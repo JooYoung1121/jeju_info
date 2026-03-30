@@ -10,25 +10,8 @@
       theme: {
         extend: {
           colors: {
-            jeju: {
-              50: '#fff7ed',
-              100: '#ffedd5',
-              200: '#fed7aa',
-              300: '#fdba74',
-              400: '#fb923c',
-              500: '#f97316',
-              600: '#ea580c',
-              700: '#c2410c',
-            },
-            ocean: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              200: '#bae6fd',
-              300: '#7dd3fc',
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7',
-            }
+            jeju: { 50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',500:'#f97316',600:'#ea580c',700:'#c2410c' },
+            ocean: { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7' }
           }
         }
       }
@@ -37,389 +20,398 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
     body { font-family: 'Noto Sans KR', sans-serif; }
-    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease; opacity: 0; }
-    .accordion-content.open { max-height: 3000px; opacity: 1; transition: max-height 0.6s ease-in, opacity 0.3s ease; }
-    .day-card { transition: all 0.2s ease; }
-    .day-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-    .filter-btn { transition: all 0.2s ease; }
-    .filter-btn.active { transform: scale(1.05); }
-    .fade-out { opacity: 0.3; transform: scale(0.97); }
+
+    /* 컴팩트 데이 칩 */
+    .day-chip { transition: all 0.15s ease; cursor: pointer; position: relative; }
+    .day-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .day-chip.selected { ring: 2px; box-shadow: 0 0 0 2px #0ea5e9; }
+    .day-chip.fade-out { opacity: 0.25; }
+
+    /* 상세 패널 */
+    .detail-panel { animation: slideDown 0.3s ease; }
+    @keyframes slideDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
+
+    /* 체크리스트 */
     .checklist-item input:checked + span { text-decoration: line-through; color: #9ca3af; }
+
+    /* 기타 */
     .section-divider { background: linear-gradient(90deg, transparent, #e5e7eb, transparent); height: 1px; }
     .hero-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 30%, #f97316 70%, #fb923c 100%); }
-    .scroll-top-btn { transition: opacity 0.3s ease, transform 0.3s ease; }
-    @media (max-width: 640px) {
-      .week-grid { grid-template-columns: 1fr !important; }
-    }
+    .filter-btn { transition: all 0.15s ease; }
+    .filter-btn.active { transform: scale(1.05); }
+
+    /* 카테고리 도트 색상 */
+    .dot-sightseeing { background: #3b82f6; }
+    .dot-food { background: #f97316; }
+    .dot-cafe { background: #f59e0b; }
+    .dot-workation { background: #8b5cf6; }
+    .dot-baby { background: #ec4899; }
+    .dot-dog { background: #22c55e; }
+    .dot-checklist { background: #6b7280; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
   <script src="data.js"></script>
 
-  <!-- Scroll to top button -->
+  <!-- Scroll to top -->
   <button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})"
-    class="scroll-top-btn fixed bottom-6 right-6 z-50 bg-ocean-500 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-xl opacity-0 pointer-events-none hover:bg-ocean-600">
+    class="fixed bottom-6 right-6 z-50 bg-ocean-500 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-xl opacity-0 pointer-events-none hover:bg-ocean-600 transition-opacity">
     &uarr;
   </button>
 
   <!-- Header -->
   <header class="hero-gradient text-white">
-    <div class="max-w-6xl mx-auto px-4 py-8 sm:py-12">
-      <h1 class="text-3xl sm:text-4xl font-bold mb-2">제주 한달살이 30일 플래너</h1>
-      <p class="text-lg sm:text-xl opacity-90 mb-4">2026.10.25 (일) ~ 11.23 (월) | 30일</p>
-      <div class="flex flex-wrap gap-3 text-sm sm:text-base">
-        <span class="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">👨 아빠</span>
-        <span class="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">👩 엄마</span>
-        <span class="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">👶 아기 (10개월)</span>
-        <span class="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">🐶 강아지 x2</span>
-      </div>
-      <div class="mt-4 flex flex-wrap gap-2 text-sm opacity-80">
-        <span>📍 숙소: 성산/구좌 (동부)</span>
-        <span>|</span>
-        <span>🚗 자차 선적</span>
-        <span>|</span>
-        <span>💻 워케이션</span>
+    <div class="max-w-6xl mx-auto px-4 py-8 sm:py-10">
+      <h1 class="text-2xl sm:text-3xl font-bold mb-1">제주 한달살이 30일 플래너</h1>
+      <p class="text-base sm:text-lg opacity-90 mb-3">2026.10.25 (일) ~ 11.23 (월)</p>
+      <div class="flex flex-wrap gap-2 text-sm">
+        <span class="bg-white/20 rounded-full px-3 py-0.5">👨👩 부부</span>
+        <span class="bg-white/20 rounded-full px-3 py-0.5">👶 아기 10개월</span>
+        <span class="bg-white/20 rounded-full px-3 py-0.5">🐶🐕 강아지 x2</span>
+        <span class="bg-white/20 rounded-full px-3 py-0.5">📍 성산/구좌</span>
+        <span class="bg-white/20 rounded-full px-3 py-0.5">🚗 자차</span>
       </div>
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
+  <!-- Navigation -->
   <nav class="sticky top-0 z-40 bg-white shadow-sm border-b">
-    <div class="max-w-6xl mx-auto px-4 py-3">
-      <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide" id="navTabs">
-        <button onclick="scrollToSection('schedule')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">📅 일정</button>
-        <button onclick="scrollToSection('checklist')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">✅ 준비물</button>
-        <button onclick="scrollToSection('info')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">📋 유용한 정보</button>
-      </div>
+    <div class="max-w-6xl mx-auto px-4 py-2.5 flex gap-2 overflow-x-auto">
+      <button onclick="scrollToSection('schedule')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">📅 일정</button>
+      <button onclick="scrollToSection('checklist')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">✅ 준비물</button>
+      <button onclick="scrollToSection('info')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">📋 유용한 정보</button>
     </div>
   </nav>
 
-  <main class="max-w-6xl mx-auto px-4 py-8">
+  <main class="max-w-6xl mx-auto px-4 py-6">
 
-    <!-- Schedule Section (일정이 가장 먼저!) -->
+    <!-- ===== 일정 섹션 ===== -->
     <section id="schedule">
-      <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
-        <span class="bg-ocean-100 text-ocean-600 w-10 h-10 rounded-lg flex items-center justify-center">📅</span>
-        30일 일정
-      </h2>
-      <!-- Filter Bar (일정 섹션 안에 배치) -->
-      <div class="bg-white rounded-xl p-3 mb-6 border border-gray-100 shadow-sm sticky top-[52px] z-30">
-        <div class="flex gap-2 overflow-x-auto pb-1" id="filterBar">
-          <button onclick="setFilter('all')" class="filter-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-ocean-500 text-white active" data-filter="all">전체</button>
-          <button onclick="setFilter('sightseeing')" class="filter-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-blue-100" data-filter="sightseeing">🏔️ 관광</button>
-          <button onclick="setFilter('food')" class="filter-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-orange-100" data-filter="food">🍽️ 맛집</button>
-          <button onclick="setFilter('cafe')" class="filter-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-amber-100" data-filter="cafe">☕ 카페</button>
-          <button onclick="setFilter('workation')" class="filter-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-purple-100" data-filter="workation">💻 워케이션</button>
-          <button onclick="setFilter('baby')" class="filter-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-pink-100" data-filter="baby">👶 아기</button>
-          <button onclick="setFilter('dog')" class="filter-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-green-100" data-filter="dog">🐶 강아지</button>
-          <button onclick="setFilter('checklist')" class="filter-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200" data-filter="checklist">✅ 준비물</button>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold flex items-center gap-2">📅 30일 일정</h2>
+      </div>
+
+      <!-- Filter -->
+      <div class="bg-white rounded-lg p-2.5 mb-5 border shadow-sm sticky top-[49px] z-30">
+        <div class="flex gap-1.5 overflow-x-auto" id="filterBar">
+          <button onclick="setFilter('all')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-ocean-500 text-white active" data-filter="all">전체</button>
+          <button onclick="setFilter('sightseeing')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="sightseeing">🏔️ 관광</button>
+          <button onclick="setFilter('food')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="food">🍽️ 맛집</button>
+          <button onclick="setFilter('cafe')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="cafe">☕ 카페</button>
+          <button onclick="setFilter('workation')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="workation">💻 워케이션</button>
+          <button onclick="setFilter('baby')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="baby">👶 아기</button>
+          <button onclick="setFilter('dog')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="dog">🐶 강아지</button>
+          <button onclick="setFilter('checklist')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="checklist">✅ 준비물</button>
         </div>
       </div>
+
       <div id="scheduleContainer"></div>
     </section>
 
-    <div class="section-divider my-12"></div>
+    <div class="section-divider my-10"></div>
 
-    <!-- Preparation Section (체크리스트 두번째) -->
-    <section id="checklist" class="mb-12">
-      <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
-        <span class="bg-jeju-100 text-jeju-700 w-10 h-10 rounded-lg flex items-center justify-center">✅</span>
-        사전 준비 체크리스트
-      </h2>
+    <!-- ===== 체크리스트 ===== -->
+    <section id="checklist" class="mb-10">
+      <h2 class="text-xl font-bold mb-5">✅ 사전 준비 체크리스트</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="checklistGrid"></div>
     </section>
 
-    <div class="section-divider mb-12"></div>
+    <div class="section-divider mb-10"></div>
 
-    <!-- Useful Info Section -->
-    <section id="info" class="mb-12">
-      <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
-        <span class="bg-green-100 text-green-700 w-10 h-10 rounded-lg flex items-center justify-center">📋</span>
-        유용한 정보
-      </h2>
+    <!-- ===== 유용한 정보 ===== -->
+    <section id="info" class="mb-10">
+      <h2 class="text-xl font-bold mb-5">📋 유용한 정보</h2>
 
-      <!-- Emergency Contacts -->
-      <div class="bg-red-50 rounded-xl p-6 mb-6 border border-red-100">
-        <h3 class="text-lg font-semibold text-red-800 mb-4">🚨 비상 연락처</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="emergencyGrid"></div>
+      <!-- 비상 연락처 -->
+      <div class="bg-red-50 rounded-xl p-5 mb-5 border border-red-100">
+        <h3 class="font-semibold text-red-800 mb-3">🚨 비상 연락처</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="emergencyGrid"></div>
       </div>
 
-      <!-- Weather Guide -->
-      <div class="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-100">
-        <h3 class="text-lg font-semibold text-blue-800 mb-4">🌤️ 날씨 & 옷차림 가이드</h3>
+      <!-- 날씨 -->
+      <div class="bg-blue-50 rounded-xl p-5 mb-5 border border-blue-100">
+        <h3 class="font-semibold text-blue-800 mb-3">🌤️ 날씨 & 옷차림</h3>
         <p class="text-sm text-blue-700 mb-3" id="weatherSummary"></p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4" id="weatherGrid"></div>
-        <div class="bg-white/60 rounded-lg p-4">
-          <h4 class="font-medium text-blue-800 mb-2">👕 옷차림 추천</h4>
-          <ul class="text-sm text-blue-700 space-y-1" id="clothingList"></ul>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3" id="weatherGrid"></div>
+        <div class="bg-white/60 rounded-lg p-3">
+          <h4 class="font-medium text-blue-800 mb-1 text-sm">👕 옷차림</h4>
+          <ul class="text-xs text-blue-700 space-y-0.5" id="clothingList"></ul>
         </div>
       </div>
 
-      <!-- Budget Guide -->
-      <div class="bg-green-50 rounded-xl p-6 border border-green-100">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-green-800">💰 예산 가이드</h3>
-          <button onclick="toggleBudgetEdit()" id="budgetEditBtn" class="text-xs px-3 py-1.5 rounded-full bg-green-200 text-green-800 hover:bg-green-300 transition-colors">
-            ✏️ 수정
-          </button>
+      <!-- 예산 -->
+      <div class="bg-green-50 rounded-xl p-5 border border-green-100">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-green-800">💰 예산 가이드</h3>
+          <button onclick="toggleBudgetEdit()" id="budgetEditBtn" class="text-xs px-3 py-1 rounded-full bg-green-200 text-green-800 hover:bg-green-300 transition-colors">✏️ 수정</button>
         </div>
-        <p class="text-sm text-green-700 mb-4" id="budgetTitle"></p>
-        <div class="space-y-2" id="budgetList"></div>
-        <div class="mt-4 pt-4 border-t border-green-200">
+        <p class="text-xs text-green-700 mb-3" id="budgetTitle"></p>
+        <div class="space-y-1.5" id="budgetList"></div>
+        <div class="mt-3 pt-3 border-t border-green-200">
           <div class="flex items-center justify-between bg-green-200/50 rounded-lg p-3 border border-green-300">
             <span class="text-sm font-semibold text-green-900">합계 (추정)</span>
             <span class="text-sm font-bold text-green-900" id="budgetTotal"></span>
           </div>
         </div>
-        <p class="text-xs text-green-500 mt-2" id="budgetEditHint" style="display:none;">금액을 클릭하면 직접 수정할 수 있습니다. 수정 내용은 자동 저장됩니다.</p>
+        <p class="text-xs text-green-500 mt-2" id="budgetEditHint" style="display:none;">금액을 직접 수정할 수 있습니다. 자동 저장됩니다.</p>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-400 py-8">
+  <footer class="bg-gray-800 text-gray-400 py-6">
     <div class="max-w-6xl mx-auto px-4 text-center text-sm">
       <p>제주 한달살이 30일 플래너 | 2026.10.25 ~ 11.23</p>
-      <p class="mt-1 text-gray-500">가족과 함께하는 제주 한 달의 기록</p>
     </div>
   </footer>
 
   <script>
-    // === State ===
+    // ========== State ==========
     let currentFilter = 'all';
-    let openAccordions = new Set();
+    let selectedDay = null; // 현재 열린 상세 패널의 day 번호
 
-    // === Render Functions ===
-
+    // ========== 체크리스트 ==========
+    function loadChecklistState() {
+      const saved = localStorage.getItem('jeju-checklist');
+      if (!saved) return;
+      const state = JSON.parse(saved);
+      for (const [key, checks] of Object.entries(state)) {
+        if (CHECKLISTS[key]) checks.forEach((c, i) => { if (CHECKLISTS[key].items[i]) CHECKLISTS[key].items[i].checked = c; });
+      }
+    }
+    function saveChecklistState() {
+      const state = {};
+      for (const [key, list] of Object.entries(CHECKLISTS)) state[key] = list.items.map(item => item.checked);
+      localStorage.setItem('jeju-checklist', JSON.stringify(state));
+    }
+    function toggleCheckItem(cat, idx) { CHECKLISTS[cat].items[idx].checked = !CHECKLISTS[cat].items[idx].checked; saveChecklistState(); }
     function renderChecklists() {
       const grid = document.getElementById('checklistGrid');
       grid.innerHTML = '';
       for (const [key, list] of Object.entries(CHECKLISTS)) {
-        const card = document.createElement('div');
-        card.className = 'bg-white rounded-xl p-5 shadow-sm border border-gray-100';
-        card.innerHTML = `
-          <h3 class="font-semibold text-lg mb-3">${list.icon} ${list.title}</h3>
-          <div class="space-y-2">
-            ${list.items.map((item, i) => `
-              <label class="checklist-item flex items-start gap-2 cursor-pointer">
-                <input type="checkbox" class="mt-1 rounded border-gray-300 text-ocean-500 focus:ring-ocean-400"
-                  onchange="toggleCheckItem('${key}', ${i})" ${item.checked ? 'checked' : ''}>
-                <span class="text-sm text-gray-700">${item.text}</span>
-              </label>
-            `).join('')}
-          </div>
-        `;
-        grid.appendChild(card);
-      }
-    }
-
-    function toggleCheckItem(category, index) {
-      CHECKLISTS[category].items[index].checked = !CHECKLISTS[category].items[index].checked;
-      // Save to localStorage
-      saveChecklistState();
-    }
-
-    function saveChecklistState() {
-      const state = {};
-      for (const [key, list] of Object.entries(CHECKLISTS)) {
-        state[key] = list.items.map(item => item.checked);
-      }
-      localStorage.setItem('jeju-checklist', JSON.stringify(state));
-    }
-
-    function loadChecklistState() {
-      const saved = localStorage.getItem('jeju-checklist');
-      if (saved) {
-        const state = JSON.parse(saved);
-        for (const [key, checks] of Object.entries(state)) {
-          if (CHECKLISTS[key]) {
-            checks.forEach((checked, i) => {
-              if (CHECKLISTS[key].items[i]) {
-                CHECKLISTS[key].items[i].checked = checked;
-              }
-            });
-          }
-        }
-      }
-    }
-
-    function getWeekIndex(day) {
-      if (day <= 7) return 0;
-      if (day <= 14) return 1;
-      if (day <= 21) return 2;
-      if (day <= 28) return 3;
-      return 4;
-    }
-
-    function getDayColor(dayData) {
-      if (dayData.categories.includes('workation')) return 'border-l-purple-400';
-      if (dayData.categories.includes('sightseeing')) return 'border-l-blue-400';
-      if (dayData.categories.includes('food')) return 'border-l-orange-400';
-      if (dayData.categories.includes('cafe')) return 'border-l-amber-400';
-      if (dayData.categories.includes('checklist')) return 'border-l-gray-400';
-      return 'border-l-ocean-400';
-    }
-
-    function getDayBg(dayOfWeek) {
-      if (dayOfWeek === '일') return 'bg-red-50/50';
-      if (dayOfWeek === '토') return 'bg-blue-50/50';
-      return 'bg-white';
-    }
-
-    function getCategoryTags(categories) {
-      return categories.map(cat => {
-        const c = CATEGORIES[cat];
-        if (!c) return '';
-        return `<span class="inline-block px-2 py-0.5 rounded-full text-xs ${c.color}">${c.icon} ${c.label}</span>`;
-      }).join(' ');
-    }
-
-    function renderPlace(place) {
-      return `
-        <div class="bg-gray-50 rounded-lg p-3 mb-2">
-          <div class="font-medium text-sm">${place.name}</div>
-          ${place.address ? `<div class="text-xs text-gray-500 mt-0.5">📍 ${place.address}</div>` : ''}
-          <div class="text-sm text-gray-600 mt-1">${place.desc}</div>
-          <div class="flex flex-wrap gap-2 mt-2">
-            ${place.duration && place.duration !== '-' ? `<span class="text-xs bg-gray-200 rounded px-2 py-0.5">⏱️ ${place.duration}</span>` : ''}
-            ${place.baby ? '<span class="text-xs bg-pink-100 text-pink-700 rounded px-2 py-0.5">👶 아기 OK</span>' : '<span class="text-xs bg-pink-50 text-pink-400 rounded px-2 py-0.5">👶 아기 ✕</span>'}
-            ${place.dog ? '<span class="text-xs bg-green-100 text-green-700 rounded px-2 py-0.5">🐶 강아지 OK</span>' : '<span class="text-xs bg-green-50 text-green-400 rounded px-2 py-0.5">🐶 강아지 ✕</span>'}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderTimeSlot(label, icon, slot) {
-      if (!slot) return '';
-      return `
-        <div class="mb-4">
-          <h5 class="font-medium text-sm text-gray-800 mb-2">${icon} ${label}: ${slot.title}</h5>
-          ${slot.places.map(renderPlace).join('')}
-        </div>
-      `;
-    }
-
-    function renderDayDetail(dayData) {
-      const s = dayData.schedule;
-      return `
-        <div class="p-4 sm:p-6">
-          <!-- Time slots -->
-          ${renderTimeSlot('오전', '🌅', s.morning)}
-          ${renderTimeSlot('오후', '☀️', s.afternoon)}
-          ${renderTimeSlot('저녁', '🌙', s.evening)}
-
-          <!-- Food recommendations -->
-          ${dayData.food && dayData.food.length > 0 ? `
-            <div class="mt-4 bg-orange-50 rounded-lg p-4">
-              <h5 class="font-medium text-sm text-orange-800 mb-2">🍽️ 맛집 추천</h5>
-              ${dayData.food.map(f => `
-                <div class="mb-2 last:mb-0">
-                  <div class="font-medium text-sm">${f.name}</div>
-                  <div class="text-xs text-gray-600">📍 ${f.address}</div>
-                  <div class="text-sm text-gray-700">메뉴: ${f.menu} | 💰 ${f.price}</div>
-                  <div class="flex gap-1 mt-1">
-                    ${f.baby ? '<span class="text-xs bg-pink-100 text-pink-700 rounded px-2 py-0.5">👶 OK</span>' : ''}
-                    ${f.dog ? '<span class="text-xs bg-green-100 text-green-700 rounded px-2 py-0.5">🐶 OK</span>' : ''}
-                  </div>
-                </div>
+        grid.innerHTML += `
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <h3 class="font-semibold mb-2">${list.icon} ${list.title}</h3>
+            <div class="space-y-1.5">
+              ${list.items.map((item, i) => `
+                <label class="checklist-item flex items-start gap-2 cursor-pointer">
+                  <input type="checkbox" class="mt-0.5 rounded border-gray-300 text-ocean-500" onchange="toggleCheckItem('${key}',${i})" ${item.checked?'checked':''}>
+                  <span class="text-sm text-gray-700">${item.text}</span>
+                </label>
               `).join('')}
             </div>
-          ` : ''}
+          </div>
+        `;
+      }
+    }
 
-          <!-- Memo & Rain plan -->
-          ${dayData.memo ? `
-            <div class="mt-3 bg-yellow-50 rounded-lg p-3">
-              <span class="text-xs font-medium text-yellow-800">📝 메모</span>
-              <p class="text-sm text-yellow-700 mt-1">${dayData.memo}</p>
-            </div>
-          ` : ''}
-          ${dayData.rainPlan ? `
-            <div class="mt-2 bg-blue-50 rounded-lg p-3">
-              <span class="text-xs font-medium text-blue-800">🌧️ 비 오는 날 대안</span>
-              <p class="text-sm text-blue-700 mt-1">${dayData.rainPlan}</p>
-            </div>
-          ` : ''}
-        </div>
-      `;
+    // ========== 일정 렌더링 (컴팩트 칩 + 전체 너비 상세 패널) ==========
+    function getWeekIndex(day) { if(day<=7) return 0; if(day<=14) return 1; if(day<=21) return 2; if(day<=28) return 3; return 4; }
+
+    function getCatDots(categories) {
+      return categories.map(c => `<span class="inline-block w-2 h-2 rounded-full dot-${c}" title="${CATEGORIES[c]?.label||''}"></span>`).join('');
+    }
+
+    function getDayOfWeekColor(dow) {
+      if (dow === '일') return 'text-red-500';
+      if (dow === '토') return 'text-blue-500';
+      return 'text-gray-500';
+    }
+
+    function getBorderColor(cats) {
+      if (cats.includes('workation')) return 'border-l-purple-400';
+      if (cats.includes('sightseeing')) return 'border-l-blue-400';
+      if (cats.includes('food')) return 'border-l-orange-400';
+      if (cats.includes('cafe')) return 'border-l-amber-400';
+      if (cats.includes('checklist')) return 'border-l-gray-400';
+      return 'border-l-ocean-400';
     }
 
     function renderSchedule() {
       const container = document.getElementById('scheduleContainer');
       container.innerHTML = '';
+      let curWeek = -1;
 
-      let currentWeek = -1;
+      SCHEDULE.forEach(d => {
+        const wi = getWeekIndex(d.day);
 
-      SCHEDULE.forEach(dayData => {
-        const weekIdx = getWeekIndex(dayData.day);
-
-        // Week header
-        if (weekIdx !== currentWeek) {
-          currentWeek = weekIdx;
-          const week = WEEKS[weekIdx];
-          const weekDiv = document.createElement('div');
-          weekDiv.className = 'mb-8';
-          weekDiv.innerHTML = `
-            <div class="flex items-center gap-3 mb-4 mt-${weekIdx > 0 ? '8' : '0'}">
-              <span class="bg-ocean-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold">${week.label}</span>
-              <span class="text-gray-500 text-sm">${week.dates}</span>
-              <span class="text-gray-400 text-sm hidden sm:inline">- ${week.subtitle}</span>
+        // 주차 헤더 + 그리드 + 상세패널 컨테이너
+        if (wi !== curWeek) {
+          curWeek = wi;
+          const w = WEEKS[wi];
+          container.innerHTML += `
+            <div class="mb-6" id="weekBlock-${wi}">
+              <div class="flex items-center gap-2 mb-3 ${wi > 0 ? 'mt-4' : ''}">
+                <span class="bg-ocean-500 text-white px-3 py-1 rounded-full text-xs font-semibold">${w.label}</span>
+                <span class="text-gray-400 text-xs">${w.dates}</span>
+                <span class="text-gray-400 text-xs hidden sm:inline">| ${w.subtitle}</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2" id="weekGrid-${wi}"></div>
+              <div id="weekDetail-${wi}"></div>
             </div>
           `;
-          const weekGrid = document.createElement('div');
-          weekGrid.className = 'week-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3';
-          weekGrid.id = `week-${weekIdx}`;
-          weekDiv.appendChild(weekGrid);
-          container.appendChild(weekDiv);
         }
+      });
 
-        // Check filter
-        const matchesFilter = currentFilter === 'all' || dayData.categories.includes(currentFilter);
+      // 칩 렌더링
+      SCHEDULE.forEach(d => {
+        const wi = getWeekIndex(d.day);
+        const grid = document.getElementById(`weekGrid-${wi}`);
+        const matchesFilter = currentFilter === 'all' || d.categories.includes(currentFilter);
+        const isSelected = selectedDay === d.day;
+        const dateStr = d.date.split('-').slice(1).join('/');
 
-        // Day card
-        const dayCard = document.createElement('div');
-        dayCard.className = `day-card rounded-xl border-l-4 ${getDayColor(dayData)} ${getDayBg(dayData.dayOfWeek)} border border-gray-100 shadow-sm cursor-pointer ${matchesFilter ? '' : 'fade-out'}`;
-        dayCard.id = `day-${dayData.day}`;
+        const chip = document.createElement('div');
+        chip.className = `day-chip rounded-lg border-l-4 ${getBorderColor(d.categories)} bg-white border border-gray-100 shadow-sm p-2.5 ${matchesFilter ? '' : 'fade-out'} ${isSelected ? 'selected' : ''}`;
+        chip.id = `chip-${d.day}`;
+        chip.onclick = () => selectDay(d.day);
 
-        const isOpen = openAccordions.has(dayData.day);
-        const dateStr = dayData.date.split('-').slice(1).join('/');
-
-        dayCard.innerHTML = `
-          <div class="p-3 sm:p-4" onclick="toggleAccordion(${dayData.day})">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-bold ${dayData.dayOfWeek === '일' ? 'text-red-500' : dayData.dayOfWeek === '토' ? 'text-blue-500' : 'text-gray-500'}">
-                Day ${dayData.day}
-              </span>
-              <span class="text-xs text-gray-400">${dateStr} (${dayData.dayOfWeek})</span>
-            </div>
-            <h4 class="font-semibold text-sm mb-2">${dayData.theme}</h4>
-            <div class="flex flex-wrap gap-1 mb-2">
-              ${getCategoryTags(dayData.categories)}
-            </div>
-            <div class="flex gap-1">
-              ${dayData.babyFriendly ? '<span class="text-xs">👶✓</span>' : '<span class="text-xs opacity-30">👶✕</span>'}
-              ${dayData.dogFriendly ? '<span class="text-xs">🐶✓</span>' : '<span class="text-xs opacity-30">🐶✕</span>'}
-            </div>
-            <div class="mt-2 text-right">
-              <span class="text-gray-400 text-xs transition-transform inline-block ${isOpen ? 'rotate-180' : ''}" id="arrow-${dayData.day}">▼</span>
-            </div>
+        chip.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-bold ${getDayOfWeekColor(d.dayOfWeek)}">D${d.day}</span>
+            <span class="text-[10px] text-gray-400">${dateStr}(${d.dayOfWeek})</span>
           </div>
-          <div class="accordion-content border-t border-gray-100 ${isOpen ? 'open' : ''}" id="detail-${dayData.day}">
-            ${renderDayDetail(dayData)}
+          <div class="font-semibold text-xs mb-1.5 leading-tight truncate" title="${d.theme}">${d.theme}</div>
+          <div class="flex items-center justify-between">
+            <div class="flex gap-0.5">${getCatDots(d.categories)}</div>
+            <div class="flex gap-0.5 text-[10px]">
+              ${d.babyFriendly ? '👶' : '<span class="opacity-20">👶</span>'}
+              ${d.dogFriendly ? '🐶' : '<span class="opacity-20">🐶</span>'}
+            </div>
           </div>
         `;
 
-        document.getElementById(`week-${currentWeek}`).appendChild(dayCard);
+        grid.appendChild(chip);
+      });
+
+      // 이미 선택된 날이 있으면 상세 패널 렌더링
+      if (selectedDay !== null) renderDetailPanel(selectedDay);
+    }
+
+    function selectDay(day) {
+      // 같은 날 다시 클릭 → 닫기
+      if (selectedDay === day) {
+        selectedDay = null;
+        renderSchedule();
+        return;
+      }
+      selectedDay = day;
+      renderSchedule();
+      // 상세 패널로 스크롤
+      setTimeout(() => {
+        const panel = document.getElementById('detailPanel');
+        if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
+
+    function renderDetailPanel(day) {
+      const d = SCHEDULE.find(s => s.day === day);
+      if (!d) return;
+      const wi = getWeekIndex(day);
+      const detailContainer = document.getElementById(`weekDetail-${wi}`);
+      const dateStr = d.date.split('-').slice(1).join('/');
+
+      detailContainer.innerHTML = `
+        <div class="detail-panel mt-3 bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden" id="detailPanel">
+          <!-- 헤더 -->
+          <div class="bg-gradient-to-r from-ocean-50 to-blue-50 px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="bg-ocean-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">Day ${d.day}</span>
+                <span class="text-sm text-gray-500">${dateStr} (${d.dayOfWeek})</span>
+                ${d.babyFriendly ? '<span class="text-xs bg-pink-100 text-pink-700 rounded-full px-2 py-0.5">👶 OK</span>' : ''}
+                ${d.dogFriendly ? '<span class="text-xs bg-green-100 text-green-700 rounded-full px-2 py-0.5">🐶 OK</span>' : ''}
+              </div>
+              <h3 class="font-bold text-lg">${d.theme}</h3>
+            </div>
+            <button onclick="selectDay(${d.day})" class="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+          </div>
+
+          <!-- 본문: 3열 타임라인 (데스크톱) / 세로 (모바일) -->
+          <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+            ${renderSlotColumn('🌅 오전', d.schedule.morning)}
+            ${renderSlotColumn('☀️ 오후', d.schedule.afternoon)}
+            ${renderSlotColumn('🌙 저녁', d.schedule.evening)}
+          </div>
+
+          <!-- 하단 정보 -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-gray-50 border-t border-gray-100">
+            ${d.food && d.food.length > 0 ? `
+              <div class="bg-orange-50 rounded-lg p-3 border border-orange-100">
+                <div class="text-xs font-semibold text-orange-800 mb-1.5">🍽️ 맛집 추천</div>
+                ${d.food.map(f => `
+                  <div class="mb-1.5 last:mb-0">
+                    <div class="text-sm font-medium">${f.name}</div>
+                    <div class="text-xs text-gray-500">${f.menu}</div>
+                    <div class="text-xs text-orange-600">💰 ${f.price}</div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+            ${d.memo ? `
+              <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-100">
+                <div class="text-xs font-semibold text-yellow-800 mb-1">📝 메모</div>
+                <p class="text-xs text-yellow-700">${d.memo}</p>
+              </div>
+            ` : ''}
+            ${d.rainPlan ? `
+              <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                <div class="text-xs font-semibold text-blue-800 mb-1">🌧️ 비 올 때</div>
+                <p class="text-xs text-blue-700">${d.rainPlan}</p>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSlotColumn(label, slot) {
+      if (!slot) return `<div class="p-4"><div class="text-xs font-semibold text-gray-400 mb-2">${label}</div><p class="text-xs text-gray-400">일정 없음</p></div>`;
+      return `
+        <div class="p-4">
+          <div class="text-xs font-semibold text-gray-500 mb-2">${label}</div>
+          <div class="text-sm font-medium text-gray-800 mb-2">${slot.title}</div>
+          ${slot.places.map(p => `
+            <div class="bg-gray-50 rounded-lg p-2.5 mb-2 last:mb-0">
+              <div class="font-medium text-sm">${p.name}</div>
+              ${p.address ? `<div class="text-[11px] text-gray-400 mt-0.5">📍 ${p.address}</div>` : ''}
+              <div class="text-xs text-gray-600 mt-1">${p.desc}</div>
+              <div class="flex flex-wrap gap-1 mt-1.5">
+                ${p.duration && p.duration !== '-' ? `<span class="text-[10px] bg-gray-200 rounded px-1.5 py-0.5">⏱${p.duration}</span>` : ''}
+                ${p.baby ? '<span class="text-[10px] bg-pink-100 text-pink-700 rounded px-1.5 py-0.5">👶OK</span>' : ''}
+                ${p.dog ? '<span class="text-[10px] bg-green-100 text-green-700 rounded px-1.5 py-0.5">🐶OK</span>' : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // ========== 필터 ==========
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === filter) {
+          btn.className = 'filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-ocean-500 text-white active';
+        } else {
+          btn.className = 'filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100';
+        }
+      });
+      // 칩 fade 업데이트
+      SCHEDULE.forEach(d => {
+        const chip = document.getElementById(`chip-${d.day}`);
+        if (!chip) return;
+        const match = filter === 'all' || d.categories.includes(filter);
+        chip.classList.toggle('fade-out', !match);
       });
     }
 
+    // ========== 유용한 정보 ==========
     function renderEmergency() {
-      const grid = document.getElementById('emergencyGrid');
-      grid.innerHTML = EMERGENCY_CONTACTS.map(c => `
-        <a href="tel:${c.phone}" class="bg-white rounded-lg p-3 flex items-center gap-3 hover:shadow-md transition-shadow border border-red-50">
-          <span class="text-2xl">${c.icon}</span>
+      document.getElementById('emergencyGrid').innerHTML = EMERGENCY_CONTACTS.map(c => `
+        <a href="tel:${c.phone}" class="bg-white rounded-lg p-2.5 flex items-center gap-2 hover:shadow-md transition-shadow border border-red-50">
+          <span class="text-xl">${c.icon}</span>
           <div>
-            <div class="font-medium text-sm text-gray-800">${c.name}</div>
-            <div class="text-xs text-gray-500">${c.place}</div>
+            <div class="text-xs font-medium text-gray-800">${c.name} <span class="text-gray-400 font-normal">${c.place}</span></div>
             <div class="text-sm font-semibold text-red-600">${c.phone}</div>
           </div>
         </a>
@@ -428,173 +420,79 @@
 
     function renderWeather() {
       document.getElementById('weatherSummary').textContent = `기간: ${WEATHER_GUIDE.period} | 평균 기온: ${WEATHER_GUIDE.avgTemp}`;
-      const grid = document.getElementById('weatherGrid');
-      grid.innerHTML = WEATHER_GUIDE.details.map(d => `
-        <div class="bg-white/60 rounded-lg p-3">
-          <div class="font-medium text-sm text-blue-800">${d.label}</div>
-          <div class="text-lg font-semibold text-blue-600">${d.temp}</div>
-          <div class="text-xs text-blue-600/70">${d.desc}</div>
+      document.getElementById('weatherGrid').innerHTML = WEATHER_GUIDE.details.map(d => `
+        <div class="bg-white/60 rounded-lg p-2.5 text-center">
+          <div class="text-xs font-medium text-blue-800">${d.label}</div>
+          <div class="text-base font-bold text-blue-600">${d.temp}</div>
+          <div class="text-[10px] text-blue-500">${d.desc}</div>
         </div>
       `).join('');
-
-      const clothingList = document.getElementById('clothingList');
-      clothingList.innerHTML = WEATHER_GUIDE.clothing.map(c => `<li>• ${c}</li>`).join('');
+      document.getElementById('clothingList').innerHTML = WEATHER_GUIDE.clothing.map(c => `<li class="text-xs">• ${c}</li>`).join('');
     }
 
+    // ========== 예산 (편집 가능) ==========
     let budgetEditMode = false;
-    let budgetData = []; // 편집 가능한 예산 데이터 (합계 제외)
+    let budgetData = [];
 
     function initBudgetData() {
-      // localStorage에서 저장된 예산 불러오기
       const saved = localStorage.getItem('jeju-budget');
-      if (saved) {
-        budgetData = JSON.parse(saved);
-      } else {
-        // 기본 데이터에서 합계 행 제외하고 복사 + min/max 파싱
-        budgetData = BUDGET_GUIDE.items
-          .filter(b => !b.category.includes('합계'))
-          .map(b => {
-            const nums = b.estimate.match(/[\d]+/g);
-            return {
-              category: b.category,
-              desc: b.desc,
-              min: nums ? parseInt(nums[0]) : 0,
-              max: nums && nums[1] ? parseInt(nums[1]) : (nums ? parseInt(nums[0]) : 0),
-            };
-          });
-      }
+      if (saved) { budgetData = JSON.parse(saved); return; }
+      budgetData = BUDGET_GUIDE.items.filter(b => !b.category.includes('합계')).map(b => {
+        const nums = b.estimate.match(/[\d]+/g);
+        return { category: b.category, desc: b.desc, min: nums?parseInt(nums[0]):0, max: nums&&nums[1]?parseInt(nums[1]):(nums?parseInt(nums[0]):0) };
+      });
     }
-
-    function saveBudgetData() {
-      localStorage.setItem('jeju-budget', JSON.stringify(budgetData));
-    }
-
-    function calcBudgetTotal() {
-      const min = budgetData.reduce((s, b) => s + b.min, 0);
-      const max = budgetData.reduce((s, b) => s + b.max, 0);
-      return { min, max };
-    }
+    function saveBudgetData() { localStorage.setItem('jeju-budget', JSON.stringify(budgetData)); }
+    function calcBudgetTotal() { return { min: budgetData.reduce((s,b)=>s+b.min,0), max: budgetData.reduce((s,b)=>s+b.max,0) }; }
 
     function renderBudget() {
-      const list = document.getElementById('budgetList');
-      list.innerHTML = budgetData.map((b, i) => `
-        <div class="bg-white/60 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between border border-green-100">
+      document.getElementById('budgetList').innerHTML = budgetData.map((b,i) => `
+        <div class="bg-white/60 rounded-lg p-2.5 flex items-center justify-between border border-green-100">
           <div class="flex-1 min-w-0">
             <span class="text-sm text-green-800">${b.category}</span>
-            <span class="text-xs text-green-600 ml-2">${b.desc}</span>
+            <span class="text-[10px] text-green-500 ml-1">${b.desc}</span>
           </div>
-          <div class="mt-1 sm:mt-0 shrink-0">
+          <div class="shrink-0 ml-2">
             ${budgetEditMode ? `
-              <div class="flex items-center gap-1">
-                <input type="number" value="${b.min}" onchange="updateBudgetItem(${i},'min',this.value)"
-                  class="w-16 text-sm text-right border border-green-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-green-400">
-                <span class="text-xs text-green-600">~</span>
-                <input type="number" value="${b.max}" onchange="updateBudgetItem(${i},'max',this.value)"
-                  class="w-16 text-sm text-right border border-green-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-green-400">
-                <span class="text-xs text-green-600">만원</span>
-              </div>
-            ` : `
-              <span class="text-sm font-semibold text-green-700">${b.min}~${b.max}만원</span>
-            `}
+              <span class="flex items-center gap-1">
+                <input type="number" value="${b.min}" onchange="updateBudgetItem(${i},'min',this.value)" class="w-14 text-xs text-right border border-green-300 rounded px-1 py-0.5 bg-white">
+                <span class="text-[10px] text-green-500">~</span>
+                <input type="number" value="${b.max}" onchange="updateBudgetItem(${i},'max',this.value)" class="w-14 text-xs text-right border border-green-300 rounded px-1 py-0.5 bg-white">
+                <span class="text-[10px] text-green-500">만원</span>
+              </span>
+            ` : `<span class="text-sm font-semibold text-green-700">${b.min}~${b.max}만원</span>`}
           </div>
         </div>
       `).join('');
-
-      const total = calcBudgetTotal();
-      document.getElementById('budgetTotal').textContent = `${total.min}~${total.max}만원`;
+      const t = calcBudgetTotal();
+      document.getElementById('budgetTotal').textContent = `${t.min}~${t.max}만원`;
     }
-
-    function updateBudgetItem(index, field, value) {
-      budgetData[index][field] = parseInt(value) || 0;
-      saveBudgetData();
-      renderBudget();
-    }
-
+    function updateBudgetItem(i, f, v) { budgetData[i][f] = parseInt(v)||0; saveBudgetData(); renderBudget(); }
     function toggleBudgetEdit() {
       budgetEditMode = !budgetEditMode;
       const btn = document.getElementById('budgetEditBtn');
       const hint = document.getElementById('budgetEditHint');
-      if (budgetEditMode) {
-        btn.textContent = '✓ 완료';
-        btn.classList.remove('bg-green-200');
-        btn.classList.add('bg-green-500', 'text-white');
-        hint.style.display = 'block';
-      } else {
-        btn.textContent = '✏️ 수정';
-        btn.classList.add('bg-green-200');
-        btn.classList.remove('bg-green-500', 'text-white');
-        hint.style.display = 'none';
-      }
+      btn.textContent = budgetEditMode ? '✓ 완료' : '✏️ 수정';
+      btn.classList.toggle('bg-green-500', budgetEditMode);
+      btn.classList.toggle('text-white', budgetEditMode);
+      btn.classList.toggle('bg-green-200', !budgetEditMode);
+      hint.style.display = budgetEditMode ? 'block' : 'none';
       renderBudget();
     }
 
-    // === Interactions ===
-
-    function toggleAccordion(day) {
-      const detail = document.getElementById(`detail-${day}`);
-      const arrow = document.getElementById(`arrow-${day}`);
-      if (openAccordions.has(day)) {
-        openAccordions.delete(day);
-        detail.classList.remove('open');
-        arrow.classList.remove('rotate-180');
-      } else {
-        openAccordions.add(day);
-        detail.classList.add('open');
-        arrow.classList.add('rotate-180');
-      }
-    }
-
-    function setFilter(filter) {
-      currentFilter = filter;
-
-      // Update button styles
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        const btnFilter = btn.dataset.filter;
-        if (btnFilter === filter) {
-          btn.classList.add('active');
-          btn.className = btn.className.replace(/bg-gray-100|bg-\w+-100/g, '');
-          btn.classList.add('bg-ocean-500', 'text-white');
-        } else {
-          btn.classList.remove('active', 'bg-ocean-500', 'text-white');
-          btn.classList.add('bg-gray-100');
-        }
-      });
-
-      // Update day cards
-      SCHEDULE.forEach(dayData => {
-        const card = document.getElementById(`day-${dayData.day}`);
-        if (!card) return;
-        const matches = filter === 'all' || dayData.categories.includes(filter);
-        if (matches) {
-          card.classList.remove('fade-out');
-        } else {
-          card.classList.add('fade-out');
-        }
-      });
-    }
-
+    // ========== 공통 ==========
     function scrollToSection(id) {
       const el = document.getElementById(id);
-      if (el) {
-        const offset = 120;
-        const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
+      if (el) window.scrollTo({ top: el.offsetTop - 60, behavior: 'smooth' });
     }
 
-    // Scroll to top button visibility
     window.addEventListener('scroll', () => {
       const btn = document.getElementById('scrollTopBtn');
-      if (window.scrollY > 500) {
-        btn.classList.remove('opacity-0', 'pointer-events-none');
-        btn.classList.add('opacity-100');
-      } else {
-        btn.classList.add('opacity-0', 'pointer-events-none');
-        btn.classList.remove('opacity-100');
-      }
+      btn.classList.toggle('opacity-0', window.scrollY <= 400);
+      btn.classList.toggle('pointer-events-none', window.scrollY <= 400);
     });
 
-    // === Initialize ===
+    // ========== Init ==========
     loadChecklistState();
     initBudgetData();
     document.getElementById('budgetTitle').textContent = BUDGET_GUIDE.title;
