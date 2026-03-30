@@ -1,0 +1,12 @@
+{
+  "discord_webhook_url": "",
+  "macos_notification": true,
+  "check_interval_minutes": 60,
+  "keywords": ["10월", "예약", "오픈", "스케줄", "운항"],
+  "error_alert_threshold": 5,
+  "urls": {
+    "reservation": "https://www.seaferry.co.kr/bbs/content.php?co_id=p201",
+    "notice": "https://www.seaferry.co.kr/bbs/board.php?bo_table=b501",
+    "schedule": "https://www.seaferry.co.kr/bbs/content.php?co_id=p301"
+  }
+}

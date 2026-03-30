@@ -1,0 +1,9 @@
+config.json
+data/state.json
+logs/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.DS_Store

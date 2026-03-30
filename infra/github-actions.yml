@@ -1,0 +1,59 @@
+name: Jeju Ferry Monitor
+
+on:
+  schedule:
+    - cron: '0 23-9 * * *'  # UTC 23~09시 = KST 08~18시, 매 정시
+  workflow_dispatch:  # 수동 실행
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore state cache
+        uses: actions/cache@v4
+        with:
+          path: data/state.json
+          key: monitor-state-${{ github.run_id }}
+          restore-keys: |
+            monitor-state-
+
+      - name: Create config from secrets
+        run: |
+          cat > config.json << 'PYEOF'
+          {
+            "discord_webhook_url": "${{ secrets.DISCORD_WEBHOOK_URL }}",
+            "macos_notification": false,
+            "check_interval_minutes": 60,
+            "keywords": ["10월", "예약", "오픈", "스케줄", "운항"],
+            "error_alert_threshold": 5,
+            "urls": {
+              "reservation": "https://www.seaferry.co.kr/bbs/content.php?co_id=p201",
+              "notice": "https://www.seaferry.co.kr/bbs/board.php?bo_table=b501",
+              "schedule": "https://www.seaferry.co.kr/bbs/content.php?co_id=p301"
+            }
+          }
+          PYEOF
+
+      - name: Run monitor
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python main.py
+
+      - name: Upload state artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: state
+          path: data/state.json
+          retention-days: 7
