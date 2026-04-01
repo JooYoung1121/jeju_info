@@ -128,6 +128,31 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2" id="emergencyGrid"></div>
       </div>
 
+      <!-- 페리 & 반려동물 -->
+      <div class="bg-indigo-50 rounded-xl p-5 mb-5 border border-indigo-100" id="ferrySection">
+        <h3 class="font-semibold text-indigo-800 mb-3">🚢 페리 & 반려동물 안내</h3>
+
+        <!-- 추천 선택 -->
+        <div class="bg-white rounded-lg p-4 mb-4 border border-indigo-200" id="ferryRecommendation"></div>
+
+        <!-- 선박 목록 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4" id="shipGrid"></div>
+
+        <!-- 펫 규정 -->
+        <div class="bg-white/60 rounded-lg p-4 border border-indigo-100">
+          <h4 class="font-medium text-indigo-800 mb-2 text-sm">🐾 반려동물 탑승 규정</h4>
+          <div id="petRulesContent"></div>
+        </div>
+
+        <!-- 고객센터 -->
+        <div class="mt-3 text-center">
+          <a href="tel:1577-3567" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800">
+            📞 고객센터 1577-3567
+          </a>
+          <span class="text-xs text-indigo-400 ml-2">(월~토 09:00~18:00)</span>
+        </div>
+      </div>
+
       <!-- 날씨 -->
       <div class="bg-blue-50 rounded-xl p-5 mb-5 border border-blue-100">
         <h3 class="font-semibold text-blue-800 mb-3">🌤️ 날씨 & 옷차림</h3>
@@ -405,6 +430,73 @@
       });
     }
 
+    // ========== 페리 정보 ==========
+    function renderFerryInfo() {
+      if (typeof FERRY_INFO === 'undefined') return;
+
+      // 추천 선택 (복수 옵션)
+      const rec = FERRY_INFO.recommendation;
+      document.getElementById('ferryRecommendation').innerHTML = `
+        <div class="text-xs font-semibold text-indigo-700 mb-3">⭐ ${rec.title}</div>
+        ${rec.options.map((opt, i) => `
+          <div class="${i > 0 ? 'mt-3 pt-3 border-t border-indigo-100' : ''}">
+            <div class="text-[11px] font-semibold ${i === 0 ? 'text-amber-700' : 'text-indigo-700'} mb-1">${i === 0 ? '🆕' : '✅'} ${opt.label}</div>
+            <div class="space-y-0.5 text-[11px] text-indigo-600">
+              <div>🚢 ${opt.ship}</div>
+              <div>🛏️ ${opt.room}</div>
+              <div>⏰ ${opt.schedule}</div>
+              <div>💡 ${opt.note}</div>
+            </div>
+          </div>
+        `).join('')}
+      `;
+
+      // 선박 목록
+      document.getElementById('shipGrid').innerHTML = FERRY_INFO.ships.map(s => `
+        <div class="bg-white rounded-lg p-3 border ${s.isNew ? 'border-amber-300 ring-1 ring-amber-200' : 'border-indigo-100'}">
+          <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span class="text-sm font-semibold ${s.isNew ? 'text-amber-700' : 'text-indigo-800'}">${s.name}</span>
+            ${s.isNew ? '<span class="text-[10px] bg-amber-100 text-amber-700 rounded-full px-2 py-0.5 font-medium">2026.05 취항</span>' : ''}
+            ${s.highlight && !s.isNew ? '<span class="text-[10px] bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5">' + s.highlight + '</span>' : ''}
+          </div>
+          <div class="text-xs text-gray-500 mb-1">📍 ${s.route}</div>
+          ${s.schedules ? s.schedules.map(sc => '<div class="text-[10px] text-gray-400">⏰ ' + sc.label + ': ' + sc.time + ' (' + sc.duration + ')</div>').join('') : ''}
+          ${s.offDays ? '<div class="text-[10px] text-red-400 mt-0.5">🚫 ' + s.offDays + '</div>' : ''}
+          ${s.rooms ? `
+            <div class="mt-2 pt-2 border-t border-gray-100">
+              <div class="text-[10px] font-medium text-gray-600 mb-1">객실:</div>
+              ${s.rooms.map(r => '<div class="text-[10px] text-gray-500">• ' + r.name + (r.price !== '-' ? ' <strong>' + r.price + '</strong>' : '') + ' - ' + r.desc + '</div>').join('')}
+            </div>
+          ` : ''}
+          ${s.facilities ? `
+            <div class="mt-1.5 text-[10px] text-gray-400">🏪 ${s.facilities.join(' / ')}</div>
+          ` : ''}
+          ${s.petPolicy ? '<div class="mt-1 text-[10px] text-green-600 font-medium">🐾 ' + s.petPolicy + '</div>' : ''}
+          ${s.link ? '<a href="' + s.link + '" target="_blank" class="mt-2 inline-block text-[10px] text-amber-600 hover:underline font-medium">🔗 상세 보기 →</a>' : ''}
+        </div>
+      `).join('');
+
+      // 펫 규정
+      const rules = FERRY_INFO.petRules;
+      document.getElementById('petRulesContent').innerHTML = `
+        <div class="mb-3">
+          <div class="text-[10px] font-medium text-amber-700 mb-1">🆕 퀸메리호 (PET FIRST CRUISE):</div>
+          ${rules.queenMary.map(r => '<div class="text-[10px] text-gray-500">• ' + r + '</div>').join('')}
+        </div>
+        <div class="mb-3">
+          <div class="text-[10px] font-medium text-gray-700 mb-1">기존 선박 (퀸제누비아/산타모니카):</div>
+          ${rules.existing.map(r => '<div class="text-[10px] text-gray-500">• ' + r + '</div>').join('')}
+        </div>
+        <div class="mb-3">
+          <div class="text-[10px] font-medium text-gray-700 mb-1">필요 서류:</div>
+          <div class="text-[10px] text-gray-500">${rules.documents.join(', ')}</div>
+        </div>
+        <div class="bg-amber-50 rounded p-2 border border-amber-100">
+          <div class="text-[10px] text-amber-700">💡 <strong>TIP:</strong> ${rules.tip}</div>
+        </div>
+      `;
+    }
+
     // ========== 유용한 정보 ==========
     function renderEmergency() {
       document.getElementById('emergencyGrid').innerHTML = EMERGENCY_CONTACTS.map(c => `
@@ -498,6 +590,7 @@
     document.getElementById('budgetTitle').textContent = BUDGET_GUIDE.title;
     renderChecklists();
     renderSchedule();
+    renderFerryInfo();
     renderEmergency();
     renderWeather();
     renderBudget();

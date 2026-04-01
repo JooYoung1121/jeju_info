@@ -8,7 +8,10 @@ import sys
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 
-from scrapers import ReservationChecker, NoticeChecker, ScheduleChecker
+from scrapers import (
+    ReservationChecker, NoticeChecker, ScheduleChecker,
+    QueenMaryChecker, PetPageChecker, FareChecker,
+)
 from state import load_state, save_state
 from notifier import notify
 
@@ -158,6 +161,102 @@ def check_schedule(config: dict, state: dict, source: str) -> dict:
     return state
 
 
+def check_queenmary(config: dict, state: dict, source: str) -> dict:
+    logger = logging.getLogger("queenmary")
+    url = config["urls"].get("queenmary")
+    if not url:
+        return state
+
+    checker = QueenMaryChecker(url, timeout=30)
+
+    result = checker.check(state)
+    if result is None:
+        return state
+
+    state["queenmary_hash"] = result["content_hash"]
+
+    if result["is_new"]:
+        logger.info(f"퀸메리 페이지 최초 스캔 완료 (키워드: {result['keywords_found']})")
+    elif result["changed"]:
+        urgency = any(kw in result["keywords_found"] for kw in ["예약", "오픈", "취항", "운항"])
+        notify(
+            config,
+            "🚢 퀸메리 페이지 변경!",
+            f"퀸메리 프리런칭 페이지가 업데이트되었습니다!\n"
+            f"감지 키워드: {', '.join(result['keywords_found']) or '없음'}\n"
+            f"미리보기: {result['content_preview'][:150]}...\n"
+            f"확인: {url}",
+            urgent=urgency,
+            source=source,
+        )
+        state["last_alert_ts"] = datetime.now().isoformat()
+        state["alert_source"] = source
+
+    state["consecutive_errors"]["queenmary"] = 0
+    return state
+
+
+def check_pet_page(config: dict, state: dict, source: str) -> dict:
+    logger = logging.getLogger("pet")
+    url = config["urls"].get("pet")
+    if not url:
+        return state
+
+    checker = PetPageChecker(url)
+
+    result = checker.check(state)
+    if result is None:
+        return state
+
+    state["pet_page_hash"] = result["content_hash"]
+
+    if result["changed"]:
+        notify(
+            config,
+            "🐾 반려동물 이용안내 변경",
+            f"반려동물 페이지가 변경되었습니다.\n"
+            f"감지 키워드: {', '.join(result['keywords_found']) or '없음'}\n"
+            f"미리보기: {result['content_preview'][:150]}...\n"
+            f"확인: {url}",
+            urgent="퀸메리" in result["keywords_found"],
+            source=source,
+        )
+        state["last_alert_ts"] = datetime.now().isoformat()
+        state["alert_source"] = source
+
+    state["consecutive_errors"]["pet"] = 0
+    return state
+
+
+def check_fare(config: dict, state: dict, source: str) -> dict:
+    logger = logging.getLogger("fare")
+    url = config["urls"].get("fare")
+    if not url:
+        return state
+
+    checker = FareChecker(url)
+
+    result = checker.check(state)
+    if result is None:
+        return state
+
+    state["fare_hash"] = result["content_hash"]
+
+    if result["changed"]:
+        notify(
+            config,
+            "💰 요금 정보 변경 감지",
+            f"요금 페이지가 변경되었습니다.\n미리보기: {result['content_preview'][:100]}...\n확인: {url}",
+            urgent=False,
+            source=source,
+        )
+        state["last_alert_ts"] = datetime.now().isoformat()
+        state["alert_source"] = source
+
+    state["consecutive_errors"]["fare"] = 0
+    return state
+
+
 def main():
     setup_logging()
     logger = logging.getLogger("main")
@@ -172,6 +271,9 @@ def main():
         ("reservation", check_reservation),
         ("notice", check_notice),
         ("schedule", check_schedule),
+        ("queenmary", check_queenmary),
+        ("pet", check_pet_page),
+        ("fare", check_fare),
     ]
 
     for name, checker_fn in checkers:

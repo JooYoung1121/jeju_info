@@ -35,12 +35,15 @@ jobs:
             "discord_webhook_url": "${{ secrets.DISCORD_WEBHOOK_URL }}",
             "macos_notification": false,
             "check_interval_minutes": 60,
-            "keywords": ["10월", "예약", "오픈", "스케줄", "운항"],
+            "keywords": ["10월", "예약", "오픈", "스케줄", "운항", "퀸메리", "펫", "반려동물", "취항", "신규"],
             "error_alert_threshold": 5,
             "urls": {
               "reservation": "https://www.seaferry.co.kr/bbs/content.php?co_id=p201",
               "notice": "https://www.seaferry.co.kr/bbs/board.php?bo_table=b501",
-              "schedule": "https://www.seaferry.co.kr/bbs/content.php?co_id=p301"
+              "schedule": "https://www.seaferry.co.kr/bbs/content.php?co_id=p301",
+              "queenmary": "http://qm.seaferry.co.kr/",
+              "pet": "https://www.seaferry.co.kr/bbs/content.php?co_id=p405",
+              "fare": "https://www.seaferry.co.kr/bbs/content.php?co_id=p101"
             }
           }
           PYEOF
