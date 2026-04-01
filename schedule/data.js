@@ -1979,6 +1979,49 @@ const EMERGENCY_CONTACTS = [
   { name: "24시 약국", place: "한라약국 (제주시)", phone: "064-757-7766", icon: "💊", mapQuery: "한라약국 제주시" },
 ];
 
+// 반려견 돌봄 (데이케어/펫시터) 정보
+const PET_CARE_INFO = {
+  title: "반려견 불가 장소 방문 시 돌봄 옵션",
+  note: "성산/구좌(동부)에는 전문 애견유치원이 거의 없어, 펫시터 방문 돌봄이 가장 현실적입니다.",
+  facilities: [
+    {
+      name: "댕댕놀이터 외도점",
+      type: "애견유치원/호텔/미용",
+      area: "제주시 외도동",
+      contact: "인스타 DM",
+      link: "https://www.instagram.com/dd_noriter/",
+      note: "성산에서 약 1시간 거리. 종일 데이케어보다는 서부 일정과 조합 추천.",
+    },
+    {
+      name: "블리스풀",
+      type: "애견카페 + 운동장",
+      area: "제주시",
+      contact: "인스타 DM",
+      link: "https://www.instagram.com/blissful.jeju/",
+      note: "넓은 잔디 운동장. 카페 이용하며 강아지 놀이.",
+    },
+  ],
+  petSitter: {
+    title: "펫시터 방문 돌봄 (숙소에서)",
+    desc: "숙소로 펫시터가 와서 강아지를 돌봐주는 서비스. 성산/구좌 숙소에서 이용 가능.",
+    platforms: [
+      { name: "숨고", url: "https://soomgo.com", desc: "제주 펫시터 검색, 평균 2.8만원/회" },
+      { name: "펫봄", url: "https://petbom.com", desc: "앱 기반 펫시터 매칭" },
+      { name: "와요(WAYO)", url: "https://wayopet.com", desc: "GPS 산책, 사진/영상 공유" },
+    ],
+    price: "2~4만원/회 (평균 2.8만원)",
+    includes: "사료/물 급여, 산책, 배변 처리, 사진/영상 공유",
+    tip: "출발 전 미리 펫시터 예약 & 사전 미팅 필수! 숙소 호스트에게 근처 추천 펫시터를 물어보는 것도 좋은 방법.",
+  },
+  whenToUse: [
+    "아쿠아플라넷 제주 (반려견 입장 불가)",
+    "한림공원 (7kg 미만 소형견만 가능)",
+    "성산일출봉 (천연기념물, 반려견 불가)",
+    "만장굴 (반려견 입장 불가)",
+    "실내 식당/카페 중 반려견 불가 장소",
+  ],
+};
+
 // 페리 & 반려동물 정보
 const FERRY_INFO = {
   title: "씨월드고속훼리 이용 가이드",
