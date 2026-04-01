@@ -254,6 +254,7 @@ const SCHEDULE = [
           {
             name: "성산일출봉",
             address: "서귀포시 성산읍 성산리 114",
+            url: "https://www.jeju.go.kr/jejuwnh/place/sunrise.htm",
             desc: "UNESCO 세계자연유산. 아기띠로 등반. 반려견 입장 불가 (천연기념물 보호구역).",
             duration: "2시간",
             baby: true,
@@ -456,6 +457,7 @@ const SCHEDULE = [
           {
             name: "만장굴",
             address: "제주시 구좌읍 만장굴길 182",
+            url: "https://www.jeju.go.kr/jejuwnh/place/manjanggul.htm",
             desc: "세계자연유산 용암동굴. 유모차 불가(바닥 울퉁불퉁) → 아기띠 필수. 동굴 내 서늘(12~13℃), 겉옷 필수. ⚠️ 2023년 말부터 휴관 중 → 방문 전 재개장 여부 반드시 확인!",
             duration: "1시간 30분",
             baby: true,
@@ -469,6 +471,7 @@ const SCHEDULE = [
           {
             name: "비자림",
             address: "제주시 구좌읍 비자숲길 55",
+            url: "https://www.jeju.go.kr/jejuwnh/place/bijarim.htm",
             desc: "천년 비자나무 숲. 반려견 동반 가능 (목줄 필수, 배변 처리 필수). 유모차보다는 아기띠 추천. 입장료 성인 3,000원.",
             duration: "1시간 30분",
             baby: true,
@@ -519,6 +522,7 @@ const SCHEDULE = [
           {
             name: "아쿠아플라넷 제주",
             address: "서귀포시 성산읍 섭지코지로 95",
+            url: "https://www.aquaplanet.co.kr/jeju/",
             desc: "아시아 최대 수족관. 실내라 날씨 무관. 유모차 이용 가능. 수유실 있음.",
             duration: "2~3시간",
             baby: true,
@@ -656,6 +660,7 @@ const SCHEDULE = [
           {
             name: "정방폭포",
             address: "서귀포시 칠십리로214번길 37",
+            url: "https://www.jeju.go.kr/jejuwnh/place/jeongbang.htm",
             desc: "바다로 떨어지는 폭포. 계단 많으므로 아기띠 필수.",
             duration: "40분",
             baby: true,
@@ -911,6 +916,7 @@ const SCHEDULE = [
           {
             name: "여미지식물원",
             address: "서귀포시 중문관광로 93",
+            url: "https://www.yeomiji.or.kr/",
             desc: "실내외 식물원. 유모차 이용 가능. 열대식물, 정원 산책.",
             duration: "1시간 30분",
             baby: true,
@@ -961,6 +967,7 @@ const SCHEDULE = [
           {
             name: "한림공원",
             address: "제주시 한림읍 한림로 300",
+            url: "https://www.hallimpark.co.kr/",
             desc: "용암동굴, 아열대 식물원, 분재원. 유모차 이용 가능. ⚠️ 반려견 7kg 미만 소형견만 입장 가능 (보호자 1인당 1마리, 리드줄+배변봉투 필수).",
             duration: "2시간",
             baby: true,
@@ -1076,6 +1083,7 @@ const SCHEDULE = [
           {
             name: "오설록 티뮤지엄",
             address: "서귀포시 안덕면 신화역사로 15",
+            url: "https://www.osulloc.com/kr/ko/museum",
             desc: "녹차밭 + 티 뮤지엄. 야외 공간 반려견 OK (실내 불가). 유모차 가능.",
             duration: "1시간 30분",
             baby: true,
@@ -1261,6 +1269,7 @@ const SCHEDULE = [
           {
             name: "에코랜드 테마파크",
             address: "제주시 조천읍 번영로 1278-169",
+            url: "https://www.ecolandthemepark.com/",
             desc: "증기기관차 타고 곶자왈 탐험. 키즈타운, 유모차 이용 가능. ⚠️ 반려견 동반 공식 미확인 → 사전 문의 필수 (064-802-8000).",
             duration: "3~4시간",
             baby: true,
@@ -1394,6 +1403,7 @@ const SCHEDULE = [
           {
             name: "한라산 영실코스",
             address: "서귀포시 하원동 산1-1",
+            url: "https://www.jeju.go.kr/hallasan/index.htm",
             desc: "부부 번갈아 등산. 영실코스 왕복 약 3~4시간. 11월 중순 첫눈 가능성!",
             duration: "3~4시간",
             baby: false,
@@ -1509,6 +1519,7 @@ const SCHEDULE = [
           {
             name: "산굼부리",
             address: "제주시 조천읍 교래리 산38",
+            url: "https://www.sangumburi.net/",
             desc: "분화구 형태 오름. 억새밭 절경 (11월!). 유모차 진입 가능한 데크.",
             duration: "1시간",
             baby: true,
@@ -1959,13 +1970,13 @@ const CHECKLISTS = {
 
 // 비상 연락처
 const EMERGENCY_CONTACTS = [
-  { name: "소아과", place: "아이사랑소아과의원", phone: "064-751-8275", icon: "🏥" },
-  { name: "동물병원", place: "제주24시숨동물의료센터", phone: "064-805-8365", icon: "🐾" },
-  { name: "대학병원", place: "제주대학교병원", phone: "064-717-1114", icon: "🏨" },
+  { name: "소아과", place: "아이사랑소아과의원", phone: "064-751-8275", icon: "🏥", mapQuery: "아이사랑소아과의원 제주" },
+  { name: "동물병원", place: "제주24시숨동물의료센터", phone: "064-805-8365", icon: "🐾", mapQuery: "제주24시숨동물의료센터" },
+  { name: "대학병원", place: "제주대학교병원", phone: "064-717-1114", icon: "🏨", mapQuery: "제주대학교병원" },
   { name: "페리", place: "씨월드고속훼리", phone: "1577-3567", icon: "🚢" },
-  { name: "경찰", place: "제주경찰청", phone: "182", icon: "🚔" },
+  { name: "경찰", place: "제주경찰청", phone: "182", icon: "🚔", mapQuery: "제주경찰청" },
   { name: "소방/구급", place: "119 구급대", phone: "119", icon: "🚑" },
-  { name: "24시 약국", place: "한라약국 (제주시)", phone: "064-757-7766", icon: "💊" },
+  { name: "24시 약국", place: "한라약국 (제주시)", phone: "064-757-7766", icon: "💊", mapQuery: "한라약국 제주시" },
 ];
 
 // 페리 & 반려동물 정보
@@ -1973,6 +1984,7 @@ const FERRY_INFO = {
   title: "씨월드고속훼리 이용 가이드",
   phone: "1577-3567",
   website: "https://www.seaferry.co.kr",
+  bookingUrl: "https://www.seaferry.co.kr/reservation",
   ships: [
     {
       name: "퀸메리 (PET FIRST CRUISE)",
