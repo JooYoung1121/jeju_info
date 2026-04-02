@@ -2173,6 +2173,25 @@ const FERRY_INFO = {
     documents: ["동물등록증", "예방접종증명서 (광견병 등)"],
     tip: "퀸메리호 2026.05 취항 예정! 패밀리침대(4인, 26.8만원) 또는 펫스위트(2인, 25만원) 추천. 기존 퀸제누비아Ⅱ도 무게 제한 없음 + 추가 요금 없음.",
   },
+  booking: {
+    title: "10월 25일 예약 가이드",
+    currentStatus: "현재 ~2026년 9월 30일까지 예약 가능. 10월 이후는 하반기 예약 오픈 대기 중.",
+    pattern: "씨월드고속훼리는 반기별로 예약 오픈 (상반기 1~6월, 하반기 7~12월). 하반기 예약은 6~7월경 오픈 예상.",
+    targetDate: "2026년 10월 25일 (일)",
+    steps: [
+      "카카오톡 채널 '씨월드고속훼리' 친구 추가 → 예약 오픈 알림 받기",
+      "6~7월부터 공식 홈페이지 공지사항 수시 확인",
+      "오픈 즉시 예약 (인기 객실 빠르게 마감!)",
+      "자차 선적도 함께 예약 (별도 선택)",
+    ],
+    warn: "패밀리침대(4인), 펫스위트 등 인기 객실은 오픈 직후 빠르게 마감됩니다!",
+    links: [
+      { label: "예약 페이지", url: "https://seaferry.seaferry.co.kr/reservation/reservation01.asp", icon: "🎫" },
+      { label: "퀸메리호 전용", url: "http://qm.seaferry.co.kr/", icon: "🚢" },
+      { label: "카카오톡 채널", url: "https://pf.kakao.com/_thbxdj", icon: "💬" },
+      { label: "공식 홈페이지", url: "https://www.seaferry.co.kr", icon: "🌐" },
+    ],
+  },
   recommendation: {
     title: "우리 가족 추천 선택",
     options: [

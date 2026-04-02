@@ -183,14 +183,15 @@
           <div id="petRulesContent"></div>
         </div>
 
+        <!-- 예약 가이드 -->
+        <div id="bookingGuide"></div>
+
         <!-- 고객센터 + 링크 -->
         <div class="mt-3 flex flex-wrap items-center justify-center gap-3">
           <a href="tel:1577-3567" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800">
             📞 고객센터 1577-3567
           </a>
           <span class="text-xs text-indigo-400">(월~토 09:00~18:00)</span>
-          <a href="https://www.seaferry.co.kr" target="_blank" class="text-xs text-indigo-500 hover:text-indigo-700 hover:underline">🌐 홈페이지</a>
-          <a href="https://www.seaferry.co.kr/reservation" target="_blank" class="text-xs bg-indigo-500 text-white px-2.5 py-1 rounded-full hover:bg-indigo-600 transition-colors">🎫 예약하기</a>
         </div>
       </div>
 
@@ -542,6 +543,31 @@
           <div class="text-[10px] text-amber-700">💡 <strong>TIP:</strong> ${rules.tip}</div>
         </div>
       `;
+
+      // 예약 가이드
+      const bk = FERRY_INFO.booking;
+      if (bk) {
+        document.getElementById('bookingGuide').innerHTML = `
+          <div class="bg-white rounded-lg p-4 mt-4 border border-amber-300 ring-1 ring-amber-200">
+            <div class="text-xs font-semibold text-amber-700 mb-2">🎫 ${bk.title}</div>
+            <div class="bg-amber-50 rounded p-2.5 mb-3 border border-amber-100">
+              <div class="text-[11px] text-amber-800 font-medium mb-1">📌 현재 상황</div>
+              <div class="text-[11px] text-amber-700">${bk.currentStatus}</div>
+              <div class="text-[11px] text-gray-500 mt-1">${bk.pattern}</div>
+            </div>
+            <div class="text-[11px] font-medium text-indigo-700 mb-1.5">📋 예약 준비 순서</div>
+            <ol class="space-y-1 mb-3">
+              ${bk.steps.map((s, i) => `<li class="text-[11px] text-gray-600 flex gap-1.5"><span class="shrink-0 w-4 h-4 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[9px] font-bold">${i+1}</span>${s}</li>`).join('')}
+            </ol>
+            <div class="bg-red-50 rounded p-2 mb-3 border border-red-100">
+              <div class="text-[10px] text-red-600 font-medium">⚠️ ${bk.warn}</div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              ${bk.links.map(l => `<a href="${l.url}" target="_blank" class="text-center text-[10px] font-medium px-2 py-2 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors">${l.icon} ${l.label}</a>`).join('')}
+            </div>
+          </div>
+        `;
+      }
     }
 
     // ========== 유용한 정보 ==========
