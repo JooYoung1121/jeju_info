@@ -29,8 +29,8 @@ const CATEGORIES = {
 
 const WEEKS = [
   { label: "1주차", subtitle: "이동 + 정착 + 동부 탐색", dates: "10/25 ~ 10/31" },
-  { label: "2주차", subtitle: "동부 심화 + 남부(서귀포)", dates: "11/1 ~ 11/7" },
-  { label: "3주차", subtitle: "서부(한림/애월) + 제주시", dates: "11/8 ~ 11/14" },
+  { label: "2주차", subtitle: "서부(한림/애월) + 제주시 — 따뜻할 때 야외 위주", dates: "11/1 ~ 11/7" },
+  { label: "3주차", subtitle: "동부 심화 + 남부(서귀포)", dates: "11/8 ~ 11/14" },
   { label: "4주차", subtitle: "중산간 + 재방문 + 여유", dates: "11/15 ~ 11/21" },
   { label: "마지막", subtitle: "정리 + 귀환", dates: "11/22 ~ 11/23" },
 ];
@@ -511,6 +511,442 @@ const SCHEDULE = [
     day: 8,
     date: "2026-11-01",
     dayOfWeek: "일",
+    theme: "한림공원 + 협재해수욕장",
+    categories: ["sightseeing", "dog", "food"],
+    babyFriendly: true,
+    dogFriendly: true,
+    schedule: {
+      morning: {
+        title: "한림공원",
+        places: [
+          {
+            name: "한림공원",
+            address: "제주시 한림읍 한림로 300",
+            url: "https://www.hallimpark.co.kr/",
+            desc: "용암동굴, 아열대 식물원, 분재원. 유모차 이용 가능. ⚠️ 반려견 7kg 미만 소형견만 입장 가능 (보호자 1인당 1마리, 리드줄+배변봉투 필수).",
+            duration: "2시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+      afternoon: {
+        title: "협재해수욕장 산책",
+        places: [
+          {
+            name: "협재해수욕장",
+            address: "제주시 한림읍 협재리",
+            desc: "에메랄드 바다. 반려견 산책 가능. 비양도 뷰.",
+            duration: "1시간 30분",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+      evening: {
+        title: "한림 맛집",
+        places: [
+          {
+            name: "한림 맛집",
+            address: "제주시 한림읍",
+            desc: "해물탕, 갈치조림 등.",
+            duration: "1시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+    },
+    food: [
+      {
+        name: "한림 해물탕",
+        menu: "해물탕, 갈치조림",
+        price: "2만~3만원대",
+        address: "제주시 한림읍",
+        baby: true,
+        dog: false,
+      },
+    ],
+    memo: "동부→서부 이동 약 1시간. 아기 낮잠 시간에 차 이동 추천. ⚠️ 한림공원 반려견 7kg 미만만 입장 가능 → 강아지 체중 확인!",
+    rainPlan: "한림공원 동굴은 실내. 협재해변은 비 시 한림공원 실내 연장.",
+  },
+  {
+    day: 9,
+    date: "2026-11-02",
+    dayOfWeek: "월",
+    theme: "워케이션 + 동부 근처",
+    categories: ["workation", "cafe"],
+    babyFriendly: true,
+    dogFriendly: true,
+    schedule: {
+      morning: {
+        title: "워케이션",
+        places: [
+          {
+            name: "숙소 또는 카페",
+            address: "구좌 일대",
+            desc: "어제 서부 원정 후 휴식 겸 근무.",
+            duration: "4시간",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+      afternoon: {
+        title: "동부 근처 가볍게",
+        places: [
+          {
+            name: "세화 or 월정리 카페",
+            address: "구좌읍",
+            desc: "가벼운 카페 타임. 해변 산책.",
+            duration: "2시간",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+      evening: {
+        title: "숙소 자취",
+        places: [
+          {
+            name: "숙소",
+            address: "성산/구좌",
+            desc: "편하게 자취.",
+            duration: "-",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+    },
+    food: [],
+    memo: "서부 원정 다음 날은 가볍게. 에너지 충전.",
+    rainPlan: "세화/월정리 카페에서 비 오는 바다 감상. 여유 있으면 스누피가든(구좌, 실내전시+포토존) 방문.",
+  },
+  {
+    day: 10,
+    date: "2026-11-03",
+    dayOfWeek: "화",
+    theme: "오설록 + 이니스프리",
+    categories: ["sightseeing", "cafe", "dog"],
+    babyFriendly: true,
+    dogFriendly: true,
+    schedule: {
+      morning: {
+        title: "오설록 티뮤지엄",
+        places: [
+          {
+            name: "오설록 티뮤지엄",
+            address: "서귀포시 안덕면 신화역사로 15",
+            url: "https://www.osulloc.com/kr/ko/museum",
+            desc: "녹차밭 + 티 뮤지엄. 야외 공간 반려견 OK (실내 불가). 유모차 가능.",
+            duration: "1시간 30분",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+      afternoon: {
+        title: "이니스프리 제주하우스",
+        places: [
+          {
+            name: "이니스프리 제주하우스",
+            address: "서귀포시 안덕면 신화역사로 23",
+            desc: "오설록 바로 옆. DIY 체험, 카페. 유모차 가능.",
+            duration: "1시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+      evening: {
+        title: "서부 맛집",
+        places: [
+          {
+            name: "중문/안덕 맛집",
+            address: "서귀포시 안덕면",
+            desc: "흑돼지, 해산물.",
+            duration: "1시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+    },
+    food: [
+      {
+        name: "오설록",
+        menu: "녹차 롤케이크, 녹차 아이스크림, 녹차 라떼",
+        price: "5천~1만5천원",
+        address: "서귀포시 안덕면",
+        baby: true,
+        dog: false,
+      },
+    ],
+    memo: "오설록은 주중이 한적함. 녹차밭 포토존 추천.",
+    rainPlan: "오설록 실내 티뮤지엄 + 이니스프리 실내 체험.",
+  },
+  {
+    day: 11,
+    date: "2026-11-04",
+    dayOfWeek: "수",
+    theme: "워케이션 + 휴식",
+    categories: ["workation"],
+    babyFriendly: true,
+    dogFriendly: true,
+    schedule: {
+      morning: {
+        title: "워케이션",
+        places: [
+          {
+            name: "숙소",
+            address: "성산/구좌",
+            desc: "집중 근무.",
+            duration: "4시간",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+      afternoon: {
+        title: "휴식",
+        places: [
+          {
+            name: "숙소 주변",
+            address: "성산/구좌",
+            desc: "느긋한 오후. 빨래, 정리, 아기 놀이.",
+            duration: "자유",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+      evening: {
+        title: "숙소 자취",
+        places: [
+          {
+            name: "숙소",
+            address: "성산/구좌",
+            desc: "편하게.",
+            duration: "-",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+    },
+    food: [],
+    memo: "빼빼로 데이! 편의점에서 빼빼로 사기. 3주차 중반 휴식.",
+    rainPlan: "원래 휴식일.",
+  },
+  {
+    day: 12,
+    date: "2026-11-05",
+    dayOfWeek: "목",
+    theme: "제주시 탐방",
+    categories: ["sightseeing", "food"],
+    babyFriendly: true,
+    dogFriendly: true,
+    schedule: {
+      morning: {
+        title: "동문시장",
+        places: [
+          {
+            name: "동문재래시장",
+            address: "제주시 관덕로14길 20",
+            desc: "제주 최대 전통시장. 감귤, 흑돼지, 떡, 건어물. 아기띠 추천.",
+            duration: "1시간 30분",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+      afternoon: {
+        title: "이호테우해변 + 탑동",
+        places: [
+          {
+            name: "이호테우해변",
+            address: "제주시 이호일동",
+            desc: "빨간+하얀 말등대 포토존. 반려견 산책 가능.",
+            duration: "1시간",
+            baby: true,
+            dog: true,
+          },
+          {
+            name: "탑동 해안도로",
+            address: "제주시 탑동",
+            desc: "바다 뷰 산책. 유모차 가능.",
+            duration: "40분",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+      evening: {
+        title: "제주시 맛집",
+        places: [
+          {
+            name: "제주시 맛집",
+            address: "제주시",
+            desc: "고기국수, 보말칼국수 등.",
+            duration: "1시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+    },
+    food: [
+      {
+        name: "제주 고기국수",
+        menu: "고기국수, 보말칼국수, 빙떡",
+        price: "8천~1만5천원",
+        address: "제주시",
+        baby: true,
+        dog: false,
+      },
+    ],
+    memo: "동부→제주시 약 50분. 동문시장은 오전이 한적함.",
+    rainPlan: "동문시장은 지붕 있어 비 무관. 이호테우해변 대신 국립제주박물관(무료, 실내, 어린이박물관) + 제주시 카페 탐방.",
+  },
+  {
+    day: 13,
+    date: "2026-11-06",
+    dayOfWeek: "금",
+    theme: "에코랜드",
+    categories: ["sightseeing", "baby"],
+    babyFriendly: true,
+    dogFriendly: false,
+    schedule: {
+      morning: {
+        title: "에코랜드 테마파크",
+        places: [
+          {
+            name: "에코랜드 테마파크",
+            address: "제주시 조천읍 번영로 1278-169",
+            url: "https://www.ecolandthemepark.com/",
+            desc: "증기기관차 타고 곶자왈 탐험. 키즈타운, 유모차 이용 가능. ⚠️ 반려견 동반 공식 미확인 → 사전 문의 필수 (064-802-8000).",
+            duration: "3~4시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+      afternoon: {
+        title: "에코랜드 내 카페 + 산책",
+        places: [
+          {
+            name: "에코랜드 카페",
+            address: "에코랜드 내",
+            desc: "호수 뷰 카페. 여유로운 오후.",
+            duration: "1시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+      evening: {
+        title: "조천 맛집",
+        places: [
+          {
+            name: "조천 맛집",
+            address: "제주시 조천읍",
+            desc: "해산물, 흑돼지.",
+            duration: "1시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+    },
+    food: [
+      {
+        name: "조천 맛집",
+        menu: "흑돼지 구이, 해물라면",
+        price: "1만~2만5천원",
+        address: "제주시 조천읍",
+        baby: true,
+        dog: false,
+      },
+    ],
+    memo: "에코랜드는 종일 코스. 아기 기관차 탑승 가능. ⚠️ 반려견 동반 불가 가능성 높음 → 사전 문의(064-802-8000).",
+    rainPlan: "에코랜드는 야외 위주 → 비 시 제주항공우주박물관(실내, 키즈존) or 스누피가든(구좌, 실내전시)으로 대체. 가벼운 비면 에코랜드 실내 카페+기관차만 이용.",
+  },
+  {
+    day: 14,
+    date: "2026-11-07",
+    dayOfWeek: "토",
+    theme: "카페비글 + 애월 + 감귤따기",
+    categories: ["dog", "cafe", "sightseeing"],
+    babyFriendly: true,
+    dogFriendly: true,
+    schedule: {
+      morning: {
+        title: "카페비글 (반려견 카페)",
+        places: [
+          {
+            name: "카페비글",
+            address: "제주시 애월읍",
+            desc: "반려견 전용 카페. 넓은 야외 공간, 강아지 놀이터. 반려견 가족에게 최고!",
+            duration: "1시간 30분",
+            baby: true,
+            dog: true,
+          },
+        ],
+      },
+      afternoon: {
+        title: "애월 한담해안산책로 + 감귤따기",
+        places: [
+          {
+            name: "한담해안산책로",
+            address: "제주시 애월읍 곽지리",
+            desc: "해안 절경 산책로. 유모차 가능. 강아지 산책 OK.",
+            duration: "1시간",
+            baby: true,
+            dog: true,
+          },
+          {
+            name: "감귤따기 체험농장",
+            address: "제주시 애월읍 일대",
+            desc: "11월 감귤 시즌! 따서 바로 먹기. 아기도 체험 가능.",
+            duration: "1시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+      evening: {
+        title: "애월 맛집",
+        places: [
+          {
+            name: "애월 해안 맛집",
+            address: "제주시 애월읍",
+            desc: "바다 뷰 레스토랑.",
+            duration: "1시간",
+            baby: true,
+            dog: false,
+          },
+        ],
+      },
+    },
+    food: [
+      {
+        name: "애월 카페/맛집",
+        menu: "브런치, 파스타, 해산물",
+        price: "1만~2만5천원",
+        address: "제주시 애월읍",
+        baby: true,
+        dog: true,
+      },
+    ],
+    memo: "카페비글은 강아지들의 천국! 11월 감귤따기는 노지감귤 시즌.",
+    rainPlan: "카페비글 실내 공간 활용. 감귤따기는 비 시 다른 날로.",
+  },
+  // === 3주차 (11/8~14) ===
+  {
+    day: 15,
+    date: "2026-11-08",
+    dayOfWeek: "일",
     theme: "아쿠아플라넷 + 성산 주변",
     categories: ["sightseeing", "baby", "food"],
     babyFriendly: true,
@@ -571,8 +1007,8 @@ const SCHEDULE = [
     rainPlan: "아쿠아플라넷이 이미 실내! 완벽한 비 오는 날 일정.",
   },
   {
-    day: 9,
-    date: "2026-11-02",
+    day: 16,
+    date: "2026-11-09",
     dayOfWeek: "월",
     theme: "워케이션 + 세화 카페",
     categories: ["workation", "cafe"],
@@ -633,8 +1069,8 @@ const SCHEDULE = [
     rainPlan: "세화 카페에서 비 오는 바다 뷰 감상 + 워케이션 연장. 여유 있으면 제주스런 공방(무드등 만들기 체험, 실내, 반려견 케이지 동반 가능) 추천.",
   },
   {
-    day: 10,
-    date: "2026-11-03",
+    day: 17,
+    date: "2026-11-10",
     dayOfWeek: "화",
     theme: "서귀포 원정",
     categories: ["sightseeing", "food"],
@@ -704,8 +1140,8 @@ const SCHEDULE = [
     rainPlan: "쇠소깍 카누는 비 시 취소 가능 → 서귀포올레시장(지붕 있음) 시간 늘리기 + 정방폭포는 우비 입고 가능. 강우량 많으면 9.81파크(실내 레이싱 체험, 서귀포)로 대체.",
   },
   {
-    day: 11,
-    date: "2026-11-04",
+    day: 18,
+    date: "2026-11-11",
     dayOfWeek: "수",
     theme: "워케이션 + 휴식",
     categories: ["workation", "baby", "dog"],
@@ -757,8 +1193,8 @@ const SCHEDULE = [
     rainPlan: "원래 휴식일이므로 날씨 무관.",
   },
   {
-    day: 12,
-    date: "2026-11-05",
+    day: 19,
+    date: "2026-11-12",
     dayOfWeek: "목",
     theme: "휴애리자연생활공원",
     categories: ["sightseeing", "baby", "food"],
@@ -819,8 +1255,8 @@ const SCHEDULE = [
     rainPlan: "휴애리는 야외 위주 → 제주항공우주박물관(실내, 키즈존, 2~3시간)으로 변경. 또는 헬로키티아일랜드(서귀포, 실내전시).",
   },
   {
-    day: 13,
-    date: "2026-11-06",
+    day: 20,
+    date: "2026-11-13",
     dayOfWeek: "금",
     theme: "제주항공우주박물관",
     categories: ["sightseeing", "baby"],
@@ -881,8 +1317,8 @@ const SCHEDULE = [
     rainPlan: "이미 실내 일정!",
   },
   {
-    day: 14,
-    date: "2026-11-07",
+    day: 21,
+    date: "2026-11-14",
     dayOfWeek: "토",
     theme: "중문관광단지",
     categories: ["sightseeing", "food"],
@@ -950,442 +1386,6 @@ const SCHEDULE = [
     ],
     memo: "중문관광단지 내 이동 많으므로 주차장 위치 미리 파악. 아기 낮잠 시간에 차 이동.",
     rainPlan: "여미지식물원(실내) 관람 시간 늘리기 + 중문 실내 카페. 주상절리는 우비 입고 짧게 가능. 폭우 시 9.81파크(실내 레이싱)로 대체.",
-  },
-  // === 3주차 (11/8~14) ===
-  {
-    day: 15,
-    date: "2026-11-08",
-    dayOfWeek: "일",
-    theme: "한림공원 + 협재해수욕장",
-    categories: ["sightseeing", "dog", "food"],
-    babyFriendly: true,
-    dogFriendly: true,
-    schedule: {
-      morning: {
-        title: "한림공원",
-        places: [
-          {
-            name: "한림공원",
-            address: "제주시 한림읍 한림로 300",
-            url: "https://www.hallimpark.co.kr/",
-            desc: "용암동굴, 아열대 식물원, 분재원. 유모차 이용 가능. ⚠️ 반려견 7kg 미만 소형견만 입장 가능 (보호자 1인당 1마리, 리드줄+배변봉투 필수).",
-            duration: "2시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-      afternoon: {
-        title: "협재해수욕장 산책",
-        places: [
-          {
-            name: "협재해수욕장",
-            address: "제주시 한림읍 협재리",
-            desc: "에메랄드 바다. 반려견 산책 가능. 비양도 뷰.",
-            duration: "1시간 30분",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-      evening: {
-        title: "한림 맛집",
-        places: [
-          {
-            name: "한림 맛집",
-            address: "제주시 한림읍",
-            desc: "해물탕, 갈치조림 등.",
-            duration: "1시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-    },
-    food: [
-      {
-        name: "한림 해물탕",
-        menu: "해물탕, 갈치조림",
-        price: "2만~3만원대",
-        address: "제주시 한림읍",
-        baby: true,
-        dog: false,
-      },
-    ],
-    memo: "동부→서부 이동 약 1시간. 아기 낮잠 시간에 차 이동 추천. ⚠️ 한림공원 반려견 7kg 미만만 입장 가능 → 강아지 체중 확인!",
-    rainPlan: "한림공원 동굴은 실내. 협재해변은 비 시 한림공원 실내 연장.",
-  },
-  {
-    day: 16,
-    date: "2026-11-09",
-    dayOfWeek: "월",
-    theme: "워케이션 + 동부 근처",
-    categories: ["workation", "cafe"],
-    babyFriendly: true,
-    dogFriendly: true,
-    schedule: {
-      morning: {
-        title: "워케이션",
-        places: [
-          {
-            name: "숙소 또는 카페",
-            address: "구좌 일대",
-            desc: "어제 서부 원정 후 휴식 겸 근무.",
-            duration: "4시간",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-      afternoon: {
-        title: "동부 근처 가볍게",
-        places: [
-          {
-            name: "세화 or 월정리 카페",
-            address: "구좌읍",
-            desc: "가벼운 카페 타임. 해변 산책.",
-            duration: "2시간",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-      evening: {
-        title: "숙소 자취",
-        places: [
-          {
-            name: "숙소",
-            address: "성산/구좌",
-            desc: "편하게 자취.",
-            duration: "-",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-    },
-    food: [],
-    memo: "서부 원정 다음 날은 가볍게. 에너지 충전.",
-    rainPlan: "세화/월정리 카페에서 비 오는 바다 감상. 여유 있으면 스누피가든(구좌, 실내전시+포토존) 방문.",
-  },
-  {
-    day: 17,
-    date: "2026-11-10",
-    dayOfWeek: "화",
-    theme: "오설록 + 이니스프리",
-    categories: ["sightseeing", "cafe", "dog"],
-    babyFriendly: true,
-    dogFriendly: true,
-    schedule: {
-      morning: {
-        title: "오설록 티뮤지엄",
-        places: [
-          {
-            name: "오설록 티뮤지엄",
-            address: "서귀포시 안덕면 신화역사로 15",
-            url: "https://www.osulloc.com/kr/ko/museum",
-            desc: "녹차밭 + 티 뮤지엄. 야외 공간 반려견 OK (실내 불가). 유모차 가능.",
-            duration: "1시간 30분",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-      afternoon: {
-        title: "이니스프리 제주하우스",
-        places: [
-          {
-            name: "이니스프리 제주하우스",
-            address: "서귀포시 안덕면 신화역사로 23",
-            desc: "오설록 바로 옆. DIY 체험, 카페. 유모차 가능.",
-            duration: "1시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-      evening: {
-        title: "서부 맛집",
-        places: [
-          {
-            name: "중문/안덕 맛집",
-            address: "서귀포시 안덕면",
-            desc: "흑돼지, 해산물.",
-            duration: "1시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-    },
-    food: [
-      {
-        name: "오설록",
-        menu: "녹차 롤케이크, 녹차 아이스크림, 녹차 라떼",
-        price: "5천~1만5천원",
-        address: "서귀포시 안덕면",
-        baby: true,
-        dog: false,
-      },
-    ],
-    memo: "오설록은 주중이 한적함. 녹차밭 포토존 추천.",
-    rainPlan: "오설록 실내 티뮤지엄 + 이니스프리 실내 체험.",
-  },
-  {
-    day: 18,
-    date: "2026-11-11",
-    dayOfWeek: "수",
-    theme: "워케이션 + 휴식",
-    categories: ["workation"],
-    babyFriendly: true,
-    dogFriendly: true,
-    schedule: {
-      morning: {
-        title: "워케이션",
-        places: [
-          {
-            name: "숙소",
-            address: "성산/구좌",
-            desc: "집중 근무.",
-            duration: "4시간",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-      afternoon: {
-        title: "휴식",
-        places: [
-          {
-            name: "숙소 주변",
-            address: "성산/구좌",
-            desc: "느긋한 오후. 빨래, 정리, 아기 놀이.",
-            duration: "자유",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-      evening: {
-        title: "숙소 자취",
-        places: [
-          {
-            name: "숙소",
-            address: "성산/구좌",
-            desc: "편하게.",
-            duration: "-",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-    },
-    food: [],
-    memo: "빼빼로 데이! 편의점에서 빼빼로 사기. 3주차 중반 휴식.",
-    rainPlan: "원래 휴식일.",
-  },
-  {
-    day: 19,
-    date: "2026-11-12",
-    dayOfWeek: "목",
-    theme: "제주시 탐방",
-    categories: ["sightseeing", "food"],
-    babyFriendly: true,
-    dogFriendly: true,
-    schedule: {
-      morning: {
-        title: "동문시장",
-        places: [
-          {
-            name: "동문재래시장",
-            address: "제주시 관덕로14길 20",
-            desc: "제주 최대 전통시장. 감귤, 흑돼지, 떡, 건어물. 아기띠 추천.",
-            duration: "1시간 30분",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-      afternoon: {
-        title: "이호테우해변 + 탑동",
-        places: [
-          {
-            name: "이호테우해변",
-            address: "제주시 이호일동",
-            desc: "빨간+하얀 말등대 포토존. 반려견 산책 가능.",
-            duration: "1시간",
-            baby: true,
-            dog: true,
-          },
-          {
-            name: "탑동 해안도로",
-            address: "제주시 탑동",
-            desc: "바다 뷰 산책. 유모차 가능.",
-            duration: "40분",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-      evening: {
-        title: "제주시 맛집",
-        places: [
-          {
-            name: "제주시 맛집",
-            address: "제주시",
-            desc: "고기국수, 보말칼국수 등.",
-            duration: "1시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-    },
-    food: [
-      {
-        name: "제주 고기국수",
-        menu: "고기국수, 보말칼국수, 빙떡",
-        price: "8천~1만5천원",
-        address: "제주시",
-        baby: true,
-        dog: false,
-      },
-    ],
-    memo: "동부→제주시 약 50분. 동문시장은 오전이 한적함.",
-    rainPlan: "동문시장은 지붕 있어 비 무관. 이호테우해변 대신 국립제주박물관(무료, 실내, 어린이박물관) + 제주시 카페 탐방.",
-  },
-  {
-    day: 20,
-    date: "2026-11-13",
-    dayOfWeek: "금",
-    theme: "에코랜드",
-    categories: ["sightseeing", "baby"],
-    babyFriendly: true,
-    dogFriendly: false,
-    schedule: {
-      morning: {
-        title: "에코랜드 테마파크",
-        places: [
-          {
-            name: "에코랜드 테마파크",
-            address: "제주시 조천읍 번영로 1278-169",
-            url: "https://www.ecolandthemepark.com/",
-            desc: "증기기관차 타고 곶자왈 탐험. 키즈타운, 유모차 이용 가능. ⚠️ 반려견 동반 공식 미확인 → 사전 문의 필수 (064-802-8000).",
-            duration: "3~4시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-      afternoon: {
-        title: "에코랜드 내 카페 + 산책",
-        places: [
-          {
-            name: "에코랜드 카페",
-            address: "에코랜드 내",
-            desc: "호수 뷰 카페. 여유로운 오후.",
-            duration: "1시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-      evening: {
-        title: "조천 맛집",
-        places: [
-          {
-            name: "조천 맛집",
-            address: "제주시 조천읍",
-            desc: "해산물, 흑돼지.",
-            duration: "1시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-    },
-    food: [
-      {
-        name: "조천 맛집",
-        menu: "흑돼지 구이, 해물라면",
-        price: "1만~2만5천원",
-        address: "제주시 조천읍",
-        baby: true,
-        dog: false,
-      },
-    ],
-    memo: "에코랜드는 종일 코스. 아기 기관차 탑승 가능. ⚠️ 반려견 동반 불가 가능성 높음 → 사전 문의(064-802-8000).",
-    rainPlan: "에코랜드는 야외 위주 → 비 시 제주항공우주박물관(실내, 키즈존) or 스누피가든(구좌, 실내전시)으로 대체. 가벼운 비면 에코랜드 실내 카페+기관차만 이용.",
-  },
-  {
-    day: 21,
-    date: "2026-11-14",
-    dayOfWeek: "토",
-    theme: "카페비글 + 애월 + 감귤따기",
-    categories: ["dog", "cafe", "sightseeing"],
-    babyFriendly: true,
-    dogFriendly: true,
-    schedule: {
-      morning: {
-        title: "카페비글 (반려견 카페)",
-        places: [
-          {
-            name: "카페비글",
-            address: "제주시 애월읍",
-            desc: "반려견 전용 카페. 넓은 야외 공간, 강아지 놀이터. 반려견 가족에게 최고!",
-            duration: "1시간 30분",
-            baby: true,
-            dog: true,
-          },
-        ],
-      },
-      afternoon: {
-        title: "애월 한담해안산책로 + 감귤따기",
-        places: [
-          {
-            name: "한담해안산책로",
-            address: "제주시 애월읍 곽지리",
-            desc: "해안 절경 산책로. 유모차 가능. 강아지 산책 OK.",
-            duration: "1시간",
-            baby: true,
-            dog: true,
-          },
-          {
-            name: "감귤따기 체험농장",
-            address: "제주시 애월읍 일대",
-            desc: "11월 감귤 시즌! 따서 바로 먹기. 아기도 체험 가능.",
-            duration: "1시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-      evening: {
-        title: "애월 맛집",
-        places: [
-          {
-            name: "애월 해안 맛집",
-            address: "제주시 애월읍",
-            desc: "바다 뷰 레스토랑.",
-            duration: "1시간",
-            baby: true,
-            dog: false,
-          },
-        ],
-      },
-    },
-    food: [
-      {
-        name: "애월 카페/맛집",
-        menu: "브런치, 파스타, 해산물",
-        price: "1만~2만5천원",
-        address: "제주시 애월읍",
-        baby: true,
-        dog: true,
-      },
-    ],
-    memo: "카페비글은 강아지들의 천국! 11월 감귤따기는 노지감귤 시즌.",
-    rainPlan: "카페비글 실내 공간 활용. 감귤따기는 비 시 다른 날로.",
   },
   // === 4주차 (11/15~21) ===
   {
