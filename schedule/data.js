@@ -2022,6 +2022,66 @@ const PET_CARE_INFO = {
   ],
 };
 
+// 아기 + 강아지 동반 카페 & 맛집 리스트
+const PET_BABY_SPOTS = {
+  title: "아기 + 강아지 동반 카페 & 맛집",
+  note: "10개월 아기(유모차/아기의자) + 강아지 2마리(4~10kg) 동반 가능한 곳 위주. 방문 전 전화 확인 권장.",
+  regions: [
+    {
+      name: "동부 (성산/구좌)",
+      icon: "🏖️",
+      spots: [
+        { type: "cafe", name: "카페록록", address: "제주시 구좌읍 하도리", desc: "오션뷰 빈티지 카페. 실내외 반려견 동반.", dog: "대형견 OK, 목줄", baby: "유모차 가능", mapQuery: "카페록록 제주 하도리" },
+        { type: "cafe", name: "카페 치즈태비", address: "제주시 구좌읍 행원로7길", desc: "북유럽 분위기. 시그니처 젤리 음료.", dog: "대형견 OK, 목줄, 실내동반", baby: "실내 넓음", mapQuery: "카페치즈태비 제주" },
+        { type: "cafe", name: "어니스트밀크", address: "서귀포시 성산읍", desc: "목장 카페. 송아지 우유주기 체험. 신선한 유제품.", dog: "소형견, 캐리어 필수", baby: "체험 가능", mapQuery: "어니스트밀크 성산" },
+        { type: "cafe", name: "여름정원", address: "서귀포시 풍천로192번길", desc: "빈티지 감성. 수제 디저트, 도시락.", dog: "대형견 OK, 실내외 동반", baby: "유모차 가능", mapQuery: "여름정원 서귀포" },
+        { type: "food", name: "제주오누이", address: "제주시 구좌읍", desc: "오션뷰 전복해산물 한식. 1층만 동반.", dog: "대형견 OK, 목줄, 1층", baby: "아기의자 문의", mapQuery: "제주오누이 구좌" },
+        { type: "food", name: "모닥식탁", address: "제주시 구좌읍 한동로 136", desc: "돌문어커리, 딱새우토마토커리. 점심만 영업.", dog: "소형견, 캐리어 필수", baby: "넓은 실내", note: "일·월 휴무", mapQuery: "모닥식탁 제주" },
+        { type: "food", name: "명리동식당 구좌직영점", address: "제주시 구좌읍 일주동로 3010-17", desc: "흑돼지 전문. 사장님이 직접 구워줌.", dog: "소형견, 캐리어/유모차", baby: "아기의자 문의", note: "수요일 휴무", mapQuery: "명리동식당 구좌" },
+        { type: "food", name: "평대스낵", address: "제주시 구좌읍 대수길 26", desc: "떡볶이, 한치튀김. 옥상에서 바다뷰.", dog: "모든 공간 동반, 리드줄", baby: "유모차 가능", mapQuery: "평대스낵 제주" },
+        { type: "food", name: "성산마씸", address: "서귀포시 성산읍", desc: "흑돼지 돔베고기 전문. 예약 필수.", dog: "대형견 OK, 목줄", baby: "문의", mapQuery: "성산마씸" },
+        { type: "food", name: "쉐프1192레스토랑", address: "서귀포시 성산읍", desc: "오션뷰 양식. 반려견 전용 스테이크 메뉴!", dog: "대형견 OK, 목줄, 실내동반", baby: "유모차 가능", mapQuery: "쉐프1192 성산" },
+      ],
+    },
+    {
+      name: "서부 (한림/애월)",
+      icon: "🌅",
+      spots: [
+        { type: "cafe", name: "애월더선셋", address: "제주시 애월읍", desc: "오션뷰 브런치 카페. 야외 테라스.", dog: "대형견 OK, 목줄, 전체이용", baby: "유모차 가능", mapQuery: "애월더선셋" },
+        { type: "cafe", name: "카페 사분의 이", address: "제주시 한경면", desc: "빈티지 독채. 전통 디저트와 차.", dog: "대형견 OK, 목줄, 전체이용", baby: "유모차 가능", mapQuery: "카페사분의이 제주" },
+        { type: "cafe", name: "제주개생활연구소", address: "제주시 한경면", desc: "제주개 보존 활동 카페. 에그타르트 맛집. 오프리시 운동장.", dog: "대형견 OK, 오프리시 운동장", baby: "유모차 가능", mapQuery: "제주개생활연구소" },
+        { type: "cafe", name: "카페비글", address: "제주시 애월읍", desc: "반려견 전용 카페. 비글 상주. 넓은 잔디 운동장.", dog: "대형견 OK, 제한없음", baby: "유모차 가능, 온돌공간은 강아지 불가", mapQuery: "카페비글 제주", url: "https://www.instagram.com/cafebeagle_jeju/" },
+        { type: "food", name: "금돈가", address: "제주시 애월읍 가문동남길 63", desc: "흑돼지 맛집. 고기를 미리 구워주며 반찬 정갈.", dog: "케이지 이용 시 동반", baby: "아기의자 문의", note: "11:00~22:30", mapQuery: "금돈가 애월" },
+        { type: "food", name: "오데뜨", address: "제주시 한림읍 중산간서로 4995-6", desc: "귤 창고 리모델링 양식당. 반려견 메뉴(흑돼지 스테이크)!", dog: "대형견 OK, 목줄, 실내", baby: "유모차 가능", mapQuery: "오데뜨 한림" },
+        { type: "food", name: "별돈별 협재해변점", address: "제주시 한림읍 협재", desc: "오션뷰 흑돼지 맛집. 협재해변 인접.", dog: "소형견, 캐리어 필수", baby: "아기의자 문의", mapQuery: "별돈별 협재" },
+        { type: "food", name: "돼지굽는정원", address: "제주시 한림읍 협재2길 8-7", desc: "야외 정원에서 흑돼지 바베큐.", dog: "야외 동반 가능", baby: "유모차 가능(야외)", mapQuery: "돼지굽는정원 협재" },
+      ],
+    },
+    {
+      name: "남부 (서귀포/중문)",
+      icon: "🌊",
+      spots: [
+        { type: "cafe", name: "감따남", address: "서귀포시", desc: "귤 농장 카페. 감귤따기 체험 + 전문 스냅사진.", dog: "대형견 OK, 목줄, 전체이용", baby: "유모차 가능, 체험 가능", mapQuery: "감따남 서귀포" },
+        { type: "cafe", name: "벨진밧", address: "서귀포시 대정읍", desc: "배우 박한별 운영. 야외 정원. 시그니처 음료.", dog: "대형견 OK, 목줄, 전체이용", baby: "유모차 가능", mapQuery: "벨진밧 서귀포" },
+        { type: "cafe", name: "목장카페 밭디", address: "서귀포시", desc: "말 목장 카페. 말 먹이주기 체험.", dog: "대형견 OK, 목줄, 실내외", baby: "유모차 가능, 체험", mapQuery: "목장카페밭디 서귀포" },
+        { type: "food", name: "중문 모메든식당", address: "서귀포시 중문", desc: "흑돼지 전문. 와인 페어링.", dog: "대형견 OK, 목줄자유, 전체이용", baby: "아기의자 문의", mapQuery: "모메든식당 중문" },
+        { type: "food", name: "커뮤니테이블시즌2", address: "서귀포시", desc: "주택 개조 파스타 전문. 분위기 좋음.", dog: "대형견 OK, 목줄, 전체이용", baby: "유모차 가능", mapQuery: "커뮤니테이블시즌2 서귀포" },
+        { type: "food", name: "아솥 서귀포본점", address: "서귀포시", desc: "캠핑식당. 솥뚜껑 바베큐. 야외 느낌.", dog: "대형견 OK, 목줄, 실내", baby: "유모차 가능(야외)", mapQuery: "아솥 서귀포" },
+        { type: "food", name: "산방산해물라면 오빠", address: "서귀포시 안덕면 사계남로216번길 24-68", desc: "산방산 뷰 해물라면. 간단하지만 인기 맛집.", dog: "동반 가능", baby: "유모차 가능", mapQuery: "산방산해물라면오빠" },
+      ],
+    },
+    {
+      name: "제주시",
+      icon: "🏙️",
+      spots: [
+        { type: "cafe", name: "카페 어반정글", address: "제주시 함덕", desc: "해변 카페. 이국적 분위기. 잔디 운동장.", dog: "대형견 OK, 야외 목줄, 실내 캐리어", baby: "유모차 가능", mapQuery: "카페어반정글 함덕" },
+        { type: "food", name: "동진식당 공항점", address: "제주시 용화로 51-1", desc: "고기국수, 순대, 돔베고기. 지역 주민 맛집.", dog: "케이지 이용 시 동반", baby: "아기의자 문의", note: "8:30~19:00", mapQuery: "동진식당 공항점 제주" },
+        { type: "food", name: "세모", address: "제주시 구좌읍 행원로 121", desc: "제주 재료 삼각김밥(흑돼지, 소라, 톳). 포장 전문.", dog: "리드줄 착용", baby: "간단 포장", note: "목요일 휴무, 재료 소진 주의", mapQuery: "세모 제주 구좌" },
+      ],
+    },
+  ],
+};
+
 // 페리 & 반려동물 정보
 const FERRY_INFO = {
   title: "씨월드고속훼리 이용 가이드",
