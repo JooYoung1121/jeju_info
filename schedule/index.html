@@ -345,11 +345,10 @@
         chip.id = `chip-${d.day}`;
         chip.onclick = () => selectDay(d.day);
 
-        const fatigueIcon = d.travelInfo ? (
-          d.travelInfo.fatigue.includes('최고') ? '<span class="text-[9px] bg-red-100 text-red-700 rounded px-1" title="피로도 최고">🔴</span>' :
-          d.travelInfo.fatigue.includes('고') ? '<span class="text-[9px] bg-orange-100 text-orange-700 rounded px-1" title="피로도 고">🟠</span>' :
-          d.travelInfo.fatigue === '주의' ? '<span class="text-[9px] bg-yellow-100 text-yellow-700 rounded px-1" title="피로도 주의">🟡</span>' : ''
-        ) : '';
+        var lv = d.travelInfo ? getFatigueLevel(d.travelInfo.fatigue) : 'ok';
+        var fatigueIcon = lv === 'critical' ? '<span class="text-[9px] bg-red-100 text-red-700 rounded px-1" title="피로도 최고">🔴</span>' :
+          lv === 'high' ? '<span class="text-[9px] bg-orange-100 text-orange-700 rounded px-1" title="피로도 고">🟠</span>' :
+          lv === 'warn' ? '<span class="text-[9px] bg-yellow-100 text-yellow-700 rounded px-1" title="피로도 주의">🟡</span>' : '';
 
         chip.innerHTML = `
           <div class="flex items-center justify-between mb-1">
@@ -389,6 +388,45 @@
       }, 50);
     }
 
+    function getFatigueLevel(fatigue) {
+      if (!fatigue) return 'ok';
+      if (fatigue.indexOf('최고') !== -1) return 'critical';
+      if (fatigue.indexOf('고') !== -1 && fatigue.indexOf('최고') === -1) return 'high';
+      if (fatigue.indexOf('주의') !== -1) return 'warn';
+      return 'ok';
+    }
+
+    function renderTravelBanner(ti) {
+      if (!ti) return '';
+      var lv = getFatigueLevel(ti.fatigue);
+      var bgCls = lv === 'critical' ? 'bg-red-50' : lv === 'high' ? 'bg-orange-50' : lv === 'warn' ? 'bg-yellow-50' : 'bg-green-50';
+      var labelCls = lv === 'critical' ? 'text-red-800' : lv === 'high' ? 'text-orange-800' : lv === 'warn' ? 'text-yellow-800' : 'text-green-800';
+      var fatigueCls = lv === 'critical' ? 'text-red-700' : lv === 'high' ? 'text-orange-700' : lv === 'warn' ? 'text-yellow-700' : 'text-green-700';
+      var oneWayHtml = ti.oneWay !== '-' ? '<span class="text-xs bg-white/70 rounded px-1.5 py-0.5">편도 ' + ti.oneWay + '</span>' : '';
+      var rtHtml = ti.roundTrip !== '-' ? '<span class="text-xs bg-white/70 rounded px-1.5 py-0.5">왕복 ' + ti.roundTrip + '</span>' : '';
+      return '<div class="px-5 py-2.5 border-t border-gray-100 flex flex-wrap items-center gap-3 ' + bgCls + '">'
+        + '<span class="text-xs font-semibold ' + labelCls + '">🚗 이동</span>'
+        + '<span class="text-xs text-gray-600">' + ti.mainDest + '</span>'
+        + oneWayHtml + rtHtml
+        + '<span class="text-xs font-medium ' + fatigueCls + '">' + ti.fatigue + '</span>'
+        + '</div>';
+    }
+
+    function renderDogAlternatives(alts) {
+      if (!alts || alts.length === 0) return '';
+      var items = alts.map(function(a) {
+        return '<div class="flex items-start gap-1.5 mb-1 last:mb-0">'
+          + '<span class="text-green-500 text-xs mt-0.5">•</span>'
+          + '<div><span class="text-xs font-medium text-green-900">' + a.name + '</span>'
+          + '<span class="text-xs text-green-700"> — ' + a.desc + '</span></div>'
+          + '</div>';
+      }).join('');
+      return '<div class="px-4 pb-4 bg-gray-50">'
+        + '<div class="bg-green-50 rounded-lg p-3 border border-green-200">'
+        + '<div class="text-xs font-semibold text-green-800 mb-2">🐶 반려견 대안 코스</div>'
+        + items + '</div></div>';
+    }
+
     function renderDetailPanel(day) {
       const d = SCHEDULE.find(s => s.day === day);
       if (!d) return;
@@ -420,27 +458,7 @@
           </div>
 
           <!-- 이동시간/피로도 배너 -->
-          ${d.travelInfo ? `
-            <div class="px-5 py-2.5 border-t border-gray-100 flex flex-wrap items-center gap-3 ${
-              d.travelInfo.fatigue.includes('최고') ? 'bg-red-50' :
-              d.travelInfo.fatigue.includes('고') ? 'bg-orange-50' :
-              d.travelInfo.fatigue === '주의' ? 'bg-yellow-50' : 'bg-green-50'
-            }">
-              <span class="text-xs font-semibold ${
-                d.travelInfo.fatigue.includes('최고') ? 'text-red-800' :
-                d.travelInfo.fatigue.includes('고') ? 'text-orange-800' :
-                d.travelInfo.fatigue === '주의' ? 'text-yellow-800' : 'text-green-800'
-              }">🚗 이동</span>
-              <span class="text-xs text-gray-600">${d.travelInfo.mainDest}</span>
-              ${d.travelInfo.oneWay !== '-' ? `<span class="text-xs bg-white/70 rounded px-1.5 py-0.5">편도 ${d.travelInfo.oneWay}</span>` : ''}
-              ${d.travelInfo.roundTrip !== '-' ? `<span class="text-xs bg-white/70 rounded px-1.5 py-0.5">왕복 ${d.travelInfo.roundTrip}</span>` : ''}
-              <span class="text-xs font-medium ${
-                d.travelInfo.fatigue.includes('최고') ? 'text-red-700' :
-                d.travelInfo.fatigue.includes('고') ? 'text-orange-700' :
-                d.travelInfo.fatigue === '주의' ? 'text-yellow-700' : 'text-green-700'
-              }">${d.travelInfo.fatigue}</span>
-            </div>
-          ` : ''}
+          ${renderTravelBanner(d.travelInfo)}
 
           <!-- 하단 정보 -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-gray-50 border-t border-gray-100">
@@ -472,22 +490,7 @@
           </div>
 
           <!-- 반려견 대안 코스 -->
-          ${d.dogAlternatives ? `
-            <div class="px-4 pb-4 bg-gray-50">
-              <div class="bg-green-50 rounded-lg p-3 border border-green-200">
-                <div class="text-xs font-semibold text-green-800 mb-2">🐶 반려견 대안 코스</div>
-                ${d.dogAlternatives.map(alt => `
-                  <div class="flex items-start gap-1.5 mb-1 last:mb-0">
-                    <span class="text-green-500 text-xs mt-0.5">•</span>
-                    <div>
-                      <span class="text-xs font-medium text-green-900">${alt.name}</span>
-                      <span class="text-xs text-green-700"> — ${alt.desc}</span>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          ` : ''}
+          ${renderDogAlternatives(d.dogAlternatives)}
         </div>
       `;
     }
