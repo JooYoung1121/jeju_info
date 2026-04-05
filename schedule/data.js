@@ -14,6 +14,7 @@ const TRIP_INFO = {
     { icon: "🐕", label: "강아지 2" },
   ],
   accommodation: "성산/구좌 (동부) 지역",
+  accommodationAddress: "제주특별자치도 제주시 구좌읍 해맞이해안로 1588-9",
   transport: "자차 선적 (씨월드고속훼리)",
 };
 
@@ -98,6 +99,7 @@ const SCHEDULE = [
     ],
     memo: "도착 후 피곤하면 숙소에서 간단히 해결. 마트에서 생필품 우선 구매.",
     rainPlan: "이동일이므로 날씨 무관",
+    travelInfo: { mainDest: "목포→제주 이동일", oneWay: "-", roundTrip: "-", fatigue: "이동일" },
   },
   {
     day: 2,
@@ -168,6 +170,7 @@ const SCHEDULE = [
     ],
     memo: "장보기 리스트 정리. 세화오일시장 장날은 끝자리 5, 0일 (10/25, 10/30, 11/5... ). 가까운 장날에 맞춰 방문 추천.",
     rainPlan: "실내에서 숙소 정리에 집중. 세화 카페 탐방.",
+    travelInfo: { mainDest: "세화해변/카페거리", oneWay: "7분", roundTrip: "15분", fatigue: "양호" },
   },
   {
     day: 3,
@@ -238,6 +241,7 @@ const SCHEDULE = [
     ],
     memo: "워케이션 시 와이파이 상태 확인 필수. 김녕해변은 조용해서 좋음.",
     rainPlan: "숙소에서 종일 워케이션. 오후 김녕미로공원 대신 세화/구좌 실내 카페. 여유 있으면 플레이케이팝(구좌, 실내 체험) 방문.",
+    travelInfo: { mainDest: "김녕해수욕장/미로공원", oneWay: "18분", roundTrip: "35분", fatigue: "양호" },
   },
   {
     day: 4,
@@ -301,6 +305,12 @@ const SCHEDULE = [
     ],
     memo: "성산일출봉은 오전 일찍 갈수록 좋음. 반려견 입장 불가 → 한 명이 강아지와 주변 산책, 번갈아 등반.",
     rainPlan: "성산일출봉은 비 시 미끄러움 → 스누피가든(구좌, 실내전시+유모차 대여)으로 대체. 강아지는 수요일만 동반 가능, 그 외엔 펫시터 이용 or 숙소 대기.",
+    travelInfo: { mainDest: "성산일출봉/섭지코지", oneWay: "40분", roundTrip: "80분", fatigue: "주의" },
+    dogAlternatives: [
+      { name: "광치기해변 산책", desc: "성산일출봉 바로 옆 해변. 강아지 산책 가능. 등반 대기 중 추천.", dog: true },
+      { name: "섭지코지 산책로", desc: "유모차+강아지 모두 가능한 해안 산책로.", dog: true },
+      { name: "숙소 근처 세화해변", desc: "강아지와 여유롭게 해변 산책 (숙소 7분)", dog: true },
+    ],
   },
   {
     day: 5,
@@ -363,6 +373,7 @@ const SCHEDULE = [
     ],
     memo: "월정리 카페 중 반려견 동반 가능 카페 사전 체크.",
     rainPlan: "월정리 카페에서 비 오는 바다 감상 + 실내 시간. 여유 있으면 플레이케이팝(구좌, 실내 체험형 전시)도 가능.",
+    travelInfo: { mainDest: "월정리해변/카페거리", oneWay: "5분", roundTrip: "10분", fatigue: "양호" },
   },
   {
     day: 6,
@@ -441,6 +452,12 @@ const SCHEDULE = [
     ],
     memo: "⚠️ 우도 여객선 반려견 탑승 여부 사전 문의 필수 (064-782-5671). 불가 시 부부 번갈아 방문 or 펫시터. 배편 마지막 시간 꼭 확인!",
     rainPlan: "우도는 날씨 좋은 날로 연기 필수 (풍랑 시 여객선 결항). 대신 스누피가든(구좌, 실내전시) 또는 플레이케이팝(만장굴 인근, 실내 체험)으로 대체.",
+    travelInfo: { mainDest: "성산포항(우도)", oneWay: "42분", roundTrip: "84분", fatigue: "주의" },
+    dogAlternatives: [
+      { name: "김녕해수욕장 + 김녕미로공원", desc: "숙소에서 18분. 해변 산책(강아지 OK) + 미로공원은 번갈아.", dog: true },
+      { name: "월정리 카페거리", desc: "숙소에서 5분. 반려견 동반 카페 다수.", dog: true },
+      { name: "펫시터 이용", desc: "숙소에서 펫시터 방문 돌봄 (숨고/펫봄 앱). 부부 함께 우도 가능.", dog: true },
+    ],
   },
   {
     day: 7,
@@ -472,10 +489,10 @@ const SCHEDULE = [
             name: "비자림",
             address: "제주시 구좌읍 비자숲길 55",
             url: "https://www.jeju.go.kr/jejuwnh/place/bijarim.htm",
-            desc: "천년 비자나무 숲. 반려견 동반 가능 (목줄 필수, 배변 처리 필수). 유모차보다는 아기띠 추천. 입장료 성인 3,000원.",
+            desc: "천년 비자나무 숲. ⚠️ 반려견 입장 불가 (천연기념물 제374호 보호구역). 유모차보다는 아기띠 추천. 입장료 성인 3,000원.",
             duration: "1시간 30분",
             baby: true,
-            dog: true,
+            dog: false,
           },
         ],
       },
@@ -503,8 +520,14 @@ const SCHEDULE = [
         dog: false,
       },
     ],
-    memo: "⚠️ 만장굴 휴관 중일 수 있음 → 방문 전 확인 필수(064-710-7903). 유모차 불가, 아기띠 필수. 비자림은 반려견 동반 가능(목줄 필수).",
+    memo: "⚠️ 만장굴 휴관 중일 수 있음 → 방문 전 확인 필수(064-710-7903). 유모차 불가, 아기띠 필수. ⚠️ 비자림 반려견 입장 불가(천연기념물) → 한 명이 강아지와 주차장/입구 근처 산책, 번갈아 관람.",
     rainPlan: "만장굴은 실내이므로 비와 무관 (개장 시). 만장굴 휴관 시: 플레이케이팝(만장굴 인근, 실내 체험) or 김녕미로공원. 비자림은 우산 쓰고 산책 가능하나, 강우량 많으면 세화 카페로 대체.",
+    travelInfo: { mainDest: "만장굴/비자림", oneWay: "20분", roundTrip: "40분", fatigue: "양호" },
+    dogAlternatives: [
+      { name: "비자림 입구 주변 산책", desc: "비자림 주차장/입구 부근 산책로. 한 명이 강아지와 대기하며 산책.", dog: true },
+      { name: "세화해변 산책", desc: "숙소 근처(7분). 만장굴/비자림 전후로 강아지 산책 시간 확보.", dog: true },
+      { name: "김녕해수욕장", desc: "만장굴에서 차로 5분. 해변에서 강아지 산책.", dog: true },
+    ],
   },
   // === 2주차 (11/1~7) ===
   {
@@ -567,8 +590,13 @@ const SCHEDULE = [
         dog: false,
       },
     ],
-    memo: "동부→서부 이동 약 1시간. 아기 낮잠 시간에 차 이동 추천. ⚠️ 한림공원 반려견 7kg 미만만 입장 가능 → 강아지 체중 확인!",
+    memo: "동부→서부 이동 약 95분(숙소 기준). 아기 낮잠 시간에 차 이동 추천. ⚠️ 한림공원 반려견 7kg 미만만 입장 가능 → 4~10kg 강아지는 입장 불가 가능성 높음. 강아지는 협재해변에서 산책 or 차 대기.",
     rainPlan: "한림공원 동굴은 실내. 협재해변은 비 시 한림공원 실내 연장.",
+    travelInfo: { mainDest: "한림공원/협재", oneWay: "95분", roundTrip: "190분", fatigue: "🔴 최고 — 서부 원정, 전날 휴식 권장" },
+    dogAlternatives: [
+      { name: "협재해수욕장 산책", desc: "한림공원 바로 옆. 반려견 산책 가능. 한 명이 강아지와 해변 산책.", dog: true },
+      { name: "금능해수욕장", desc: "협재 바로 옆 해변. 사람 적고 넓어서 강아지 산책 최적.", dog: true },
+    ],
   },
   {
     day: 9,
@@ -622,6 +650,7 @@ const SCHEDULE = [
     food: [],
     memo: "서부 원정 다음 날은 가볍게. 에너지 충전.",
     rainPlan: "세화/월정리 카페에서 비 오는 바다 감상. 여유 있으면 스누피가든(구좌, 실내전시+포토존) 방문.",
+    travelInfo: { mainDest: "숙소 주변", oneWay: "5분", roundTrip: "10분", fatigue: "양호" },
   },
   {
     day: 10,
@@ -685,6 +714,7 @@ const SCHEDULE = [
     ],
     memo: "오설록은 주중이 한적함. 녹차밭 포토존 추천.",
     rainPlan: "오설록 실내 티뮤지엄 + 이니스프리 실내 체험.",
+    travelInfo: { mainDest: "오설록/이니스프리", oneWay: "90분", roundTrip: "180분", fatigue: "🔴 최고 — 서부 원정" },
   },
   {
     day: 11,
@@ -738,6 +768,7 @@ const SCHEDULE = [
     food: [],
     memo: "빼빼로 데이! 편의점에서 빼빼로 사기. 3주차 중반 휴식.",
     rainPlan: "원래 휴식일.",
+    travelInfo: { mainDest: "숙소 (휴식일)", oneWay: "-", roundTrip: "-", fatigue: "양호" },
   },
   {
     day: 12,
@@ -808,6 +839,7 @@ const SCHEDULE = [
     ],
     memo: "동부→제주시 약 50분. 동문시장은 오전이 한적함.",
     rainPlan: "동문시장은 지붕 있어 비 무관. 이호테우해변 대신 국립제주박물관(무료, 실내, 어린이박물관) + 제주시 카페 탐방.",
+    travelInfo: { mainDest: "동문시장/이호테우", oneWay: "50분", roundTrip: "130분", fatigue: "🔴 고 — 제주시 원정" },
   },
   {
     day: 13,
@@ -871,6 +903,12 @@ const SCHEDULE = [
     ],
     memo: "에코랜드는 종일 코스. 아기 기관차 탑승 가능. ⚠️ 반려견 동반 불가 가능성 높음 → 사전 문의(064-802-8000).",
     rainPlan: "에코랜드는 야외 위주 → 비 시 제주항공우주박물관(실내, 키즈존) or 스누피가든(구좌, 실내전시)으로 대체. 가벼운 비면 에코랜드 실내 카페+기관차만 이용.",
+    travelInfo: { mainDest: "에코랜드", oneWay: "28분", roundTrip: "55분", fatigue: "양호" },
+    dogAlternatives: [
+      { name: "교래자연휴양림", desc: "에코랜드에서 차로 10분. 15kg 이하 반려견 동반 가능(동물등록증 필수). 편백숲 산책.", dog: true },
+      { name: "세화해변/월정리해변", desc: "숙소 근처(5~7분). 강아지와 해변 산책.", dog: true },
+      { name: "펫시터 이용", desc: "숙소에서 펫시터 방문 돌봄. 가족 모두 에코랜드 즐기기.", dog: true },
+    ],
   },
   {
     day: 14,
@@ -941,6 +979,7 @@ const SCHEDULE = [
     ],
     memo: "카페비글은 강아지들의 천국! 11월 감귤따기는 노지감귤 시즌.",
     rainPlan: "카페비글 실내 공간 활용. 감귤따기는 비 시 다른 날로.",
+    travelInfo: { mainDest: "카페비글(조천)/애월", oneWay: "28~75분", roundTrip: "150분", fatigue: "🔴 고 — 서부 원정" },
   },
   // === 3주차 (11/8~14) ===
   {
@@ -1005,6 +1044,12 @@ const SCHEDULE = [
     ],
     memo: "아쿠아플라넷 주말 혼잡 → 오전 일찍 방문 추천. 수유실/기저귀교환대 있음.",
     rainPlan: "아쿠아플라넷이 이미 실내! 완벽한 비 오는 날 일정.",
+    travelInfo: { mainDest: "아쿠아플라넷/광치기", oneWay: "43분", roundTrip: "85분", fatigue: "주의" },
+    dogAlternatives: [
+      { name: "광치기해변 산책", desc: "아쿠아플라넷에서 차로 5분. 성산일출봉 뷰. 강아지 산책 가능.", dog: true },
+      { name: "섭지코지 산책로", desc: "아쿠아플라넷 바로 옆. 해안 산책로. 강아지 OK.", dog: true },
+      { name: "펫시터 이용", desc: "숙소에서 펫시터 방문 돌봄. 가족 모두 아쿠아플라넷 즐기기.", dog: true },
+    ],
   },
   {
     day: 16,
@@ -1067,6 +1112,7 @@ const SCHEDULE = [
     ],
     memo: "세화 카페 중 반려견 동반 + 유모차 진입 가능한 곳 체크.",
     rainPlan: "세화 카페에서 비 오는 바다 뷰 감상 + 워케이션 연장. 여유 있으면 제주스런 공방(무드등 만들기 체험, 실내, 반려견 케이지 동반 가능) 추천.",
+    travelInfo: { mainDest: "숙소/세화 카페", oneWay: "5분", roundTrip: "10분", fatigue: "양호" },
   },
   {
     day: 17,
@@ -1083,7 +1129,7 @@ const SCHEDULE = [
           {
             name: "쇠소깍",
             address: "서귀포시 하효동",
-            desc: "바다와 민물이 만나는 용암 계곡. 투명카누 체험(아기 동반 가능).",
+            desc: "바다와 민물이 만나는 용암 계곡. ⚠️ 투명카누: 24개월 미만 영아 탑승 불가 → 부부 교대 체험 or 계곡 산책으로 대체.",
             duration: "1시간 30분",
             baby: true,
             dog: true,
@@ -1136,8 +1182,9 @@ const SCHEDULE = [
         dog: false,
       },
     ],
-    memo: "서귀포까지 동부에서 차로 약 40분. 아기 낮잠 시간에 이동하면 효율적.",
+    memo: "서귀포까지 동부에서 차로 약 55분. 아기 낮잠 시간에 이동하면 효율적. ⚠️ 투명카누 24개월 미만 탑승 불가 → 부부 교대 체험 or 쇠소깍 계곡 산책으로 대체.",
     rainPlan: "쇠소깍 카누는 비 시 취소 가능 → 서귀포올레시장(지붕 있음) 시간 늘리기 + 정방폭포는 우비 입고 가능. 강우량 많으면 9.81파크(실내 레이싱 체험, 서귀포)로 대체.",
+    travelInfo: { mainDest: "서귀포(쇠소깍/정방폭포)", oneWay: "55~65분", roundTrip: "130분", fatigue: "🔴 고 — 남부 원정" },
   },
   {
     day: 18,
@@ -1191,6 +1238,7 @@ const SCHEDULE = [
     food: [],
     memo: "아기와 강아지 컨디션 회복일. 무리하지 않기. 빨래, 정리 시간.",
     rainPlan: "원래 휴식일이므로 날씨 무관.",
+    travelInfo: { mainDest: "숙소 (휴식일)", oneWay: "-", roundTrip: "-", fatigue: "양호" },
   },
   {
     day: 19,
@@ -1251,8 +1299,13 @@ const SCHEDULE = [
         dog: false,
       },
     ],
-    memo: "휴애리는 아기와 함께하기 최적. 유모차 무료 대여, 수유실 완비.",
+    memo: "휴애리는 아기와 함께하기 최적. 유모차 무료 대여, 수유실 완비. ⚠️ 반려견 7kg 미만 소형견만 입장 가능 → 10kg 강아지는 입장 불가. 강아지는 숙소 대기 or 펫시터 필요.",
     rainPlan: "휴애리는 야외 위주 → 제주항공우주박물관(실내, 키즈존, 2~3시간)으로 변경. 또는 헬로키티아일랜드(서귀포, 실내전시).",
+    travelInfo: { mainDest: "휴애리(남원)", oneWay: "60분", roundTrip: "120분", fatigue: "🔴 고 — 남부 원정" },
+    dogAlternatives: [
+      { name: "숙소에서 펫시터", desc: "남부 원정일이라 강아지는 숙소에서 펫시터 돌봄이 가장 현실적.", dog: true },
+      { name: "세화/월정리 해변 산책", desc: "한 명이 강아지와 숙소 근처 산책. 부부 교대로 휴애리.", dog: true },
+    ],
   },
   {
     day: 20,
@@ -1315,6 +1368,11 @@ const SCHEDULE = [
     ],
     memo: "항공우주박물관은 실내라 비 올 때 완벽한 대안. 키즈존 10개월에게도 OK.",
     rainPlan: "이미 실내 일정!",
+    travelInfo: { mainDest: "항공우주박물관(안덕)", oneWay: "85분", roundTrip: "170분", fatigue: "🔴 최고 — 서부 원정" },
+    dogAlternatives: [
+      { name: "숙소에서 펫시터", desc: "서부 원정일이라 강아지는 숙소에서 펫시터 돌봄 추천.", dog: true },
+      { name: "오설록 녹차밭 야외", desc: "항공우주박물관 근처. 야외 강아지 동반 가능. 실내 불가.", dog: true },
+    ],
   },
   {
     day: 21,
@@ -1339,10 +1397,10 @@ const SCHEDULE = [
           {
             name: "천제연폭포",
             address: "서귀포시 천제연로 132",
-            desc: "3단 폭포. 1폭포까지 계단 → 아기띠 추천.",
+            desc: "3단 폭포. 1폭포까지 계단 → 아기띠 추천. ⚠️ 반려견 출입 불가.",
             duration: "1시간",
             baby: true,
-            dog: true,
+            dog: false,
           },
         ],
       },
@@ -1384,8 +1442,14 @@ const SCHEDULE = [
         dog: false,
       },
     ],
-    memo: "중문관광단지 내 이동 많으므로 주차장 위치 미리 파악. 아기 낮잠 시간에 차 이동.",
+    memo: "중문관광단지 내 이동 많으므로 주차장 위치 미리 파악. 아기 낮잠 시간에 차 이동. ⚠️ 천제연폭포 반려견 출입 불가 → 한 명이 강아지와 주변 산책, 번갈아 관람.",
     rainPlan: "여미지식물원(실내) 관람 시간 늘리기 + 중문 실내 카페. 주상절리는 우비 입고 짧게 가능. 폭우 시 9.81파크(실내 레이싱)로 대체.",
+    travelInfo: { mainDest: "중문관광단지", oneWay: "82분", roundTrip: "165분", fatigue: "🔴 최고 — 남부 원정, 전날 휴식 권장" },
+    dogAlternatives: [
+      { name: "대포주상절리 산책", desc: "천제연 대신 주상절리 데크길 산책. 반려견 가능 추정 (확인 필요 064-738-1521).", dog: true },
+      { name: "중문색달해변 산책", desc: "중문관광단지 내 해변. 강아지 산책 가능.", dog: true },
+      { name: "숙소에서 펫시터", desc: "남부 원정 종일 코스. 펫시터가 가장 현실적.", dog: true },
+    ],
   },
   // === 4주차 (11/15~21) ===
   {
@@ -1448,8 +1512,13 @@ const SCHEDULE = [
         dog: false,
       },
     ],
-    memo: "한라산은 부부 번갈아 등산 (한 명은 아기+강아지와 대기). 11월 중순 기온 낮으므로 방한 필수.",
+    memo: "한라산은 부부 번갈아 등산 (한 명은 아기+강아지와 대기). ⚠️ 한라산 국립공원 반려견 전면 금지 (법령, 과태료 60만원). 강아지는 반드시 숙소에 두고 가야 함. 11월 중순 기온 낮으므로 방한 필수.",
     rainPlan: "한라산은 날씨 좋은 날에만 (비/강풍 시 입산 통제). 대체: 오전 제주항공우주박물관(실내) or 9.81파크(실내 레이싱), 오후 1100고지 드라이브 + 카페에서 안개낀 숲 감상.",
+    travelInfo: { mainDest: "한라산 영실코스", oneWay: "75분", roundTrip: "150분", fatigue: "🔴 고 — 등산+장거리 이동, 전날 휴식 필수" },
+    dogAlternatives: [
+      { name: "숙소에서 펫시터", desc: "등산+장거리 종일 코스. 강아지는 숙소에서 펫시터 돌봄이 유일한 현실적 방법.", dog: true },
+      { name: "1100고지 휴게소 주변", desc: "등산하지 않고 차에서 잠깐 내려 휴게소 카페만 이용 시 강아지와 주차장 산책 가능.", dog: true },
+    ],
   },
   {
     day: 23,
@@ -1503,6 +1572,7 @@ const SCHEDULE = [
     food: [],
     memo: "한라산 등산 다음 날은 무조건 쉬기! 근육통 회복.",
     rainPlan: "원래 휴식일.",
+    travelInfo: { mainDest: "숙소 (휴식일)", oneWay: "-", roundTrip: "-", fatigue: "양호" },
   },
   {
     day: 24,
@@ -1520,10 +1590,10 @@ const SCHEDULE = [
             name: "산굼부리",
             address: "제주시 조천읍 교래리 산38",
             url: "https://www.sangumburi.net/",
-            desc: "분화구 형태 오름. 억새밭 절경 (11월!). 유모차 진입 가능한 데크.",
+            desc: "분화구 형태 오름. 억새밭 절경 (11월!). 유모차 진입 가능한 데크. ⚠️ 반려견 동반 불가 (천연기념물 제263호).",
             duration: "1시간",
             baby: true,
-            dog: true,
+            dog: false,
           },
         ],
       },
@@ -1564,8 +1634,14 @@ const SCHEDULE = [
         dog: false,
       },
     ],
-    memo: "산굼부리 11월 억새는 절경! 포토 스팟. 교래숲은 힐링 코스.",
+    memo: "산굼부리 11월 억새는 절경! 포토 스팟. ⚠️ 산굼부리 반려견 동반 불가(천연기념물) → 한 명이 강아지와 주차장 대기, 번갈아 관람. 교래숲은 15kg 이하 동반 가능(동물등록증 필수).",
     rainPlan: "산굼부리는 가벼운 비엔 우비 입고 가능하나, 강풍/폭우 시 플레이케이팝(구좌, 실내) or 스누피가든(구좌, 실내)으로 대체. 교래자연휴양림은 비 시 숲길 미끄러움 → 패스.",
+    travelInfo: { mainDest: "산굼부리/교래", oneWay: "30분", roundTrip: "60분", fatigue: "양호" },
+    dogAlternatives: [
+      { name: "교래자연휴양림", desc: "산굼부리에서 차로 5분. 15kg 이하 반려견 동반 OK. 편백숲 산책.", dog: true },
+      { name: "산굼부리 주차장 주변 산책", desc: "한 명이 강아지와 주차장 부근 산책. 주변 오름 뷰 좋음.", dog: true },
+      { name: "에코랜드 주변", desc: "산굼부리에서 10분. 에코랜드 반려견 가능 여부 사전 확인.", dog: true },
+    ],
   },
   {
     day: 25,
@@ -1619,6 +1695,7 @@ const SCHEDULE = [
     food: [],
     memo: "4주차 중반. 이제 동네 단골 카페가 생길 시기!",
     rainPlan: "동네 카페에서 비 오는 바다 감상 + 워케이션 연장. 외출하고 싶으면 제주스런 공방(무드등 만들기, 실내) 체험 추천.",
+    travelInfo: { mainDest: "숙소/구좌 카페", oneWay: "5분", roundTrip: "10분", fatigue: "양호" },
   },
   {
     day: 26,
@@ -1672,6 +1749,7 @@ const SCHEDULE = [
     food: [],
     memo: "자유로운 날! 그동안의 경험을 바탕으로 최고의 하루를 만들기.",
     rainPlan: "실내 베스트 스팟 재방문: 아쿠아플라넷(재입장X, 못 간 경우), 스누피가든, 여미지식물원, 오설록 중 미방문 장소 우선. 또는 숙소에서 여유롭게 자취+영화.",
+    travelInfo: { mainDest: "자유 일정 (TBD)", oneWay: "-", roundTrip: "-", fatigue: "선택에 따라 다름" },
   },
   {
     day: 27,
@@ -1734,6 +1812,7 @@ const SCHEDULE = [
     ],
     memo: "동문야시장은 매일 운영 (동절기 18:00~24:00). 재료 소진 시 조기 마감. 사람 많으므로 유모차보다 아기띠.",
     rainPlan: "감귤농장은 비 시 실내 수확 체험 가능한 곳 확인. 동문야시장은 지붕 없는 구간 있음 → 우비 필수 or 동문재래시장(지붕 있음)에서 먹거리로 대체.",
+    travelInfo: { mainDest: "감귤농장(구좌)+동문야시장(제주시)", oneWay: "10~50분", roundTrip: "100분", fatigue: "주의 — 저녁 제주시 이동" },
   },
   {
     day: 28,
@@ -1796,6 +1875,7 @@ const SCHEDULE = [
     ],
     memo: "마지막 주말! 성산 근처에서 편하게. 좋았던 맛집 재방문해도 좋음.",
     rainPlan: "올레길은 비 시 미끄러움 → 가벼운 구간만 우비 입고 or 패스. 대신 성산 실내 카페에서 마지막 바다 뷰 감상 + 기념품 쇼핑.",
+    travelInfo: { mainDest: "올레길1코스(성산)", oneWay: "40분", roundTrip: "80분", fatigue: "주의" },
   },
   // === 마지막 (11/22~23) ===
   {
@@ -1850,6 +1930,7 @@ const SCHEDULE = [
     food: [],
     memo: "내일 선박 탑승! 짐 꼼꼼히 정리. 강아지 케이지, 아기 카시트 확인.",
     rainPlan: "실내 정리 집중.",
+    travelInfo: { mainDest: "숙소 (정리일)", oneWay: "-", roundTrip: "-", fatigue: "양호" },
   },
   {
     day: 30,
@@ -1903,6 +1984,7 @@ const SCHEDULE = [
     food: [],
     memo: "선박 내 식사 가능. 간식/음료 미리 준비. 아기 분유, 강아지 사료 챙기기.",
     rainPlan: "이동일이므로 날씨 무관.",
+    travelInfo: { mainDest: "제주→목포 이동일", oneWay: "62분(제주항)", roundTrip: "-", fatigue: "이동일" },
   },
 ];
 
