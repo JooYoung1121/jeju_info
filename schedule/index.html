@@ -469,7 +469,7 @@
                   <div class="mb-1.5 last:mb-0">
                     <div class="text-sm font-medium">${f.name}</div>
                     <div class="text-xs text-gray-500">${f.menu}</div>
-                    ${f.address ? `<a href="${naverMapUrl(f.name, f.address)}" target="_blank" class="text-[11px] text-gray-400 hover:text-ocean-500 hover:underline">📍 ${f.address}</a>` : ''}
+                    ${f.address ? `<a href="${naverMapUrl(f.name, f.address, f.mapQuery)}" target="_blank" class="text-[11px] text-gray-400 hover:text-ocean-500 hover:underline">📍 ${f.address}</a>` : ''}
                     <div class="text-xs text-orange-600">💰 ${f.price}</div>
                   </div>
                 `).join('')}
@@ -495,9 +495,10 @@
       `;
     }
 
-    function naverMapUrl(name, address) {
-      const query = encodeURIComponent(name + (address ? ' ' + address : ''));
-      return `https://map.naver.com/v5/search/${query}`;
+    function naverMapUrl(name, address, mapQuery) {
+      // mapQuery가 있으면 최우선 사용, 없으면 이름만 (주소 전체 X)
+      const query = mapQuery || name;
+      return `https://map.naver.com/v5/search/${encodeURIComponent(query)}`;
     }
 
     function renderSlotColumn(label, slot) {
@@ -509,7 +510,7 @@
           ${slot.places.map(p => `
             <div class="bg-gray-50 rounded-lg p-2.5 mb-2 last:mb-0">
               <div class="font-medium text-sm">${p.url ? `<a href="${p.url}" target="_blank" class="text-ocean-600 hover:underline">${p.name} ↗</a>` : p.name}</div>
-              ${p.address ? `<a href="${naverMapUrl(p.name, p.address)}" target="_blank" class="inline-block text-[11px] text-gray-400 mt-0.5 hover:text-ocean-500 hover:underline">📍 ${p.address}</a>` : ''}
+              ${p.address ? `<a href="${naverMapUrl(p.name, p.address, p.mapQuery)}" target="_blank" class="inline-block text-[11px] text-gray-400 mt-0.5 hover:text-ocean-500 hover:underline">📍 ${p.address}</a>` : ''}
               <div class="text-xs text-gray-600 mt-1">${p.desc}</div>
               <div class="flex flex-wrap gap-1 mt-1.5">
                 ${p.duration && p.duration !== '-' ? `<span class="text-[10px] bg-gray-200 rounded px-1.5 py-0.5">⏱${p.duration}</span>` : ''}
@@ -671,7 +672,7 @@
                     </div>
                     ${s.note ? `<div class="text-[10px] text-gray-400 mt-1">📌 ${s.note}</div>` : ''}
                     <div class="flex gap-1.5 mt-2 pt-2 border-t border-amber-50">
-                      <a href="${naverMapUrl(s.name, s.address)}" target="_blank" class="flex-1 text-center text-[10px] font-medium px-2 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors">🗺️ 지도</a>
+                      <a href="${naverMapUrl(s.name, s.address, s.mapQuery)}" target="_blank" class="flex-1 text-center text-[10px] font-medium px-2 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors">🗺️ 지도</a>
                       <a href="https://search.naver.com/search.naver?query=${encodeURIComponent(s.name + ' 제주 리뷰')}" target="_blank" class="flex-1 text-center text-[10px] font-medium px-2 py-1.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors">⭐ 리뷰</a>
                       ${s.url ? `<a href="${s.url}" target="_blank" class="flex-1 text-center text-[10px] font-medium px-2 py-1.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors">🔗 상세</a>` : ''}
                     </div>
@@ -752,7 +753,7 @@
           </div>
           <div class="flex gap-1 shrink-0">
             <a href="tel:${c.phone}" class="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 transition-colors" title="전화">📞</a>
-            ${c.mapQuery ? `<a href="${naverMapUrl(c.place, '')}" target="_blank" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 transition-colors" title="지도">🗺️</a>` : ''}
+            ${c.mapQuery ? `<a href="${naverMapUrl(c.place, '', c.mapQuery)}" target="_blank" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 transition-colors" title="지도">🗺️</a>` : ''}
           </div>
         </div>
       `).join('');
