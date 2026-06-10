@@ -2137,7 +2137,7 @@ const PET_BABY_SPOTS = {
       spots: [
         { type: "cafe", name: "어니스트밀크", address: "서귀포시 성산읍 중산간동로 3147-7", desc: "목장 카페. 송아지 우유주기 체험(11·14·16시). 성산일출봉 조망.", dog: "소형견, 캐리어 필수", baby: "유모차 가능, 체험 가능", note: "매일 10:00~18:00 | 070-7722-1886", mapQuery: "어니스트밀크 성산" },
         { type: "food", name: "제주오누이", address: "제주시 구좌읍 해맞이해안로 972", desc: "오션뷰 전복돌솥밥·전복구이·회국수. 아기의자 있음.", dog: "대형견 OK, 목줄, 1층 동반", baby: "아기의자 있음", note: "매일 10:00~20:00 | 064-782-6801", mapQuery: "제주오누이 월정리" },
-        { type: "food", name: "명리동식당 구좌직영점", address: "제주시 구좌읍 일주동로 3010-17", desc: "흑돼지 전문. 사장님이 직접 구워줌. 김치전골 인기.", dog: "소형견, 캐리어/유모차 필수", baby: "아기의자 문의", note: "매일 11:30~21:30 (연중무휴) | 0507-1424-2269", mapQuery: "명리동식당 구좌" },
+        { type: "food", name: "명리동식당 구좌직영점", address: "제주시 구좌읍 일주동로 3010-17", desc: "흑돼지 전문. 사장님이 직접 구워줌. 김치전골 인기.", dog: "소형견, 캐리어/유모차 필수", baby: "아기의자 문의", note: "화~일 11:30~21:00 (브레이크 15:00~16:00), 월 휴무 | 0507-1424-2269", mapQuery: "명리동식당 구좌" },
         { type: "food", name: "평대스낵", address: "제주시 구좌읍 대수길 26", desc: "한치튀김이 유명! 옥상에서 평대해변 바다뷰.", dog: "모든 견종 동반, 리드줄", baby: "유모차 가능", note: "매일 11:00~16:00 (수 휴무)", mapQuery: "평대스낵 제주" },
         { type: "food", name: "성산마씸", address: "서귀포시 성산읍 한도로 257", desc: "옥돔구이 정식, 돔베고기 정식. 제주 한식.", dog: "대형견 OK, 목줄", baby: "문의", note: "인스타 @massim_jeju 확인", mapQuery: "성산마씸" },
         { type: "food", name: "쉐프1192레스토랑", address: "서귀포시 성산읍 환해장성로 465", desc: "오션뷰 양식. 나시고랭, 찹스테이크, 파스타.", dog: "대형견 OK, 목줄, 실내동반", baby: "유모차 가능", note: "10:00~21:00 (월 휴무) | 0507-1472-1430", mapQuery: "쉐프1192 성산", url: "https://www.chef1192.co.kr/" },
@@ -2534,10 +2534,10 @@ const NEARBY_PLACES = {
       icon: "🏖️",
       color: "blue",
       places: [
-        { name: "평대해변", address: "구좌읍 평대리", distance: "0.5km", time: "도보 5분", desc: "가장 가까운 해변. 한적하고 물 맑음. 강아지 산책 최적.", dog: true, baby: true },
-        { name: "세화해변", address: "구좌읍 세화리", distance: "3km", time: "차량 5분", desc: "에메랄드빛 바다. 세화오일시장 인접.", dog: true, baby: true },
-        { name: "월정리해변", address: "구좌읍 월정리", distance: "6km", time: "차량 10분", desc: "제주 동부 대표 해변. 카페거리 인접. 수심 얕아 아기 물놀이 가능.", dog: true, baby: true },
-        { name: "김녕해변", address: "구좌읍 김녕리", distance: "8km", time: "차량 12분", desc: "넓은 백사장. 가족 단위 인기.", dog: true, baby: true },
+        { name: "평대해변", address: "구좌읍 평대리", distance: "0.5km", time: "도보 5분", dir: 350, desc: "가장 가까운 해변. 한적하고 물 맑음. 강아지 산책 최적.", dog: true, baby: true },
+        { name: "세화해변", address: "구좌읍 세화리", distance: "3km", time: "차량 5분", dir: 75, desc: "에메랄드빛 바다. 세화오일시장 인접.", dog: true, baby: true },
+        { name: "월정리해변", address: "구좌읍 월정리", distance: "6km", time: "차량 10분", dir: 250, desc: "제주 동부 대표 해변. 카페거리 인접. 수심 얕아 아기 물놀이 가능.", dog: true, baby: true },
+        { name: "김녕해변", address: "구좌읍 김녕리", distance: "8km", time: "차량 12분", dir: 255, desc: "넓은 백사장. 가족 단위 인기.", dog: true, baby: true },
       ],
     },
     {
@@ -2545,10 +2545,10 @@ const NEARBY_PLACES = {
       icon: "🛒",
       color: "green",
       places: [
-        { name: "동복리 편의점 (CU/GS25)", address: "구좌읍 동복리", distance: "0.5km", time: "도보 5분", desc: "급한 장보기, 간식, 생필품.", dog: false, baby: true },
-        { name: "하나로마트 구좌점", address: "구좌읍 세평항로 13", distance: "5km", time: "차량 8분", desc: "농협 마트. 신선한 채소·과일·흑돼지. 08:00~22:00.", dog: false, baby: true },
-        { name: "세화오일시장", address: "구좌읍 세화리", distance: "3km", time: "차량 5분", desc: "끝자리 5, 0일에만 장날! 제주 특산물·먹거리.", dog: true, baby: true },
-        { name: "이마트 제주점", address: "제주시 탑동로 38", distance: "28km", time: "차량 40분", desc: "대형마트. 대량 장보기 시 이용.", dog: false, baby: true },
+        { name: "동복리 편의점 (CU/GS25)", address: "구좌읍 동복리", distance: "0.5km", time: "도보 5분", dir: 270, desc: "급한 장보기, 간식, 생필품.", dog: false, baby: true },
+        { name: "하나로마트 구좌점", address: "구좌읍 세평항로 13", distance: "5km", time: "차량 8분", dir: 80, desc: "농협 마트. 신선한 채소·과일·흑돼지. 08:00~22:00.", dog: false, baby: true },
+        { name: "세화오일시장", address: "구좌읍 세화리", distance: "3km", time: "차량 5분", dir: 78, desc: "끝자리 5, 0일에만 장날! 제주 특산물·먹거리.", dog: true, baby: true },
+        { name: "이마트 제주점", address: "제주시 탑동로 38", distance: "28km", time: "차량 40분", dir: 250, desc: "대형마트. 대량 장보기 시 이용.", dog: false, baby: true },
       ],
     },
     {
@@ -2556,11 +2556,11 @@ const NEARBY_PLACES = {
       icon: "🍽️",
       color: "orange",
       places: [
-        { name: "평대스낵", address: "구좌읍 대수길 26", distance: "1km", time: "도보 10분", desc: "한치튀김 맛집! 옥상 바다뷰. 모든 견종 동반 가능.", dog: true, baby: true },
-        { name: "평대성게국수", address: "구좌읍 해맞이해안로 1172", distance: "1.5km", time: "차량 3분", desc: "성게국수 전문. 반려견 동반 가능.", dog: true, baby: true },
-        { name: "제주오누이", address: "구좌읍 해맞이해안로 972", distance: "5km", time: "차량 8분", desc: "오션뷰 전복돌솥밥·회국수. 대형견 OK.", dog: true, baby: true },
-        { name: "명리동식당 구좌직영점", address: "구좌읍 일주동로 3010-17", distance: "4km", time: "차량 7분", desc: "흑돼지 전문. 사장님 직접 구워줌.", dog: true, baby: true },
-        { name: "쉐프1192레스토랑", address: "성산읍 환해장성로 465", distance: "10km", time: "차량 15분", desc: "오션뷰 양식. 나시고랭, 파스타. 실내 동반.", dog: true, baby: true },
+        { name: "평대스낵", address: "구좌읍 대수길 26", distance: "1km", time: "도보 10분", dir: 200, desc: "한치튀김 맛집! 옥상 바다뷰. 모든 견종 동반 가능.", dog: true, baby: true },
+        { name: "평대성게국수", address: "구좌읍 해맞이해안로 1172", distance: "1.5km", time: "차량 3분", dir: 210, desc: "성게국수 전문. 반려견 동반 가능.", dog: true, baby: true },
+        { name: "제주오누이", address: "구좌읍 해맞이해안로 972", distance: "5km", time: "차량 8분", dir: 250, desc: "오션뷰 전복돌솥밥·회국수. 대형견 OK.", dog: true, baby: true },
+        { name: "명리동식당 구좌직영점", address: "구좌읍 일주동로 3010-17", distance: "4km", time: "차량 7분", dir: 220, desc: "흑돼지 전문. 사장님 직접 구워줌. (월 휴무)", dog: true, baby: true },
+        { name: "쉐프1192레스토랑", address: "성산읍 환해장성로 465", distance: "10km", time: "차량 15분", dir: 110, desc: "오션뷰 양식. 나시고랭, 파스타. 실내 동반.", dog: true, baby: true },
       ],
     },
     {
@@ -2568,10 +2568,10 @@ const NEARBY_PLACES = {
       icon: "☕",
       color: "amber",
       places: [
-        { name: "모어모어", address: "구좌읍 해맞이해안로 1616", distance: "0.3km", time: "도보 3분", desc: "가장 가까운 카페! 올바다뷰 수플레 전문.", dog: false, baby: true },
-        { name: "카페 치즈태비", address: "구좌읍 행원로7길 18-9", distance: "3km", time: "차량 5분", desc: "교회 건물 개조 감성 카페.", dog: false, baby: true },
-        { name: "시시소소", address: "구좌읍 중산간동로 2247", distance: "5km", time: "차량 8분", desc: "환승연애 촬영지. 넓은 정원.", dog: false, baby: true },
-        { name: "어니스트밀크", address: "성산읍 중산간동로 3147-7", distance: "12km", time: "차량 18분", desc: "목장 카페. 송아지 우유주기 체험. 성산일출봉 조망.", dog: true, baby: true },
+        { name: "모어모어", address: "구좌읍 해맞이해안로 1616", distance: "0.3km", time: "도보 3분", dir: 10, desc: "가장 가까운 카페! 올바다뷰 수플레 전문.", dog: false, baby: true },
+        { name: "카페 치즈태비", address: "구좌읍 행원로7길 18-9", distance: "3km", time: "차량 5분", dir: 240, desc: "교회 건물 개조 감성 카페.", dog: false, baby: true },
+        { name: "시시소소", address: "구좌읍 중산간동로 2247", distance: "5km", time: "차량 8분", dir: 190, desc: "환승연애 촬영지. 넓은 정원.", dog: false, baby: true },
+        { name: "어니스트밀크", address: "성산읍 중산간동로 3147-7", distance: "12km", time: "차량 18분", dir: 130, desc: "목장 카페. 송아지 우유주기 체험. 성산일출봉 조망.", dog: true, baby: true },
       ],
     },
     {
@@ -2579,9 +2579,9 @@ const NEARBY_PLACES = {
       icon: "🏥",
       color: "red",
       places: [
-        { name: "구좌중앙의원", address: "구좌읍 구좌로", distance: "5km", time: "차량 8분", desc: "내과·소아과.", dog: false, baby: true },
-        { name: "세화약국", address: "구좌읍 세화리", distance: "3km", time: "차량 5분", desc: "기본 의약품.", dog: false, baby: true },
-        { name: "제주동물병원 (가까운 곳)", address: "조천읍/제주시", distance: "20~30km", time: "차량 30~40분", desc: "강아지 응급 시 이용. 사전에 위치 확인 필수!", dog: true, baby: false },
+        { name: "구좌중앙의원", address: "구좌읍 구좌로", distance: "5km", time: "차량 8분", dir: 200, desc: "내과·소아과.", dog: false, baby: true },
+        { name: "세화약국", address: "구좌읍 세화리", distance: "3km", time: "차량 5분", dir: 78, desc: "기본 의약품.", dog: false, baby: true },
+        { name: "제주동물병원 (가까운 곳)", address: "조천읍/제주시", distance: "20~30km", time: "차량 30~40분", dir: 255, desc: "강아지 응급 시 이용. 사전에 위치 확인 필수!", dog: true, baby: false },
       ],
     },
   ],
