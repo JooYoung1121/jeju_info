@@ -80,6 +80,91 @@
     .dot-baby { background: #ec4899; }
     .dot-dog { background: #22c55e; }
     .dot-checklist { background: #6b7280; }
+
+    /* 숙소 주변 지도 */
+    .nearby-map {
+      position: relative;
+      background: #dbeafe;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% 100%, #93c5fd 0%, transparent 70%),
+        radial-gradient(circle at 30% 30%, #d1fae5 0%, transparent 50%),
+        radial-gradient(circle at 70% 40%, #fef3c7 0%, transparent 40%);
+      border-radius: 16px;
+      min-height: 480px;
+      overflow: hidden;
+    }
+    .map-pin {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .map-pin:hover { transform: translate(-50%, -50%) scale(1.15); z-index: 20; }
+    .map-pin .pin-label {
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      border: 2px solid white;
+    }
+    .map-pin .pin-time {
+      font-size: 10px;
+      color: #374151;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 3px;
+      background: white;
+      border-radius: 6px;
+      padding: 2px 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .home-pin {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 30;
+    }
+    .home-pin .home-icon {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, #f97316, #dc2626);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 0 5px white, 0 6px 20px rgba(249,115,22,0.5);
+      animation: homePulse 2s infinite;
+    }
+    @keyframes homePulse {
+      0%,100% { box-shadow: 0 0 0 5px white, 0 6px 20px rgba(249,115,22,0.5); }
+      50% { box-shadow: 0 0 0 5px white, 0 6px 20px rgba(249,115,22,0.5), 0 0 0 16px rgba(249,115,22,0.15); }
+    }
+    .home-pin .home-label {
+      text-align: center;
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #991b1b;
+      background: white;
+      padding: 2px 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .map-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px dashed;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .nearby-details summary {
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+    }
+    .nearby-details summary::-webkit-details-marker { display: none; }
+    .nearby-details[open] summary .chevron { transform: rotate(180deg); }
+    .nearby-details .chevron { transition: transform 0.2s ease; display: inline-block; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -101,7 +186,7 @@
         <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">👨‍👩‍👦 부부 + 아기</span>
         <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">🐶🐕 강아지 x2</span>
         <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">📍 성산/구좌</span>
-        <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">🚗 자차</span>
+        <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">⚡ 테슬라 모델Y</span>
       </div>
     </div>
   </header>
@@ -110,8 +195,10 @@
   <nav class="sticky top-0 z-40 bg-white shadow-sm border-b">
     <div class="max-w-6xl mx-auto px-4 py-2.5 flex gap-2 overflow-x-auto">
       <button onclick="scrollToSection('schedule')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">📅 일정</button>
+      <button onclick="scrollToSection('nearbySection')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">🏠 숙소주변</button>
       <button onclick="scrollToSection('checklist')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">✅ 준비물</button>
-      <button onclick="scrollToSection('petBabySpots')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-amber-100 hover:bg-amber-200 text-amber-800">🍽️ 카페·맛집</button>
+      <button onclick="scrollToSection('petBabySpots')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">🍽️ 카페·맛집</button>
+      <button onclick="scrollToSection('evSection')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">⚡ 전기차</button>
       <button onclick="scrollToSection('info')" class="shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">📋 유용한 정보</button>
     </div>
   </nav>
@@ -131,7 +218,6 @@
           <button onclick="setFilter('sightseeing')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="sightseeing">🏔️ 관광</button>
           <button onclick="setFilter('food')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="food">🍽️ 맛집</button>
           <button onclick="setFilter('cafe')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="cafe">☕ 카페</button>
-          <button onclick="setFilter('workation')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="workation">💻 워케이션</button>
           <button onclick="setFilter('baby')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="baby">👶 아기</button>
           <button onclick="setFilter('dog')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="dog">🐶 강아지</button>
           <button onclick="setFilter('checklist')" class="filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100" data-filter="checklist">✅ 준비물</button>
@@ -143,10 +229,24 @@
 
     <div class="section-divider my-10"></div>
 
+    <!-- ===== 숙소 주변 편의시설 ===== -->
+    <section id="nearbySection" class="mb-10">
+      <div id="nearbyContent"></div>
+    </section>
+
+    <div class="section-divider my-10"></div>
+
     <!-- ===== 체크리스트 ===== -->
     <section id="checklist" class="mb-10">
       <h2 class="text-xl font-bold mb-5">✅ 사전 준비 체크리스트</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="checklistGrid"></div>
+    </section>
+
+    <div class="section-divider mb-10"></div>
+
+    <!-- ===== 전기차(테슬라 모델Y) 가이드 ===== -->
+    <section id="evSection" class="mb-10">
+      <div id="evContent"></div>
     </section>
 
     <div class="section-divider mb-10"></div>
@@ -163,6 +263,9 @@
 
       <!-- 아기+강아지 동반 카페 & 맛집 -->
       <div class="bg-amber-50 rounded-xl p-5 mb-5 border border-amber-100" id="petBabySpots"></div>
+
+      <!-- 감귤 체험 농장 -->
+      <div class="bg-orange-50 rounded-xl p-5 mb-5 border border-orange-100" id="tangerineFarms"></div>
 
       <!-- 반려견 돌봄 -->
       <div class="bg-emerald-50 rounded-xl p-5 mb-5 border border-emerald-100" id="petCareSection"></div>
@@ -225,15 +328,22 @@
           <h3 class="font-semibold text-green-800">💰 예산 가이드</h3>
           <button onclick="toggleBudgetEdit()" id="budgetEditBtn" class="text-xs px-3 py-1 rounded-full bg-green-200 text-green-800 hover:bg-green-300 transition-colors">✏️ 수정</button>
         </div>
-        <p class="text-xs text-green-700 mb-3" id="budgetTitle"></p>
+        <p class="text-xs text-green-700 mb-2" id="budgetTitle"></p>
+        <div id="budgetTarget" class="bg-green-100 border border-green-300 rounded-lg p-3 mb-3 text-sm font-semibold text-green-900"></div>
+        <p class="text-xs text-green-600 mb-3" id="budgetNote"></p>
         <div class="space-y-1.5" id="budgetList"></div>
         <div class="mt-3 pt-3 border-t border-green-200">
           <div class="flex items-center justify-between bg-green-200/50 rounded-lg p-3 border border-green-300">
             <span class="text-sm font-semibold text-green-900">합계 (추정)</span>
             <span class="text-sm font-bold text-green-900" id="budgetTotal"></span>
           </div>
+          <p id="budgetVerdict" class="text-xs mt-2 text-center"></p>
         </div>
         <p class="text-xs text-green-500 mt-2" id="budgetEditHint" style="display:none;">금액을 직접 수정할 수 있습니다. 자동 저장됩니다.</p>
+        <div class="mt-4 bg-white/60 rounded-lg p-3 border border-green-100">
+          <h4 class="text-xs font-semibold text-green-800 mb-2">💡 적자 방지 팁</h4>
+          <ul class="space-y-1" id="budgetTips"></ul>
+        </div>
       </div>
     </section>
   </main>
@@ -568,7 +678,7 @@
         <div class="bg-white rounded-lg p-3 border ${s.isNew ? 'border-amber-300 ring-1 ring-amber-200' : 'border-indigo-100'}">
           <div class="flex items-center gap-2 mb-1.5 flex-wrap">
             <span class="text-sm font-semibold ${s.isNew ? 'text-amber-700' : 'text-indigo-800'}">${s.name}</span>
-            ${s.isNew ? '<span class="text-[10px] bg-amber-100 text-amber-700 rounded-full px-2 py-0.5 font-medium">2026.05 취항</span>' : ''}
+            ${s.isNew ? '<span class="text-[10px] bg-amber-100 text-amber-700 rounded-full px-2 py-0.5 font-medium">운항 중 · 우리 배 ✅</span>' : ''}
             ${s.highlight && !s.isNew ? '<span class="text-[10px] bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5">' + s.highlight + '</span>' : ''}
           </div>
           <div class="text-xs text-gray-500 mb-1">📍 ${s.route}</div>
@@ -634,6 +744,152 @@
       }
     }
 
+    // ========== 숙소 주변 편의시설 ==========
+    function renderNearby() {
+      if (typeof NEARBY_PLACES === 'undefined') return;
+      const data = NEARBY_PLACES;
+      const colorMap = {
+        blue:   { bg: 'bg-blue-100',   text: 'text-blue-800',   border: 'border-blue-200',   dot: '#3b82f6' },
+        green:  { bg: 'bg-green-100',  text: 'text-green-800',  border: 'border-green-200',  dot: '#22c55e' },
+        orange: { bg: 'bg-orange-100', text: 'text-orange-800', border: 'border-orange-200', dot: '#f97316' },
+        amber:  { bg: 'bg-amber-100',  text: 'text-amber-800',  border: 'border-amber-200',  dot: '#f59e0b' },
+        red:    { bg: 'bg-red-100',    text: 'text-red-800',    border: 'border-red-200',    dot: '#ef4444' },
+      };
+
+      // Map pin positions (percentage-based layout)
+      // Home is at center (50%, 50%)
+      const pinPositions = {
+        // 해변 - 하단 (바다 방향)
+        "평대해변":       { x: 50, y: 72 },
+        "세화해변":       { x: 72, y: 78 },
+        "월정리해변":     { x: 24, y: 78 },
+        "김녕해변":       { x: 10, y: 68 },
+        // 마트 - 우측
+        "동복리 편의점 (CU/GS25)": { x: 62, y: 42 },
+        "하나로마트 구좌점":        { x: 82, y: 30 },
+        "세화오일시장":             { x: 78, y: 55 },
+        "이마트 제주점":            { x: 10, y: 15 },
+        // 맛집 - 좌측
+        "평대스낵":             { x: 38, y: 66 },
+        "평대성게국수":         { x: 30, y: 58 },
+        "제주오누이":           { x: 18, y: 52 },
+        "명리동식당 구좌직영점": { x: 22, y: 36 },
+        "쉐프1192레스토랑":     { x: 88, y: 65 },
+        // 카페 - 상단
+        "모어모어":       { x: 55, y: 60 },
+        "카페 치즈태비":   { x: 35, y: 28 },
+        "시시소소":       { x: 48, y: 18 },
+        "어니스트밀크":   { x: 85, y: 45 },
+        // 병원
+        "구좌중앙의원":   { x: 68, y: 18 },
+        "세화약국":       { x: 75, y: 42 },
+        "제주동물병원 (가까운 곳)": { x: 15, y: 25 },
+      };
+
+      let mapPinsHTML = '';
+      data.categories.forEach(cat => {
+        const c = colorMap[cat.color] || colorMap.blue;
+        cat.places.forEach(p => {
+          const pos = pinPositions[p.name] || { x: 50, y: 50 };
+          mapPinsHTML += `
+            <div class="map-pin" style="left:${pos.x}%;top:${pos.y}%"
+                 onclick="document.getElementById('detail-${p.name.replace(/[^a-zA-Z가-힣]/g,'')}')?.scrollIntoView({behavior:'smooth',block:'center'})">
+              <div class="pin-label ${c.bg} ${c.text}" style="border-color:${c.dot}">${cat.icon} ${p.name.length > 8 ? p.name.substring(0,7)+'…' : p.name}</div>
+              <div class="pin-time">${p.time}</div>
+            </div>
+          `;
+        });
+      });
+
+      const container = document.getElementById('nearbyContent');
+      container.innerHTML = `
+        <h2 class="text-xl font-bold mb-2">${data.title}</h2>
+        <p class="text-xs text-gray-500 mb-1">📍 ${data.accommodation.address}</p>
+        <p class="text-xs text-gray-400 mb-5">${data.note}</p>
+
+        <!-- 비주얼 지도 -->
+        <div class="nearby-map p-4 mb-6 border border-gray-200" style="min-height:460px">
+          <!-- 거리 링 -->
+          <div class="map-ring" style="left:50%;top:50%;width:140px;height:140px;border-color:rgba(234,88,12,0.35)"></div>
+          <div class="map-ring" style="left:50%;top:50%;width:280px;height:280px;border-color:rgba(234,88,12,0.2)"></div>
+          <div class="map-ring" style="left:50%;top:50%;width:440px;height:440px;border-color:rgba(234,88,12,0.12)"></div>
+
+          <!-- 거리 라벨 -->
+          <div style="position:absolute;left:50%;top:50%;transform:translate(75px,-78px);font-size:10px;color:#ea580c;font-weight:700;background:white;padding:1px 6px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.1)">~1km</div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(145px,-148px);font-size:10px;color:#ea580c;font-weight:700;background:white;padding:1px 6px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.1)">~5km</div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(225px,-228px);font-size:10px;color:#ea580c;font-weight:700;background:white;padding:1px 6px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.1)">~10km+</div>
+
+          <!-- 바다 표시 -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(0deg,rgba(37,99,235,0.2),transparent);border-radius:0 0 16px 16px;pointer-events:none"></div>
+          <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:12px;color:#2563eb;font-weight:700;letter-spacing:10px;pointer-events:none;text-shadow:0 0 6px white,0 0 12px white">~ ~ ~ 바 다 ~ ~ ~</div>
+
+          <!-- 숙소 (중앙) -->
+          <div class="home-pin" style="left:50%;top:50%">
+            <div class="home-icon">🏠</div>
+            <div class="home-label">우리 숙소</div>
+          </div>
+
+          <!-- 핀들 -->
+          ${mapPinsHTML}
+        </div>
+
+        <!-- 범례 -->
+        <div class="flex flex-wrap gap-2 mb-6 justify-center">
+          ${data.categories.map(cat => {
+            const c = colorMap[cat.color];
+            return `<span class="text-[10px] px-2 py-1 rounded-full ${c.bg} ${c.text} border ${c.border}">${cat.icon} ${cat.name}</span>`;
+          }).join('')}
+          <span class="text-[10px] px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">🐶 반려견 가능</span>
+          <span class="text-[10px] px-2 py-1 rounded-full bg-pink-50 text-pink-700 border border-pink-200">👶 아기 가능</span>
+        </div>
+
+        <!-- 접었다 펼 수 있는 카테고리별 상세 표 -->
+        ${data.categories.map(cat => {
+          const c = colorMap[cat.color] || colorMap.blue;
+          return `
+            <details class="nearby-details mb-3">
+              <summary class="flex items-center gap-2 p-3 rounded-xl ${c.bg} border ${c.border} hover:shadow-sm transition-shadow">
+                <span class="chevron text-gray-400">▼</span>
+                <span class="font-semibold ${c.text} text-sm">${cat.icon} ${cat.name}</span>
+                <span class="text-[10px] text-gray-400 ml-auto">${cat.places.length}곳 · 탭하여 펼치기</span>
+              </summary>
+              <div class="mt-2 overflow-x-auto">
+                <table class="w-full text-[11px] border-collapse">
+                  <thead>
+                    <tr class="bg-gray-50">
+                      <th class="text-left p-2 font-semibold text-gray-600 rounded-tl-lg">장소</th>
+                      <th class="text-center p-2 font-semibold text-gray-600 w-16">거리</th>
+                      <th class="text-center p-2 font-semibold text-gray-600 w-20">소요시간</th>
+                      <th class="text-center p-2 font-semibold text-gray-600 w-10">🐶</th>
+                      <th class="text-center p-2 font-semibold text-gray-600 w-10">👶</th>
+                      <th class="text-left p-2 font-semibold text-gray-600 rounded-tr-lg">설명</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${cat.places.map((p, i) => `
+                      <tr id="detail-${p.name.replace(/[^a-zA-Z가-힣]/g,'')}" class="${i%2===0?'bg-white':'bg-gray-50/50'} border-b border-gray-100">
+                        <td class="p-2 font-semibold text-gray-800">
+                          <a href="https://map.naver.com/v5/search/${encodeURIComponent(p.name + ' 제주')}" target="_blank" class="hover:text-blue-600 hover:underline">${p.name}</a>
+                          <div class="text-[9px] text-gray-400 font-normal">${p.address}</div>
+                        </td>
+                        <td class="p-2 text-center text-gray-600">${p.distance}</td>
+                        <td class="p-2 text-center">
+                          <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${p.time.includes('도보') ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${p.time}</span>
+                        </td>
+                        <td class="p-2 text-center">${p.dog ? '<span class="text-green-600">✅</span>' : '<span class="text-gray-300">—</span>'}</td>
+                        <td class="p-2 text-center">${p.baby ? '<span class="text-pink-500">✅</span>' : '<span class="text-gray-300">—</span>'}</td>
+                        <td class="p-2 text-gray-600">${p.desc}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          `;
+        }).join('')}
+      `;
+    }
+
     // ========== 유용한 정보 ==========
     function renderPetBabySpots() {
       if (typeof PET_BABY_SPOTS === 'undefined') return;
@@ -686,6 +942,48 @@
 
       window.setPetBabyFilter = function(f) { regionFilter = f; render(); };
       render();
+    }
+
+    function renderTangerineFarms() {
+      if (typeof TANGERINE_FARMS === 'undefined') return;
+      const data = TANGERINE_FARMS;
+      const colorMap = {
+        green: { bg: 'bg-green-50', border: 'border-green-200', title: 'text-green-800', badge: 'bg-green-100 text-green-700 border-green-200' },
+        pink: { bg: 'bg-pink-50', border: 'border-pink-200', title: 'text-pink-800', badge: 'bg-pink-100 text-pink-700 border-pink-200' },
+      };
+      document.getElementById('tangerineFarms').innerHTML = `
+        <h3 class="font-semibold text-orange-800 mb-2">${data.title}</h3>
+        <p class="text-xs text-orange-700 mb-4">${data.note}</p>
+        ${data.sections.map(sec => {
+          const c = colorMap[sec.color] || colorMap.green;
+          return `
+            <div class="mb-4 last:mb-0">
+              <div class="text-sm font-semibold ${c.title} mb-2">${sec.title}</div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                ${sec.farms.map(f => `
+                  <div class="bg-white rounded-lg p-3 border border-orange-100 hover:shadow-md transition-shadow">
+                    <div class="text-sm font-semibold text-gray-800 mb-1">🍊 ${f.name}</div>
+                    <div class="text-[10px] text-gray-400 mb-1">📍 ${f.address}</div>
+                    <p class="text-[11px] text-gray-600 mb-2">${f.desc}</p>
+                    <div class="flex flex-wrap gap-1 mb-1.5">
+                      <span class="text-[10px] px-1.5 py-0.5 rounded border ${f.dog === true ? 'bg-green-50 text-green-700 border-green-200' : f.dog === false ? 'bg-red-50 text-red-600 border-red-200' : 'bg-gray-50 text-gray-500 border-gray-200'}">🐶 ${f.dogNote}</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1 mb-1.5">
+                      <span class="text-[10px] px-1.5 py-0.5 rounded border ${f.baby ? 'bg-pink-50 text-pink-700 border-pink-200' : 'bg-gray-50 text-gray-500 border-gray-200'}">👶 ${f.babyNote}</span>
+                    </div>
+                    ${f.phone ? `<div class="text-[10px] text-gray-400 mb-2">📞 ${f.phone}</div>` : ''}
+                    <div class="flex gap-1.5 pt-2 border-t border-orange-50">
+                      <a href="https://map.naver.com/v5/search/${encodeURIComponent(f.mapQuery || f.name + ' 제주')}" target="_blank" class="flex-1 text-center text-[10px] font-medium px-2 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors">🗺️ 지도</a>
+                      <a href="https://search.naver.com/search.naver?query=${encodeURIComponent(f.name + ' 제주 감귤체험 리뷰')}" target="_blank" class="flex-1 text-center text-[10px] font-medium px-2 py-1.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors">⭐ 리뷰</a>
+                      ${f.url ? `<a href="${f.url}" target="_blank" class="flex-1 text-center text-[10px] font-medium px-2 py-1.5 rounded-md bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 transition-colors">🔗 상세</a>` : ''}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      `;
     }
 
     function renderPetCare() {
@@ -759,6 +1057,97 @@
       `).join('');
     }
 
+    // ========== 전기차(테슬라 모델Y) 가이드 ==========
+    function renderEV() {
+      if (typeof EV_GUIDE === 'undefined') return;
+      const ev = EV_GUIDE;
+      const fr = ev.ferryRules;
+      const ch = ev.chargers;
+      document.getElementById('evContent').innerHTML = `
+        <h2 class="text-xl font-bold mb-2">${ev.title}</h2>
+        <p class="text-xs text-gray-500 mb-1">🚙 ${ev.car}</p>
+        <p class="text-xs text-gray-400 mb-5">${ev.note}</p>
+
+        <!-- 페리 선적 규정 (강조) -->
+        <div class="bg-red-50 rounded-xl p-5 mb-4 border border-red-200">
+          <h3 class="font-semibold text-red-800 mb-3">${fr.title}</h3>
+          <div class="space-y-2">
+            ${fr.items.map(r => `
+              <div class="bg-white rounded-lg p-3 border border-red-100">
+                <div class="text-xs font-semibold text-red-700 mb-0.5">${r.label}</div>
+                <div class="text-[11px] text-gray-600">${r.value}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- 충전 인프라 -->
+        <div class="bg-sky-50 rounded-xl p-5 mb-4 border border-sky-200">
+          <h3 class="font-semibold text-sky-800 mb-3">${ch.title}</h3>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+            <div class="bg-white rounded-lg p-3 border border-sky-100">
+              <div class="text-xs font-semibold text-sky-700 mb-1.5">⚡ 테슬라 슈퍼차저</div>
+              ${ch.superchargers.map(s => `
+                <div class="mb-1.5 last:mb-0">
+                  <a href="https://map.naver.com/v5/search/${encodeURIComponent(s.name)}" target="_blank" class="text-xs font-medium text-gray-800 hover:text-sky-600 hover:underline">${s.name}</a>
+                  <div class="text-[10px] text-gray-400">📍 ${s.address}</div>
+                  <div class="text-[10px] text-sky-600">${s.note}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="bg-white rounded-lg p-3 border border-sky-100">
+              <div class="text-xs font-semibold text-sky-700 mb-1.5">🏠 동부 데스티네이션 차저</div>
+              ${ch.destination.map(s => `
+                <div class="mb-1.5 last:mb-0">
+                  <div class="text-xs font-medium text-gray-800">${s.name}</div>
+                  <div class="text-[10px] text-gray-500">${s.note}</div>
+                </div>
+              `).join('')}
+              <div class="text-[10px] text-gray-400 mt-1.5 pt-1.5 border-t border-gray-100">${ch.publicNote}</div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg p-3 mb-3 border border-sky-100">
+            <div class="text-xs font-semibold text-sky-700 mb-1.5">🔧 필요 어댑터</div>
+            ${ch.adapters.map(a => `<div class="text-[11px] text-gray-600">• ${a}</div>`).join('')}
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+            ${ch.apps.map(a => `
+              <a href="${a.url}" target="_blank" class="bg-white rounded-lg p-2.5 border border-sky-100 hover:shadow-md transition-shadow">
+                <div class="text-xs font-semibold text-sky-800">${a.name} ↗</div>
+                <div class="text-[10px] text-gray-500 mt-0.5">${a.note}</div>
+              </a>
+            `).join('')}
+          </div>
+          <div class="bg-sky-100/60 rounded p-2 border border-sky-200">
+            <div class="text-[11px] text-sky-800">💰 <strong>충전 요금:</strong> ${ch.price}</div>
+          </div>
+        </div>
+
+        <!-- 팁 / 주의 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+            <h4 class="font-semibold text-emerald-800 mb-2 text-sm">✅ 충전 전략 팁</h4>
+            <ul class="space-y-1">${ev.tips.map(t => `<li class="text-[11px] text-emerald-700">• ${t}</li>`).join('')}</ul>
+          </div>
+          <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
+            <h4 class="font-semibold text-amber-800 mb-2 text-sm">⚠️ 주의 / 제약</h4>
+            <ul class="space-y-1">${ev.cautions.map(t => `<li class="text-[11px] text-amber-700">• ${t}</li>`).join('')}</ul>
+          </div>
+        </div>
+
+        <!-- 출처 -->
+        <details class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <summary class="text-xs font-medium text-gray-600 cursor-pointer">📚 출처 (2026.06 확인)</summary>
+          <div class="mt-2 space-y-1">
+            ${ev.sources.map(s => `<a href="${s.url}" target="_blank" class="block text-[10px] text-gray-500 hover:text-sky-600 hover:underline">↗ ${s.label}</a>`).join('')}
+          </div>
+        </details>
+      `;
+    }
+
     function renderWeather() {
       document.getElementById('weatherSummary').textContent = `기간: ${WEATHER_GUIDE.period} | 평균 기온: ${WEATHER_GUIDE.avgTemp}`;
       document.getElementById('weatherGrid').innerHTML = WEATHER_GUIDE.details.map(d => `
@@ -776,14 +1165,14 @@
     let budgetData = [];
 
     function initBudgetData() {
-      const saved = localStorage.getItem('jeju-budget');
+      const saved = localStorage.getItem('jeju-budget-v2');
       if (saved) { budgetData = JSON.parse(saved); return; }
       budgetData = BUDGET_GUIDE.items.filter(b => !b.category.includes('합계')).map(b => {
         const nums = b.estimate.match(/[\d]+/g);
         return { category: b.category, desc: b.desc, min: nums?parseInt(nums[0]):0, max: nums&&nums[1]?parseInt(nums[1]):(nums?parseInt(nums[0]):0) };
       });
     }
-    function saveBudgetData() { localStorage.setItem('jeju-budget', JSON.stringify(budgetData)); }
+    function saveBudgetData() { localStorage.setItem('jeju-budget-v2', JSON.stringify(budgetData)); }
     function calcBudgetTotal() { return { min: budgetData.reduce((s,b)=>s+b.min,0), max: budgetData.reduce((s,b)=>s+b.max,0) }; }
 
     function renderBudget() {
@@ -807,6 +1196,21 @@
       `).join('');
       const t = calcBudgetTotal();
       document.getElementById('budgetTotal').textContent = `${t.min}~${t.max}만원`;
+      // 목표(350~450만) 대비 평가
+      const verdict = document.getElementById('budgetVerdict');
+      if (verdict) {
+        const mid = Math.round((t.min + t.max) / 2);
+        if (t.max <= 450) {
+          verdict.textContent = `👍 목표선(~450만) 안! 평균 약 ${mid}만원`;
+          verdict.className = 'text-xs mt-2 text-center text-green-700 font-medium';
+        } else if (t.min <= 450) {
+          verdict.textContent = `⚖️ 평균 약 ${mid}만원 — 상한이 목표(450만)를 넘으니 숙소·식비부터 조절`;
+          verdict.className = 'text-xs mt-2 text-center text-amber-700 font-medium';
+        } else {
+          verdict.textContent = `⚠️ 최소도 목표(450만)를 초과 — 항목 점검 필요`;
+          verdict.className = 'text-xs mt-2 text-center text-red-600 font-medium';
+        }
+      }
     }
     function updateBudgetItem(i, f, v) { budgetData[i][f] = parseInt(v)||0; saveBudgetData(); renderBudget(); }
     function toggleBudgetEdit() {
@@ -837,11 +1241,17 @@
     loadChecklistState();
     initBudgetData();
     document.getElementById('budgetTitle').textContent = BUDGET_GUIDE.title;
+    if (BUDGET_GUIDE.target) document.getElementById('budgetTarget').textContent = BUDGET_GUIDE.target;
+    if (BUDGET_GUIDE.note) document.getElementById('budgetNote').textContent = BUDGET_GUIDE.note;
+    if (BUDGET_GUIDE.savingTips) document.getElementById('budgetTips').innerHTML = BUDGET_GUIDE.savingTips.map(t => `<li class="text-[11px] text-green-700">• ${t}</li>`).join('');
     renderChecklists();
     renderSchedule();
+    renderNearby();
     renderFerryInfo();
     renderPetBabySpots();
+    renderTangerineFarms();
     renderPetCare();
+    renderEV();
     renderEmergency();
     renderWeather();
     renderBudget();
