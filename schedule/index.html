@@ -14,22 +14,57 @@
       theme: {
         extend: {
           colors: {
-            jeju: { 50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',500:'#f97316',600:'#ea580c',700:'#c2410c' },
-            ocean: { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7' }
+            // 감귤 (tangerine) — 강조/주요 액션
+            jeju: { 50:'#fdf4ed',100:'#fbe4d2',200:'#f6c39e',300:'#f0a06a',400:'#ec8b46',500:'#E8772E',600:'#c75f1d',700:'#9e4a17' },
+            // 절제된 청록 (teal) — 보조/링크/지도. 기존 ocean 토큰 재정의로 전역 리톤
+            ocean: { 50:'#eef5f4',100:'#d9e8e6',200:'#b3d2cd',300:'#7fb3ac',400:'#4d908a',500:'#2F6E6A',600:'#265a57',700:'#1d4744' },
+            // 현무암 (basalt) — 텍스트/헤더
+            basalt: { DEFAULT:'#2B2A28', soft:'#5A564E', line:'#3a3835' },
+            // 억새 베이지 (paper)
+            paper: { DEFAULT:'#EDE8DC', card:'#F6F2E9', deep:'#E4DDCB' },
+            // 억새 금빛 (silver grass gold)
+            gold: { DEFAULT:'#C9A24B', deep:'#B8893B', soft:'#E4CF9A' }
           }
         }
       }
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
-    body { font-family: 'Noto Sans KR', sans-serif; }
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Noto Sans KR', sans-serif; -webkit-font-smoothing: antialiased; }
+    /* 디스플레이 = 고운바탕(가을 세리프). 큰 숫자/제목 인격 부여 */
+    .font-display { font-family: 'Gowun Batang', 'Noto Sans KR', serif; }
+    .tnum { font-variant-numeric: tabular-nums; }
 
     /* 컴팩트 데이 칩 */
     .day-chip { transition: all 0.15s ease; cursor: pointer; position: relative; }
     .day-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .day-chip.selected { ring: 2px; box-shadow: 0 0 0 2px #0ea5e9; }
+    .day-chip.selected { box-shadow: 0 0 0 2px #2F6E6A; }
     .day-chip.fade-out { opacity: 0.25; }
+
+    /* === 대시보드(오늘) === */
+    .dash-card { background: #F6F2E9; border: 1px solid #E4DDCB; border-radius: 18px; }
+    .dash-countdown {
+      background:
+        radial-gradient(120% 100% at 100% 0%, rgba(232,119,46,0.10), transparent 55%),
+        linear-gradient(160deg, #F6F2E9 0%, #EFE9DA 100%);
+      border: 1px solid #E4DDCB; border-radius: 22px; position: relative; overflow: hidden;
+    }
+    .dash-countdown::after {
+      content: ''; position: absolute; right: -10px; bottom: -10px; width: 180px; height: 180px;
+      background: repeating-linear-gradient(78deg, transparent 0 9px, rgba(201,162,75,0.16) 9px 10px);
+      -webkit-mask-image: radial-gradient(circle at 100% 100%, #000, transparent 72%);
+      mask-image: radial-gradient(circle at 100% 100%, #000, transparent 72%);
+      pointer-events: none;
+    }
+    .dday-num { font-size: clamp(3rem, 12vw, 5.5rem); line-height: 0.92; letter-spacing: -0.02em; }
+    .prog-track { background: #E4DDCB; border-radius: 999px; overflow: hidden; }
+    .prog-fill { background: linear-gradient(90deg, #2F6E6A, #4d908a); height: 100%; border-radius: 999px; transition: width .6s ease; }
+    .prog-fill.gold { background: linear-gradient(90deg, #B8893B, #C9A24B); }
+    .prog-fill.tangerine { background: linear-gradient(90deg, #E8772E, #f0a06a); }
+    .dash-link { transition: transform .15s ease, box-shadow .15s ease; }
+    .dash-link:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(43,42,40,0.10); }
+    @media (prefers-reduced-motion: reduce) { .prog-fill, .dash-link, .day-chip { transition: none; } }
 
     /* 상세 패널 */
     .detail-panel { animation: slideDown 0.3s ease; }
@@ -40,39 +75,27 @@
 
     /* 기타 */
     .section-divider { background: linear-gradient(90deg, transparent, #e5e7eb, transparent); height: 1px; }
+
+    /* === 억새 가을 히어로 === 현무암 + 황혼빛 + 흔들리는 억새 결 */
     .hero-gradient {
-      background: linear-gradient(180deg, #0369a1 0%, #0ea5e9 35%, #38bdf8 50%, #7dd3fc 60%, #22c55e 62%, #4ade80 65%, #facc15 68%, #fbbf24 75%, #f59e0b 100%);
+      background:
+        radial-gradient(130% 90% at 82% -10%, rgba(232,119,46,0.22) 0%, transparent 55%),
+        radial-gradient(120% 80% at 10% 0%, rgba(201,162,75,0.16) 0%, transparent 60%),
+        linear-gradient(170deg, #34322e 0%, #2B2A28 55%, #211f1d 100%);
       position: relative;
       overflow: hidden;
     }
-    .hero-gradient::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 40px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 40'%3E%3Cpath fill='%23f9fafb' d='M0,20 C360,40 720,0 1080,20 C1260,30 1350,35 1440,20 L1440,40 L0,40Z'/%3E%3C/svg%3E") no-repeat bottom center;
-      background-size: cover;
-    }
+    /* 억새 결: 바닥에서 솟아 비스듬히 누운 가는 금빛 선들 */
     .hero-gradient::after {
       content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background:
-        radial-gradient(ellipse 80px 60px at 10% 30%, rgba(255,255,255,0.15) 0%, transparent 70%),
-        radial-gradient(ellipse 60px 50px at 85% 20%, rgba(255,255,255,0.12) 0%, transparent 70%),
-        radial-gradient(ellipse 50px 40px at 50% 15%, rgba(255,255,255,0.1) 0%, transparent 70%),
-        radial-gradient(circle 3px at 15% 75%, #facc15 0%, transparent 80%),
-        radial-gradient(circle 4px at 20% 72%, #fbbf24 0%, transparent 80%),
-        radial-gradient(circle 3px at 25% 76%, #facc15 0%, transparent 80%),
-        radial-gradient(circle 4px at 30% 70%, #fde047 0%, transparent 80%),
-        radial-gradient(circle 3px at 35% 74%, #fbbf24 0%, transparent 80%),
-        radial-gradient(circle 3px at 70% 73%, #facc15 0%, transparent 80%),
-        radial-gradient(circle 4px at 75% 70%, #fde047 0%, transparent 80%),
-        radial-gradient(circle 3px at 80% 75%, #fbbf24 0%, transparent 80%),
-        radial-gradient(circle 4px at 85% 72%, #facc15 0%, transparent 80%),
-        radial-gradient(circle 3px at 90% 76%, #fde047 0%, transparent 80%);
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(80deg, transparent 0 11px, rgba(201,162,75,0.10) 11px 12px);
+      -webkit-mask-image: linear-gradient(180deg, transparent 28%, #000 105%);
+      mask-image: linear-gradient(180deg, transparent 28%, #000 105%);
       pointer-events: none;
     }
+    /* 억새 이삭 톤의 가는 윗줄 */
+    .gold-rule { height: 2px; background: linear-gradient(90deg, #C9A24B, rgba(201,162,75,0) 60%); }
     .filter-btn { transition: all 0.15s ease; }
     .filter-btn.active { transform: scale(1.05); }
 
@@ -98,7 +121,7 @@
     .nearby-details .chevron { transition: transform 0.2s ease; display: inline-block; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-paper text-basalt">
   <script src="data.js"></script>
 
   <!-- Scroll to top -->
@@ -107,39 +130,46 @@
     &uarr;
   </button>
 
-  <!-- Header -->
-  <header class="hero-gradient text-white">
-    <div class="max-w-6xl mx-auto px-4 py-10 sm:py-14 pb-14 sm:pb-16 relative z-10">
-      <p class="text-sm sm:text-base opacity-80 mb-1 tracking-wide">🏝️ 제주도</p>
-      <h1 class="text-2xl sm:text-4xl font-bold mb-2 drop-shadow-md">제주 한달살이 30일 플래너</h1>
-      <p class="text-base sm:text-lg opacity-90 mb-4">2026.10.25 (일) ~ 11.23 (월)</p>
-      <div class="flex flex-wrap gap-2 text-sm">
-        <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">👨‍👩‍👦 부부 + 아기</span>
-        <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">🐶🐕 강아지 x2</span>
-        <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">📍 성산/구좌</span>
-        <span class="bg-white/70 text-gray-800 backdrop-blur-sm rounded-full px-3 py-1 shadow">⚡ 테슬라 모델Y</span>
+  <!-- Header (억새 가을) -->
+  <header class="hero-gradient text-paper">
+    <div class="max-w-6xl mx-auto px-4 py-7 sm:py-9 relative z-10">
+      <p class="text-[11px] sm:text-xs text-gold-soft tracking-[0.25em] uppercase mb-2">Jeju · 가을 한 달</p>
+      <h1 class="font-display text-3xl sm:text-5xl font-bold mb-2 leading-tight">제주 한달살이<span class="text-jeju-400">.</span></h1>
+      <p class="font-display text-sm sm:text-base text-paper/70 mb-4">2026 . 10 . 25 <span class="text-gold">—</span> 11 . 23 <span class="text-paper/40">· 30일</span></p>
+      <div class="gold-rule w-24 mb-4"></div>
+      <div class="flex flex-wrap gap-2 text-xs sm:text-sm">
+        <span class="bg-paper/10 ring-1 ring-paper/15 text-paper/90 rounded-full px-3 py-1">👨‍👩‍👦 부부 + 아기</span>
+        <span class="bg-paper/10 ring-1 ring-paper/15 text-paper/90 rounded-full px-3 py-1">🐶🐕 강아지 x2</span>
+        <span class="bg-paper/10 ring-1 ring-paper/15 text-paper/90 rounded-full px-3 py-1">📍 성산/구좌</span>
+        <span class="bg-paper/10 ring-1 ring-paper/15 text-paper/90 rounded-full px-3 py-1">⚡ 테슬라 모델Y</span>
       </div>
     </div>
   </header>
 
   <!-- Tab Navigation -->
-  <nav id="tabBar" class="sticky top-0 z-40 bg-white shadow-sm border-b">
+  <nav id="tabBar" class="sticky top-0 z-40 bg-paper-card/95 backdrop-blur border-b border-paper-deep">
     <div class="max-w-6xl mx-auto px-4 py-2.5 flex gap-2 overflow-x-auto">
-      <button onclick="setTab('schedule')" data-tab-btn="schedule" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-ocean-500 text-white">📅 일정</button>
-      <button onclick="setTab('nearby')" data-tab-btn="nearby" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">🏠 숙소주변</button>
-      <button onclick="setTab('food')" data-tab-btn="food" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">🍽️ 카페·맛집</button>
-      <button onclick="setTab('explore')" data-tab-btn="explore" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">🧭 더 가볼 곳</button>
-      <button onclick="setTab('ev')" data-tab-btn="ev" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">⚡ 전기차</button>
-      <button onclick="setTab('pet')" data-tab-btn="pet" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">🐾 반려견·페리</button>
-      <button onclick="setTab('checklist')" data-tab-btn="checklist" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">✅ 준비물</button>
-      <button onclick="setTab('info')" data-tab-btn="info" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-gray-100 hover:bg-gray-200">📋 정보</button>
+      <button onclick="setTab('today')" data-tab-btn="today" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-ocean-500 text-white">🌾 오늘</button>
+      <button onclick="setTab('schedule')" data-tab-btn="schedule" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">📅 일정</button>
+      <button onclick="setTab('nearby')" data-tab-btn="nearby" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">🏠 숙소주변</button>
+      <button onclick="setTab('food')" data-tab-btn="food" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">🍽️ 카페·맛집</button>
+      <button onclick="setTab('explore')" data-tab-btn="explore" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">🧭 더 가볼 곳</button>
+      <button onclick="setTab('ev')" data-tab-btn="ev" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">⚡ 전기차</button>
+      <button onclick="setTab('pet')" data-tab-btn="pet" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">🐾 반려견·페리</button>
+      <button onclick="setTab('checklist')" data-tab-btn="checklist" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">✅ 준비물</button>
+      <button onclick="setTab('info')" data-tab-btn="info" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">📋 정보</button>
     </div>
   </nav>
 
   <main class="max-w-6xl mx-auto px-4 py-6">
 
+    <!-- ===== TAB: 오늘 (대시보드) ===== -->
+    <section id="today" class="tab-panel hidden" data-tab="today">
+      <div id="dashboardContent"></div>
+    </section>
+
     <!-- ===== TAB: 일정 ===== -->
-    <section id="schedule" class="tab-panel" data-tab="schedule">
+    <section id="schedule" class="tab-panel hidden" data-tab="schedule">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-bold flex items-center gap-2">📅 30일 일정</h2>
       </div>
@@ -1262,14 +1292,205 @@
       renderBudget();
     }
 
+    // ========== 대시보드 (오늘) ==========
+    function _isoToday() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+    function _parseISO(s) { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+    function _daysBetween(a, b) { return Math.round((_parseISO(b) - _parseISO(a)) / 86400000); } // b - a (일)
+    function _fmtDate(iso) {
+      const d = _parseISO(iso); const dow = ['일','월','화','수','목','금','토'][d.getDay()];
+      return `${d.getMonth()+1}월 ${d.getDate()}일 (${dow})`;
+    }
+
+    function checklistStats() {
+      let total = 0, done = 0;
+      for (const k in CHECKLISTS) CHECKLISTS[k].items.forEach(it => { total++; if (it.checked) done++; });
+      return { total, done, pct: total ? Math.round(done/total*100) : 0 };
+    }
+
+    function weatherForToday() {
+      // 여행 기간 내 날짜에 맞는 구간, 아니면 첫 구간
+      const today = _isoToday();
+      const m = _parseISO(today).getMonth()+1, day = _parseISO(today).getDate();
+      let idx = 0;
+      if (m === 11) { if (day <= 7) idx = 1; else if (day <= 14) idx = 2; else idx = 3; }
+      else if (m > 11 || (m === 12)) idx = 3;
+      else idx = 0; // 10월 또는 그 이전
+      return WEATHER_GUIDE.details[idx] || WEATHER_GUIDE.details[0];
+    }
+
+    function goToDay(day) {
+      setTab('schedule');
+      selectedDay = null;
+      setTimeout(() => selectDay(day), 90);
+    }
+
+    function dashScheduleCard(d, heading, isToday) {
+      if (!d) return '';
+      const dateStr = d.date.split('-').slice(1).join('/');
+      const slots = [['🌅', d.schedule.morning], ['☀️', d.schedule.afternoon], ['🌙', d.schedule.evening]];
+      return `
+        <div class="dash-card p-5 h-full flex flex-col">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-semibold tracking-wide ${isToday ? 'text-jeju-600' : 'text-ocean-600'}">${heading}</span>
+            <span class="text-[11px] text-basalt-soft">${dateStr} (${d.dayOfWeek}) · Day ${d.day}</span>
+          </div>
+          <h3 class="font-display text-2xl font-bold mb-3 text-basalt">${d.theme}</h3>
+          <div class="space-y-2 flex-1">
+            ${slots.map(([ic, s]) => s ? `
+              <div class="flex gap-2.5 items-start">
+                <span class="text-base leading-5 shrink-0">${ic}</span>
+                <p class="text-sm text-basalt-soft leading-snug">${s.title}</p>
+              </div>` : '').join('')}
+          </div>
+          <button onclick="goToDay(${d.day})" class="mt-4 self-start text-xs font-semibold px-4 py-2 rounded-full bg-ocean-500 text-white hover:bg-ocean-600 transition-colors">일정 자세히 보기 →</button>
+        </div>`;
+    }
+
+    function renderDashboard() {
+      const el = document.getElementById('dashboardContent');
+      if (!el) return;
+      const start = TRIP_INFO.startDate, end = TRIP_INFO.endDate, today = _isoToday();
+      const toStart = _daysBetween(today, start);   // >0 = 출발 전
+      const toEnd   = _daysBetween(today, end);      // <0 = 종료 후
+      let phase, dayNum = null;
+      if (toStart > 0) phase = 'before';
+      else if (toEnd >= 0) phase = 'during';
+      else phase = 'after';
+      if (phase !== 'before') dayNum = _daysBetween(start, today) + 1;
+
+      // --- 카운트다운 시그니처 ---
+      let eyebrow, big, sub, barPct, barLabel, barClass;
+      if (phase === 'before') {
+        eyebrow = '제주 한달살이까지';
+        big = `D-${toStart}`;
+        sub = `${_fmtDate(start)} 출발 · 목포항 14:00 퀸메리호`;
+        const cl = checklistStats();
+        barPct = cl.pct; barLabel = `준비물 ${cl.done}/${cl.total} (${cl.pct}%)`; barClass = 'gold';
+      } else if (phase === 'during') {
+        eyebrow = '제주에서';
+        big = `${dayNum}<span class="text-3xl sm:text-4xl font-normal text-basalt-soft">일째</span>`;
+        sub = `30일 중 · 남은 ${toEnd}일`;
+        barPct = Math.round(dayNum/30*100); barLabel = `여정 ${dayNum} / 30`; barClass = '';
+      } else {
+        eyebrow = '제주 한 달, 완주';
+        big = `30<span class="text-3xl sm:text-4xl font-normal text-basalt-soft">일 완료</span>`;
+        sub = '함께한 가을 한 달 🌾';
+        barPct = 100; barLabel = '여정 30 / 30'; barClass = '';
+      }
+
+      // --- 준비 진행률 (체크리스트) ---
+      const cl = checklistStats();
+      // --- 예산 ---
+      const bt = (typeof calcBudgetTotal === 'function') ? calcBudgetTotal() : { min:0, max:0 };
+      const cap = (BUDGET_GUIDE && BUDGET_GUIDE.targetMax) ? BUDGET_GUIDE.targetMax : 200;
+      const mid = Math.round((bt.min + bt.max)/2);
+      const budgetPct = Math.min(Math.round(mid/cap*100), 100);
+      let budgetClass = 'tangerine', budgetMsg = `목표 ${cap}만 대비`;
+      if (bt.max <= cap) { budgetClass = ''; budgetMsg = `목표선 안 👍`; }
+      else if (bt.min > cap) { budgetClass = 'tangerine'; budgetMsg = `목표 초과 ⚠️`; }
+      // --- 날씨 ---
+      const w = weatherForToday();
+      const clothTip = WEATHER_GUIDE.clothing[0];
+
+      // --- 오늘/다가오는 일정 ---
+      let planCard;
+      if (phase === 'during') {
+        const d = SCHEDULE.find(s => s.day === dayNum);
+        planCard = dashScheduleCard(d, '오늘의 일정', true);
+      } else if (phase === 'before') {
+        const d = SCHEDULE.find(s => s.day === 1);
+        planCard = dashScheduleCard(d, '다가오는 첫 일정', false);
+      } else {
+        planCard = `<div class="dash-card p-5 h-full flex flex-col items-center justify-center text-center">
+          <div class="text-4xl mb-2">🌾</div>
+          <p class="font-display text-xl font-bold text-basalt mb-1">여행이 끝났어요</p>
+          <p class="text-sm text-basalt-soft">30일의 기록은 일정 탭에 그대로 남아 있어요.</p></div>`;
+      }
+
+      const quick = [
+        { tab:'nearby', ic:'🏠', label:'숙소 주변' },
+        { tab:'food', ic:'🍽️', label:'카페·맛집' },
+        { tab:'explore', ic:'🧭', label:'더 가볼 곳' },
+        { tab:'ev', ic:'⚡', label:'전기차 충전' },
+        { tab:'pet', ic:'🐾', label:'반려견·페리' },
+        { tab:'info', ic:'📋', label:'비상·예산' },
+      ];
+
+      el.innerHTML = `
+        <!-- 시그니처 카운트다운 -->
+        <div class="dash-countdown p-6 sm:p-8 mb-4">
+          <div class="relative z-10">
+            <p class="text-[11px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-gold-deep mb-2">${eyebrow}</p>
+            <div class="font-display dday-num font-bold text-jeju-600 tnum mb-3">${big}</div>
+            <p class="text-sm text-basalt-soft mb-5">${sub}</p>
+            <div class="max-w-md">
+              <div class="flex justify-between text-[11px] text-basalt-soft mb-1.5"><span>${barLabel}</span><span>${barPct}%</span></div>
+              <div class="prog-track h-2.5"><div class="prog-fill ${barClass}" style="width:${barPct}%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 일정 + 위젯 -->
+        <div class="grid lg:grid-cols-3 gap-4 mb-4">
+          <div class="lg:col-span-2">${planCard}</div>
+          <div class="flex flex-col gap-4">
+            <!-- 준비 진행률 -->
+            <button onclick="setTab('checklist')" class="dash-link dash-card p-5 text-left">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-semibold tracking-wide text-ocean-600">준비물 진행률</span>
+                <span class="text-xs text-basalt-soft">${cl.done}/${cl.total}</span>
+              </div>
+              <div class="font-display text-3xl font-bold text-basalt mb-2 tnum">${cl.pct}<span class="text-lg text-basalt-soft">%</span></div>
+              <div class="prog-track h-2"><div class="prog-fill gold" style="width:${cl.pct}%"></div></div>
+              <p class="text-[11px] text-basalt-soft mt-2">탭하여 체크리스트로 →</p>
+            </button>
+            <!-- 예산 -->
+            <button onclick="setTab('info')" class="dash-link dash-card p-5 text-left">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-semibold tracking-wide text-ocean-600">생활비 (목표 ${cap}만)</span>
+                <span class="text-xs text-basalt-soft">${budgetMsg}</span>
+              </div>
+              <div class="font-display text-3xl font-bold text-basalt mb-2 tnum">${bt.min}~${bt.max}<span class="text-base text-basalt-soft">만</span></div>
+              <div class="prog-track h-2"><div class="prog-fill ${budgetClass}" style="width:${budgetPct}%"></div></div>
+              <p class="text-[11px] text-basalt-soft mt-2">평균 약 ${mid}만 · 탭하여 조정 →</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- 날씨 스트립 -->
+        <div class="dash-card p-4 mb-4 flex items-center gap-4 flex-wrap">
+          <span class="text-2xl">🌤️</span>
+          <div>
+            <div class="text-sm font-semibold text-basalt">${w.label} · ${w.temp}</div>
+            <div class="text-[11px] text-basalt-soft">${w.desc}</div>
+          </div>
+          <div class="text-[11px] text-basalt-soft sm:ml-auto sm:text-right">👕 ${clothTip}</div>
+        </div>
+
+        <!-- 빠른 이동 -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+          ${quick.map(q => `
+            <button onclick="setTab('${q.tab}')" class="dash-link dash-card py-4 flex flex-col items-center gap-1.5">
+              <span class="text-xl">${q.ic}</span>
+              <span class="text-[11px] font-medium text-basalt-soft">${q.label}</span>
+            </button>`).join('')}
+        </div>
+      `;
+    }
+
     // ========== 탭 ==========
     function setTab(name) {
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('hidden', p.dataset.tab !== name));
       document.querySelectorAll('[data-tab-btn]').forEach(b => {
         const on = b.dataset.tabBtn === name;
-        b.className = 'tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full ' + (on ? 'bg-ocean-500 text-white' : 'bg-gray-100 hover:bg-gray-200');
+        b.className = 'tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full ' + (on ? 'bg-ocean-500 text-white' : 'bg-paper-deep text-basalt-soft hover:bg-gold-soft');
       });
       try { localStorage.setItem('jeju-tab', name); } catch(e) {}
+      // 대시보드는 열 때마다 최신 진행률 반영
+      if (name === 'today') renderDashboard();
       // Leaflet 지도는 숨김 상태에서 생성되면 크기가 0 → 보일 때 재계산
       if (typeof _maps !== 'undefined' && _maps[name] && _maps[name].map) {
         setTimeout(() => {
@@ -1311,12 +1532,13 @@
     renderEmergency();
     renderWeather();
     renderBudget();
-    // 마지막으로 본 탭 복원 (없으면 일정)
+    renderDashboard();
+    // 마지막으로 본 탭 복원 (없으면 오늘 대시보드)
     (function() {
-      let saved = 'schedule';
-      try { saved = localStorage.getItem('jeju-tab') || 'schedule'; } catch(e) {}
-      const valid = ['schedule','nearby','food','explore','ev','pet','checklist','info'];
-      setTab(valid.includes(saved) ? saved : 'schedule');
+      let saved = 'today';
+      try { saved = localStorage.getItem('jeju-tab') || 'today'; } catch(e) {}
+      const valid = ['today','schedule','nearby','food','explore','ev','pet','checklist','info'];
+      setTab(valid.includes(saved) ? saved : 'today');
       window.scrollTo({ top: 0 });
     })();
   </script>
