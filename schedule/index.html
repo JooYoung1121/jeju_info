@@ -156,6 +156,7 @@
       <button onclick="setTab('explore')" data-tab-btn="explore" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">🧭 더 가볼 곳</button>
       <button onclick="setTab('ev')" data-tab-btn="ev" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">⚡ 전기차</button>
       <button onclick="setTab('pet')" data-tab-btn="pet" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">🐾 반려견·페리</button>
+      <button onclick="setTab('medical')" data-tab-btn="medical" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">🏥 병원·응급</button>
       <button onclick="setTab('checklist')" data-tab-btn="checklist" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">✅ 준비물</button>
       <button onclick="setTab('info')" data-tab-btn="info" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">📋 정보</button>
     </div>
@@ -259,6 +260,11 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- ===== TAB: 병원·응급 (영유아 + 반려견) ===== -->
+    <section id="medicalSection" class="tab-panel hidden" data-tab="medical">
+      <div id="medicalContent"></div>
     </section>
 
     <!-- ===== TAB: 준비물 ===== -->
@@ -1021,6 +1027,125 @@
       `).join('');
     }
 
+    // ========== 병원·응급 (영유아 + 반려견) ==========
+    function renderMedical() {
+      if (typeof MEDICAL_GUIDE === 'undefined') return;
+      const data = MEDICAL_GUIDE;
+      const cm = {
+        pink:  { bg:'bg-pink-50',  bd:'border-pink-200',  tx:'text-pink-800',  chip:'bg-pink-500',  dot:'#ec4899' },
+        red:   { bg:'bg-red-50',   bd:'border-red-200',   tx:'text-red-800',   chip:'bg-red-500',   dot:'#dc2626' },
+        green: { bg:'bg-green-50', bd:'border-green-200', tx:'text-green-800', chip:'bg-green-600', dot:'#16a34a' },
+        amber: { bg:'bg-amber-50', bd:'border-amber-200', tx:'text-amber-800', chip:'bg-amber-500', dot:'#f59e0b' },
+        blue:  { bg:'bg-blue-50',  bd:'border-blue-200',  tx:'text-blue-800',  chip:'bg-blue-500',  dot:'#3b82f6' },
+        violet:{ bg:'bg-violet-50',bd:'border-violet-200',tx:'text-violet-800',chip:'bg-violet-500',dot:'#7c3aed' },
+      };
+      let medFilter = 'all'; // all | baby | pet
+
+      function placeCard(p, col) {
+        return `
+          <div class="bg-white rounded-lg p-3 border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-1.5 flex-wrap mb-0.5">
+              <span class="text-sm font-semibold text-gray-800">${p.name}</span>
+              ${p.type ? `<span class="text-[10px] px-1.5 py-0.5 rounded ${col.bg} ${col.tx}">${p.type}</span>` : ''}
+              ${p.dist ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">🚗 ${p.dist}</span>` : ''}
+            </div>
+            ${p.address ? `<div class="text-[10px] text-gray-400">📍 ${p.address}</div>` : ''}
+            ${p.hours ? `<div class="text-[10px] text-gray-500 mt-1">🕒 ${p.hours}</div>` : ''}
+            ${p.note ? `<p class="text-[11px] text-gray-600 mt-1">${p.note}</p>` : ''}
+            <div class="flex gap-1.5 mt-2 pt-2 border-t border-gray-50">
+              ${p.phone ? `<a href="tel:${p.phone.replace(/[^\d-]/g,'')}" class="flex-1 text-center text-[11px] font-semibold px-2 py-1.5 rounded-md ${col.chip} text-white hover:opacity-90 transition-opacity">📞 ${p.phone}</a>` : ''}
+              <a href="${naverMapUrl(p.name, p.address, p.mapQuery)}" target="_blank" class="text-center text-[10px] font-medium px-2.5 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors">🗺️ 지도</a>
+              <a href="https://search.naver.com/search.naver?query=${encodeURIComponent(p.name + ' ' + (p.type||''))}" target="_blank" class="text-center text-[10px] font-medium px-2.5 py-1.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors">🔍</a>
+            </div>
+          </div>`;
+      }
+
+      function sectionBlock(sec) {
+        return `
+          <div class="rounded-xl p-4 mb-4 border ${sec.wrapBg || 'bg-white'}">
+            <h3 class="font-semibold text-gray-800 mb-1">${sec.title}</h3>
+            ${sec.tips && sec.tips.length ? `<ul class="mb-3 mt-2 space-y-1">${sec.tips.map(t => `<li class="text-[11px] text-gray-600">💡 ${t}</li>`).join('')}</ul>` : ''}
+            ${sec.groups.map(g => {
+              const col = cm[g.color] || cm.blue;
+              return `
+                <div class="mb-4 last:mb-0">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:${col.dot}"></span>
+                    <span class="text-sm font-semibold ${col.tx}">${g.name}</span>
+                    <span class="text-[10px] text-gray-400">${g.places.length}곳</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    ${g.places.map(p => placeCard(p, col)).join('')}
+                  </div>
+                </div>`;
+            }).join('')}
+          </div>`;
+      }
+
+      function render() {
+        const el = document.getElementById('medicalContent');
+        el.innerHTML = `
+          <h2 class="text-xl font-bold mb-2">${data.title}</h2>
+          <p class="text-xs text-gray-500 mb-3">${data.note}</p>
+
+          <!-- 응급 핫라인 -->
+          <div class="bg-red-50 rounded-xl p-4 mb-4 border border-red-200">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              ${data.hotlines.map(h => `
+                <a href="${h.tel ? 'tel:' + h.tel : h.url}" ${h.url && !h.tel ? 'target="_blank"' : ''} class="bg-white rounded-lg p-3 text-center border border-red-100 hover:shadow-md transition-shadow">
+                  <div class="text-xl mb-0.5">${h.icon}</div>
+                  <div class="text-[11px] font-medium text-gray-700">${h.name}</div>
+                  <div class="text-sm font-bold text-red-600">${h.label}</div>
+                </a>`).join('')}
+            </div>
+          </div>
+
+          <!-- 지도 -->
+          <p class="text-[11px] text-gray-500 mb-2">🗺️ 마커: <span style="color:#ec4899">●</span> 소아과 <span style="color:#dc2626">●</span> 응급실·24시 <span style="color:#16a34a">●</span> 약국 <span style="color:#f59e0b">●</span> 동물병원 + 🏠 숙소</p>
+          <div id="medicalMap" class="border border-gray-200 mb-4" style="height:400px;border-radius:14px;overflow:hidden;z-index:0"></div>
+
+          <!-- 필터 -->
+          <div class="flex gap-1.5 mb-4">
+            <button onclick="setMedFilter('all')" class="px-3 py-1 text-xs rounded-full ${medFilter==='all'?'bg-gray-800 text-white':'bg-white border border-gray-200 text-gray-600'}">전체</button>
+            <button onclick="setMedFilter('baby')" class="px-3 py-1 text-xs rounded-full ${medFilter==='baby'?'bg-pink-500 text-white':'bg-white border border-gray-200 text-gray-600'}">👶 영유아</button>
+            <button onclick="setMedFilter('pet')" class="px-3 py-1 text-xs rounded-full ${medFilter==='pet'?'bg-amber-500 text-white':'bg-white border border-gray-200 text-gray-600'}">🐾 동물병원</button>
+          </div>
+
+          ${(medFilter==='all'||medFilter==='baby') ? sectionBlock(data.baby) : ''}
+          ${(medFilter==='all'||medFilter==='pet') ? sectionBlock(data.pet) : ''}
+
+          <!-- 출처 -->
+          <details class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <summary class="text-xs font-medium text-gray-600 cursor-pointer">📚 출처 (${data.updated} 확인)</summary>
+            <div class="mt-2 space-y-1">
+              ${data.sources.map(s => `<a href="${s.url}" target="_blank" class="block text-[10px] text-gray-500 hover:text-blue-600 hover:underline">↗ ${s.label}</a>`).join('')}
+            </div>
+          </details>
+        `;
+
+        // 지도 마커
+        const markers = [];
+        if (typeof NEARBY_PLACES !== 'undefined' && NEARBY_PLACES.accommodation.coords) {
+          const a = NEARBY_PLACES.accommodation.coords;
+          markers.push({ lat: a[0], lng: a[1], isHome: true, popup: '<b>🏠 우리 숙소</b>' });
+        }
+        const secs = [];
+        if (medFilter==='all'||medFilter==='baby') secs.push(data.baby);
+        if (medFilter==='all'||medFilter==='pet') secs.push(data.pet);
+        secs.forEach(sec => sec.groups.forEach(g => {
+          const dot = (cm[g.color] || cm.blue).dot;
+          g.places.forEach(p => {
+            if (typeof p.lat !== 'number') return;
+            markers.push({ lat: p.lat, lng: p.lng, fill: dot,
+              popup: naverPopup(p.name, (p.type||'') + (p.phone ? '<br>📞 ' + p.phone : '') + (p.dist ? '<br>🚗 ' + p.dist : ''), p.mapQuery || (p.name + ' 제주')) });
+          });
+        }));
+        buildSpotsMap('medicalMap', 'medical', null, markers, 12);
+      }
+      window.setMedFilter = function(f) { medFilter = f; render(); };
+      render();
+    }
+
     // ========== 더 가볼 곳 (후보 풀) ==========
     function renderExplore() {
       if (typeof EXPLORE_SPOTS === 'undefined') return;
@@ -1416,6 +1541,7 @@
         { tab:'explore', ic:'🧭', label:'더 가볼 곳' },
         { tab:'ev', ic:'⚡', label:'전기차 충전' },
         { tab:'pet', ic:'🐾', label:'반려견·페리' },
+        { tab:'medical', ic:'🏥', label:'병원·응급' },
         { tab:'info', ic:'📋', label:'비상·예산' },
       ];
 
@@ -1461,17 +1587,20 @@
         </div>
 
         <!-- 날씨 스트립 -->
-        <div class="dash-card p-4 mb-4 flex items-center gap-4 flex-wrap">
-          <span class="text-2xl">🌤️</span>
-          <div>
-            <div class="text-sm font-semibold text-basalt">${w.label} · ${w.temp}</div>
-            <div class="text-[11px] text-basalt-soft">${w.desc}</div>
+        <div class="dash-card p-4 mb-4">
+          <div class="flex items-center gap-4 flex-wrap">
+            <span class="text-2xl">🌤️</span>
+            <div>
+              <div class="text-sm font-semibold text-basalt">${w.label} · ${w.temp}</div>
+              <div class="text-[11px] text-basalt-soft">${w.desc}</div>
+            </div>
+            <div class="text-[11px] text-basalt-soft sm:ml-auto sm:text-right">👕 ${clothTip}</div>
           </div>
-          <div class="text-[11px] text-basalt-soft sm:ml-auto sm:text-right">👕 ${clothTip}</div>
+          <div id="liveWx" class="hidden mt-3 pt-3 border-t border-paper-deep flex items-center gap-2 flex-wrap"></div>
         </div>
 
         <!-- 빠른 이동 -->
-        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2.5">
           ${quick.map(q => `
             <button onclick="setTab('${q.tab}')" class="dash-link dash-card py-4 flex flex-col items-center gap-1.5">
               <span class="text-xl">${q.ic}</span>
@@ -1479,6 +1608,47 @@
             </button>`).join('')}
         </div>
       `;
+      updateLiveWeather();
+    }
+
+    // ===== 실시간 날씨 (Open-Meteo — 무료·API키 불필요, 열 때마다 최신) =====
+    let _wxCache = null; // { t: epoch ms, data } — 30분 캐시
+    function _wxCodeInfo(code) {
+      // WMO weather code → 한글 (출처: open-meteo.com/en/docs)
+      if (code === 0) return { e: '☀️', d: '맑음' };
+      if (code <= 2) return { e: '🌤️', d: '구름 조금' };
+      if (code === 3) return { e: '☁️', d: '흐림' };
+      if (code <= 48) return { e: '🌫️', d: '안개' };
+      if (code <= 57) return { e: '🌦️', d: '이슬비' };
+      if (code <= 67) return { e: '🌧️', d: '비' };
+      if (code <= 77) return { e: '🌨️', d: '눈' };
+      if (code <= 82) return { e: '🌧️', d: '소나기' };
+      if (code <= 86) return { e: '🌨️', d: '소낙눈' };
+      return { e: '⛈️', d: '뇌우' };
+    }
+    async function updateLiveWeather() {
+      const el = document.getElementById('liveWx');
+      if (!el) return;
+      try {
+        if (!_wxCache || Date.now() - _wxCache.t > 30 * 60 * 1000) {
+          const acc = NEARBY_PLACES.accommodation.coords;
+          const url = `https://api.open-meteo.com/v1/forecast?latitude=${acc[0]}&longitude=${acc[1]}`
+            + '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m'
+            + '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max'
+            + '&timezone=Asia%2FSeoul&forecast_days=1&wind_speed_unit=ms';
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('wx ' + res.status);
+          _wxCache = { t: Date.now(), data: await res.json() };
+        }
+        const c = _wxCache.data.current, dl = _wxCache.data.daily;
+        const w = _wxCodeInfo(c.weather_code);
+        el.innerHTML = `
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-ocean-500 text-white">LIVE</span>
+          <span class="text-sm font-semibold text-basalt">지금 구좌 ${w.e} ${Math.round(c.temperature_2m)}°</span>
+          <span class="text-[11px] text-basalt-soft">${w.d} · 체감 ${Math.round(c.apparent_temperature)}° · 바람 ${Math.round(c.wind_speed_10m)}m/s</span>
+          <span class="text-[11px] text-basalt-soft sm:ml-auto">오늘 ${Math.round(dl.temperature_2m_min[0])}~${Math.round(dl.temperature_2m_max[0])}° · 강수확률 ${dl.precipitation_probability_max[0]}%</span>`;
+        el.classList.remove('hidden');
+      } catch (e) { /* 실패 시 조용히 — 시즌 가이드만 표시 */ }
     }
 
     // ========== 탭 ==========
@@ -1528,6 +1698,7 @@
     renderTangerineFarms();
     renderPetCare();
     renderExplore();
+    renderMedical();
     renderEV();
     renderEmergency();
     renderWeather();
@@ -1537,7 +1708,7 @@
     (function() {
       let saved = 'today';
       try { saved = localStorage.getItem('jeju-tab') || 'today'; } catch(e) {}
-      const valid = ['today','schedule','nearby','food','explore','ev','pet','checklist','info'];
+      const valid = ['today','schedule','nearby','food','explore','ev','pet','medical','checklist','info'];
       setTab(valid.includes(saved) ? saved : 'today');
       window.scrollTo({ top: 0 });
     })();
