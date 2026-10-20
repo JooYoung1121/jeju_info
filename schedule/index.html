@@ -271,8 +271,25 @@
 
     <!-- ===== TAB: 준비물 ===== -->
     <section id="checklist" class="tab-panel hidden" data-tab="checklist">
-      <h2 class="text-xl font-bold mb-5">✅ 사전 준비 체크리스트</h2>
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h2 class="text-xl font-bold">✅ 사전 준비 체크리스트</h2>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button id="clEditBtn" onclick="toggleChecklistEdit()" class="px-3 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">✏️ 편집</button>
+          <button onclick="exportChecklist()" class="px-3 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft" title="JSON 파일로 저장 (다른 기기로 옮기기)">⬇️ 내보내기</button>
+          <label class="px-3 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft cursor-pointer" title="내보낸 JSON 파일 불러오기">⬆️ 불러오기<input type="file" accept="application/json,.json" class="hidden" onchange="importChecklist(this)"></label>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 mb-4">
+        <div class="flex items-center justify-between text-xs text-gray-600 mb-1.5"><span>전체 진행률</span><span id="clProgressText"></span></div>
+        <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div id="clProgressBar" class="h-full bg-ocean-500 transition-all" style="width:0%"></div></div>
+        <p class="text-[11px] text-gray-400 mt-2">체크·추가·수정·삭제 내용은 이 브라우저에 자동 저장돼요. 다른 기기와 맞추려면 내보내기 → 불러오기를 쓰세요.</p>
+      </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="checklistGrid"></div>
+      <div id="clEditTools" class="hidden mt-4 flex flex-wrap gap-2">
+        <button onclick="addChecklistCategory()" class="px-3 py-2 text-sm rounded-lg bg-ocean-500 text-white hover:opacity-90">➕ 카테고리 추가</button>
+        <button onclick="uncheckAllChecklist()" class="px-3 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">☐ 체크 모두 해제</button>
+        <button onclick="resetChecklist()" class="px-3 py-2 text-sm rounded-lg bg-red-50 text-red-600 hover:bg-red-100">↺ 기본 목록으로 초기화</button>
+      </div>
     </section>
 
     <!-- ===== TAB: 정보 (비상·날씨·예산) ===== -->
@@ -331,39 +348,168 @@
     let currentFilter = 'all';
     let selectedDay = null; // 현재 열린 상세 패널의 day 번호
 
-    // ========== 체크리스트 ==========
+    // ========== 체크리스트 (사용자 편집 가능) ==========
+    // 전체 목록(카테고리+항목+체크상태)을 localStorage에 저장. 첫 방문 시 data.js 기본값 + 구버전(jeju-checklist) 체크상태로 시드.
+    const CHECKLIST_KEY = 'jeju-checklist-v2';
+    const _CL_DEFAULT = JSON.stringify(CHECKLISTS);
+    let clEditMode = false;
+    function _escHtml(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function _setChecklists(obj) {
+      for (const k of Object.keys(CHECKLISTS)) delete CHECKLISTS[k];
+      Object.assign(CHECKLISTS, obj);
+    }
+    function _validChecklists(obj) {
+      return obj && typeof obj === 'object' && !Array.isArray(obj) &&
+        Object.values(obj).every(l => l && typeof l.title === 'string' && Array.isArray(l.items) &&
+          l.items.every(it => it && typeof it.text === 'string'));
+    }
     function loadChecklistState() {
-      const saved = localStorage.getItem('jeju-checklist');
-      if (!saved) return;
-      const state = JSON.parse(saved);
-      for (const [key, checks] of Object.entries(state)) {
-        if (CHECKLISTS[key]) checks.forEach((c, i) => { if (CHECKLISTS[key].items[i]) CHECKLISTS[key].items[i].checked = c; });
-      }
+      try {
+        const v2 = localStorage.getItem(CHECKLIST_KEY);
+        if (v2) { const obj = JSON.parse(v2); if (_validChecklists(obj)) { _setChecklists(obj); return; } }
+        const legacy = localStorage.getItem('jeju-checklist');
+        if (legacy) {
+          const state = JSON.parse(legacy);
+          for (const [key, checks] of Object.entries(state)) {
+            if (CHECKLISTS[key]) checks.forEach((c, i) => { if (CHECKLISTS[key].items[i]) CHECKLISTS[key].items[i].checked = c; });
+          }
+        }
+      } catch (e) {}
     }
     function saveChecklistState() {
-      const state = {};
-      for (const [key, list] of Object.entries(CHECKLISTS)) state[key] = list.items.map(item => item.checked);
-      localStorage.setItem('jeju-checklist', JSON.stringify(state));
+      try { localStorage.setItem(CHECKLIST_KEY, JSON.stringify(CHECKLISTS)); } catch (e) {}
     }
-    function toggleCheckItem(cat, idx) { CHECKLISTS[cat].items[idx].checked = !CHECKLISTS[cat].items[idx].checked; saveChecklistState(); }
+    function toggleCheckItem(cat, idx) {
+      CHECKLISTS[cat].items[idx].checked = !CHECKLISTS[cat].items[idx].checked;
+      saveChecklistState(); renderChecklists();
+    }
+    function toggleChecklistEdit() { clEditMode = !clEditMode; renderChecklists(); }
+    function addChecklistItem(cat, input) {
+      const text = input.value.trim();
+      if (!text) return;
+      CHECKLISTS[cat].items.push({ text, checked: false });
+      saveChecklistState(); renderChecklists();
+      const next = document.querySelector(`[data-cl-add="${cat}"]`);
+      if (next) next.focus();
+    }
+    function editChecklistItem(cat, idx, input) {
+      const text = input.value.trim();
+      if (!text) { input.value = CHECKLISTS[cat].items[idx].text; return; }
+      CHECKLISTS[cat].items[idx].text = text; saveChecklistState(); updateChecklistProgress();
+    }
+    function deleteChecklistItem(cat, idx) {
+      CHECKLISTS[cat].items.splice(idx, 1); saveChecklistState(); renderChecklists();
+    }
+    function moveChecklistItem(cat, idx, dir) {
+      const items = CHECKLISTS[cat].items, j = idx + dir;
+      if (j < 0 || j >= items.length) return;
+      [items[idx], items[j]] = [items[j], items[idx]];
+      saveChecklistState(); renderChecklists();
+    }
+    function renameChecklistCategory(cat, input) {
+      const title = input.value.trim();
+      if (!title) { input.value = CHECKLISTS[cat].title; return; }
+      CHECKLISTS[cat].title = title; saveChecklistState();
+    }
+    function setChecklistIcon(cat, input) {
+      CHECKLISTS[cat].icon = input.value.trim() || '📌'; saveChecklistState();
+    }
+    function deleteChecklistCategory(cat) {
+      const l = CHECKLISTS[cat];
+      if (!confirm(`'${l.title}' 카테고리와 항목 ${l.items.length}개를 삭제할까요?`)) return;
+      delete CHECKLISTS[cat]; saveChecklistState(); renderChecklists();
+    }
+    function addChecklistCategory() {
+      const title = (prompt('새 카테고리 이름', '') || '').trim();
+      if (!title) return;
+      CHECKLISTS['c' + Date.now().toString(36)] = { title, icon: '📌', items: [] };
+      saveChecklistState(); renderChecklists();
+    }
+    function uncheckAllChecklist() {
+      if (!confirm('모든 항목의 체크를 해제할까요?')) return;
+      for (const l of Object.values(CHECKLISTS)) l.items.forEach(it => it.checked = false);
+      saveChecklistState(); renderChecklists();
+    }
+    function resetChecklist() {
+      if (!confirm('직접 추가·수정한 내용이 모두 사라지고 기본 목록으로 돌아갑니다. 계속할까요?\n(필요하면 먼저 ⬇️ 내보내기로 백업하세요)')) return;
+      _setChecklists(JSON.parse(_CL_DEFAULT)); saveChecklistState(); renderChecklists();
+    }
+    function exportChecklist() {
+      const blob = new Blob([JSON.stringify(CHECKLISTS, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `jeju-checklist-${_isoToday()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    function importChecklist(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const obj = JSON.parse(reader.result);
+          if (!_validChecklists(obj)) throw new Error('형식 오류');
+          if (!confirm('불러온 목록으로 현재 체크리스트를 덮어쓸까요?')) return;
+          _setChecklists(obj); saveChecklistState(); renderChecklists();
+        } catch (e) { alert('체크리스트 파일을 읽지 못했어요: ' + e.message); }
+        finally { input.value = ''; }
+      };
+      reader.readAsText(file);
+    }
+    function updateChecklistProgress() {
+      const { total, done, pct } = checklistStats();
+      const t = document.getElementById('clProgressText'), b = document.getElementById('clProgressBar');
+      if (t) t.textContent = `${done} / ${total} (${pct}%)`;
+      if (b) b.style.width = pct + '%';
+    }
     function renderChecklists() {
       const grid = document.getElementById('checklistGrid');
-      grid.innerHTML = '';
-      for (const [key, list] of Object.entries(CHECKLISTS)) {
-        grid.innerHTML += `
-          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <h3 class="font-semibold mb-2">${list.icon} ${list.title}</h3>
-            <div class="space-y-1.5">
-              ${list.items.map((item, i) => `
-                <label class="checklist-item flex items-start gap-2 cursor-pointer">
-                  <input type="checkbox" class="mt-0.5 rounded border-gray-300 text-ocean-500" onchange="toggleCheckItem('${key}',${i})" ${item.checked?'checked':''}>
-                  <span class="text-sm text-gray-700">${item.text}</span>
-                </label>
-              `).join('')}
-            </div>
-          </div>
-        `;
+      const btn = document.getElementById('clEditBtn');
+      btn.textContent = clEditMode ? '✔ 편집 완료' : '✏️ 편집';
+      btn.classList.toggle('bg-ocean-500', clEditMode); btn.classList.toggle('text-white', clEditMode);
+      btn.classList.toggle('bg-paper-deep', !clEditMode); btn.classList.toggle('text-basalt-soft', !clEditMode);
+      document.getElementById('clEditTools').classList.toggle('hidden', !clEditMode);
+      const entries = Object.entries(CHECKLISTS);
+      if (!entries.length) {
+        grid.innerHTML = `<div class="sm:col-span-2 text-center text-sm text-gray-500 bg-white rounded-xl p-6 border border-dashed border-gray-300">카테고리가 없어요. ✏️ 편집 → ➕ 카테고리 추가로 시작하세요.</div>`;
+        updateChecklistProgress(); return;
       }
+      grid.innerHTML = entries.map(([key, list]) => {
+        const done = list.items.filter(it => it.checked).length;
+        const head = clEditMode ? `
+            <div class="flex items-center gap-1.5 mb-2">
+              <input value="${_escHtml(list.icon || '')}" maxlength="4" class="w-10 text-center border border-gray-200 rounded px-1 py-1 text-sm" onchange="setChecklistIcon('${key}',this)" aria-label="아이콘">
+              <input value="${_escHtml(list.title)}" class="flex-1 min-w-0 border border-gray-200 rounded px-2 py-1 text-sm font-semibold" onchange="renameChecklistCategory('${key}',this)" aria-label="카테고리 이름">
+              <button onclick="deleteChecklistCategory('${key}')" class="shrink-0 px-2 py-1 text-xs rounded bg-red-50 text-red-600 hover:bg-red-100" title="카테고리 삭제">🗑</button>
+            </div>` : `
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <h3 class="font-semibold">${_escHtml(list.icon || '')} ${_escHtml(list.title)}</h3>
+              <span class="shrink-0 text-[11px] px-2 py-0.5 rounded-full ${done === list.items.length && list.items.length ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">${done}/${list.items.length}</span>
+            </div>`;
+        const items = list.items.map((item, i) => clEditMode ? `
+                <div class="flex items-center gap-1">
+                  <input type="checkbox" class="shrink-0 rounded border-gray-300 text-ocean-500" onchange="toggleCheckItem('${key}',${i})" ${item.checked ? 'checked' : ''}>
+                  <input value="${_escHtml(item.text)}" class="flex-1 min-w-0 border border-gray-200 rounded px-2 py-1 text-sm" onchange="editChecklistItem('${key}',${i},this)" onkeydown="if(event.key==='Enter')this.blur()" aria-label="항목 수정">
+                  <button onclick="moveChecklistItem('${key}',${i},-1)" class="shrink-0 w-6 h-7 text-xs text-gray-400 hover:text-gray-700 disabled:opacity-30" ${i === 0 ? 'disabled' : ''} title="위로">▲</button>
+                  <button onclick="moveChecklistItem('${key}',${i},1)" class="shrink-0 w-6 h-7 text-xs text-gray-400 hover:text-gray-700 disabled:opacity-30" ${i === list.items.length - 1 ? 'disabled' : ''} title="아래로">▼</button>
+                  <button onclick="deleteChecklistItem('${key}',${i})" class="shrink-0 w-7 h-7 text-sm rounded text-red-500 hover:bg-red-50" title="삭제">✕</button>
+                </div>` : `
+                <label class="checklist-item flex items-start gap-2 cursor-pointer">
+                  <input type="checkbox" class="mt-0.5 rounded border-gray-300 text-ocean-500" onchange="toggleCheckItem('${key}',${i})" ${item.checked ? 'checked' : ''}>
+                  <span class="text-sm text-gray-700">${_escHtml(item.text)}</span>
+                </label>`).join('');
+        return `
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            ${head}
+            <div class="space-y-1.5">${items || '<p class="text-xs text-gray-400">항목이 없어요</p>'}</div>
+            <form class="flex gap-1.5 mt-3" onsubmit="event.preventDefault(); addChecklistItem('${key}', this.elements.t)">
+              <input name="t" data-cl-add="${key}" placeholder="+ 준비물 추가" class="flex-1 min-w-0 border border-gray-200 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-ocean-500">
+              <button class="shrink-0 px-3 py-1.5 text-xs rounded bg-ocean-500 text-white hover:opacity-90">추가</button>
+            </form>
+          </div>`;
+      }).join('');
+      updateChecklistProgress();
     }
 
     // ========== 일정 렌더링 (컴팩트 칩 + 전체 너비 상세 패널) ==========
