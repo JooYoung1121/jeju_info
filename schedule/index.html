@@ -66,6 +66,18 @@
     .dash-link:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(43,42,40,0.10); }
     @media (prefers-reduced-motion: reduce) { .prog-fill, .dash-link, .day-chip { transition: none; } }
 
+    /* 달력 (노션 캘린더풍) */
+    .cal-cell { min-height: 92px; transition: background-color .12s ease; cursor: pointer; }
+    .cal-cell:hover { background: #faf8f3; }
+    .cal-cell.is-selected { box-shadow: inset 0 0 0 2px #2F6E6A; background: #f3f8f7; }
+    .cal-cell.is-dim { opacity: .3; }
+    .cal-pill { display: block; border-radius: 4px; padding: 1px 4px; font-size: 10px; line-height: 1.35; overflow: hidden; }
+    .cal-theme { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; }
+    .cal-evt { white-space: nowrap; text-overflow: ellipsis; }
+    @media (min-width: 640px) { .cal-cell { min-height: 118px; } .cal-pill { font-size: 11px; padding: 2px 6px; } }
+    .agenda-row { transition: background-color .12s ease; cursor: pointer; }
+    .agenda-row:hover { background: #faf8f3; }
+
     /* 상세 패널 */
     .detail-panel { animation: slideDown 0.3s ease; }
     @keyframes slideDown { from { opacity:0; transform: translateY(-8px); } to { opacity:1; transform: translateY(0); } }
@@ -173,8 +185,18 @@
 
     <!-- ===== TAB: 일정 ===== -->
     <section id="schedule" class="tab-panel hidden" data-tab="schedule">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
         <h2 class="text-xl font-bold flex items-center gap-2">📅 30일 일정</h2>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button data-sync-badge onclick="openShareModal()" class="px-3 py-1.5 text-xs rounded-full font-medium bg-gray-100 text-gray-600">⚪ 이 기기만</button>
+          <div class="inline-flex p-0.5 rounded-full bg-paper-deep" role="tablist" aria-label="보기 방식">
+            <button data-sview="calendar" onclick="setSchedView('calendar')" class="sview-btn px-3 py-1 text-xs rounded-full">🗓 달력</button>
+            <button data-sview="list" onclick="setSchedView('list')" class="sview-btn px-3 py-1 text-xs rounded-full">📋 목록</button>
+          </div>
+          <button onclick="openEventModal()" class="px-3 py-1.5 text-xs rounded-full bg-jeju-500 text-white font-semibold hover:bg-jeju-600">＋ 일정 추가</button>
+          <button onclick="exportSchedule()" class="px-2.5 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft" title="내 일정 JSON 백업">⬇️</button>
+          <label class="px-2.5 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft cursor-pointer" title="백업 파일 불러오기">⬆️<input type="file" accept="application/json,.json" class="hidden" onchange="importSchedule(this)"></label>
+        </div>
       </div>
 
       <!-- Filter -->
@@ -191,7 +213,48 @@
       </div>
 
       <div id="scheduleContainer"></div>
+      <div id="calDetail" class="mt-4 scroll-mt-28"></div>
     </section>
+
+    <!-- 가족 공유 모달 -->
+    <div id="shareModal" class="hidden fixed inset-0 z-[60] bg-black/40 flex items-end sm:items-center justify-center" onclick="if(event.target===this)this.classList.add('hidden')">
+      <div class="w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg">👨‍👩‍👧 가족 실시간 공유</h3>
+          <button type="button" onclick="document.getElementById('shareModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-2xl leading-none" aria-label="닫기">&times;</button>
+        </div>
+        <div id="shareModalBody" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- 일정 추가/수정 모달 -->
+    <div id="eventModal" class="hidden fixed inset-0 z-[60] bg-black/40 flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target===this)closeEventModal()">
+      <form id="eventForm" onsubmit="event.preventDefault(); saveEventFromForm()" class="w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-5 space-y-3 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <h3 id="eventModalTitle" class="font-bold text-lg">일정 추가</h3>
+          <button type="button" onclick="closeEventModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none" aria-label="닫기">&times;</button>
+        </div>
+        <input type="hidden" name="id">
+        <label class="block"><span class="text-xs font-medium text-gray-500">제목</span>
+          <input name="title" required maxlength="80" placeholder="예: 소아과 예약, 감귤따기" class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ocean-500"></label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="block"><span class="text-xs font-medium text-gray-500">날짜</span>
+            <input name="date" type="date" required class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ocean-500"></label>
+          <label class="block"><span class="text-xs font-medium text-gray-500">시간 (선택)</span>
+            <input name="time" type="time" class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ocean-500"></label>
+        </div>
+        <div><span class="text-xs font-medium text-gray-500">색상</span>
+          <div id="eventColorPicker" class="mt-1 flex flex-wrap gap-1.5"></div></div>
+        <label class="block"><span class="text-xs font-medium text-gray-500">메모 (선택)</span>
+          <textarea name="memo" rows="3" maxlength="500" placeholder="주소, 예약번호, 준비물 등" class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ocean-500"></textarea></label>
+        <div class="flex items-center gap-2 pt-1">
+          <button type="button" id="eventDeleteBtn" onclick="deleteEventFromForm()" class="hidden px-3 py-2 text-sm rounded-lg bg-red-50 text-red-600 hover:bg-red-100">삭제</button>
+          <div class="flex-1"></div>
+          <button type="button" onclick="closeEventModal()" class="px-4 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">취소</button>
+          <button class="px-4 py-2 text-sm rounded-lg bg-ocean-500 text-white font-semibold hover:bg-ocean-600">저장</button>
+        </div>
+      </form>
+    </div>
 
     <!-- ===== TAB: 숙소주변 ===== -->
     <section id="nearbySection" class="tab-panel hidden" data-tab="nearby">
@@ -274,6 +337,7 @@
       <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h2 class="text-xl font-bold">✅ 사전 준비 체크리스트</h2>
         <div class="flex flex-wrap items-center gap-1.5">
+          <button data-sync-badge onclick="openShareModal()" class="px-3 py-1.5 text-xs rounded-full font-medium bg-gray-100 text-gray-600">⚪ 이 기기만</button>
           <button id="clEditBtn" onclick="toggleChecklistEdit()" class="px-3 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">✏️ 편집</button>
           <button onclick="exportChecklist()" class="px-3 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft" title="JSON 파일로 저장 (다른 기기로 옮기기)">⬇️ 내보내기</button>
           <label class="px-3 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft cursor-pointer" title="내보낸 JSON 파일 불러오기">⬆️ 불러오기<input type="file" accept="application/json,.json" class="hidden" onchange="importChecklist(this)"></label>
@@ -282,7 +346,7 @@
       <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 mb-4">
         <div class="flex items-center justify-between text-xs text-gray-600 mb-1.5"><span>전체 진행률</span><span id="clProgressText"></span></div>
         <div class="h-2 bg-gray-100 rounded-full overflow-hidden"><div id="clProgressBar" class="h-full bg-ocean-500 transition-all" style="width:0%"></div></div>
-        <p class="text-[11px] text-gray-400 mt-2">체크·추가·수정·삭제 내용은 이 브라우저에 자동 저장돼요. 다른 기기와 맞추려면 내보내기 → 불러오기를 쓰세요.</p>
+        <p class="text-[11px] text-gray-400 mt-2">체크·추가·수정·삭제 내용은 자동 저장돼요. 위의 공유 버튼으로 가족 코드를 연결하면 아내·남편 폰에서 실시간으로 같이 보여요.</p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="checklistGrid"></div>
       <div id="clEditTools" class="hidden mt-4 flex flex-wrap gap-2">
@@ -346,7 +410,6 @@
   <script>
     // ========== State ==========
     let currentFilter = 'all';
-    let selectedDay = null; // 현재 열린 상세 패널의 day 번호
 
     // ========== 체크리스트 (사용자 편집 가능) ==========
     // 전체 목록(카테고리+항목+체크상태)을 localStorage에 저장. 첫 방문 시 data.js 기본값 + 구버전(jeju-checklist) 체크상태로 시드.
@@ -380,6 +443,7 @@
     }
     function saveChecklistState() {
       try { localStorage.setItem(CHECKLIST_KEY, JSON.stringify(CHECKLISTS)); } catch (e) {}
+      window.syncPush && window.syncPush();
     }
     function toggleCheckItem(cat, idx) {
       CHECKLISTS[cat].items[idx].checked = !CHECKLISTS[cat].items[idx].checked;
@@ -540,87 +604,284 @@
       return 'border-l-ocean-400';
     }
 
-    function renderSchedule() {
-      const container = document.getElementById('scheduleContainer');
-      container.innerHTML = '';
-      let curWeek = -1;
+    // ========== 달력 일정 + 내 일정 (localStorage) ==========
+    const EVENTS_KEY = 'jeju-events-v1', DAY_OVR_KEY = 'jeju-day-override-v1', SVIEW_KEY = 'jeju-sched-view';
+    const EVENT_COLORS = {
+      jeju:  { label: '감귤', pill: 'bg-jeju-100 text-jeju-700', dot: 'bg-jeju-500' },
+      ocean: { label: '청록', pill: 'bg-ocean-100 text-ocean-700', dot: 'bg-ocean-500' },
+      pink:  { label: '아기', pill: 'bg-pink-100 text-pink-700', dot: 'bg-pink-500' },
+      green: { label: '강아지', pill: 'bg-green-100 text-green-700', dot: 'bg-green-500' },
+      blue:  { label: '관광', pill: 'bg-blue-100 text-blue-700', dot: 'bg-blue-500' },
+      gray:  { label: '기타', pill: 'bg-gray-100 text-gray-700', dot: 'bg-gray-400' },
+    };
+    const CAT_PRIORITY = ['sightseeing', 'food', 'cafe', 'baby', 'dog', 'checklist'];
+    let userEvents = [], dayOverrides = {}, schedView = 'calendar', selectedDate = null;
 
+    function loadScheduleUserData() {
+      try { const e = JSON.parse(localStorage.getItem(EVENTS_KEY) || '[]'); if (Array.isArray(e)) userEvents = e.filter(x => x && x.date && x.title); } catch (e) {}
+      try { const o = JSON.parse(localStorage.getItem(DAY_OVR_KEY) || '{}'); if (o && typeof o === 'object') dayOverrides = o; } catch (e) {}
+      try { const v = localStorage.getItem(SVIEW_KEY); if (v === 'list' || v === 'calendar') schedView = v; } catch (e) {}
+      const today = _isoToday();
+      if (today >= TRIP_INFO.startDate && today <= TRIP_INFO.endDate) selectedDate = today;
+    }
+    function saveScheduleUserData() {
+      try {
+        localStorage.setItem(EVENTS_KEY, JSON.stringify(userEvents));
+        localStorage.setItem(DAY_OVR_KEY, JSON.stringify(dayOverrides));
+      } catch (e) {}
+      window.syncPush && window.syncPush();
+    }
+    function _toISO(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+    function calendarDates() {
+      const s = _parseISO(TRIP_INFO.startDate), e = _parseISO(TRIP_INFO.endDate);
+      s.setDate(s.getDate() - s.getDay()); e.setDate(e.getDate() + (6 - e.getDay()));
+      const out = [];
+      for (const d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) out.push(_toISO(d));
+      return out;
+    }
+    function dayByDate(iso) { return SCHEDULE.find(s => s.date === iso); }
+    function eventsOn(iso) {
+      return userEvents.filter(e => e.date === iso).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+    }
+    function themeOf(d) { return (dayOverrides[d.day] && dayOverrides[d.day].theme) || d.theme; }
+    function primaryCat(cats) { return CAT_PRIORITY.find(c => cats.includes(c)) || cats[0]; }
+    function isMarketDay(iso) { const n = +iso.slice(8); return n % 5 === 0; } // 세화오일장: 끝자리 5·0일
+    function _dow(iso) { return ['일','월','화','수','목','금','토'][_parseISO(iso).getDay()]; }
+
+    function setSchedView(v) {
+      schedView = v;
+      try { localStorage.setItem(SVIEW_KEY, v); } catch (e) {}
+      renderSchedule();
+    }
+
+    function renderSchedule() {
+      document.querySelectorAll('.sview-btn').forEach(b => {
+        const on = b.dataset.sview === schedView;
+        b.className = 'sview-btn px-3 py-1 text-xs rounded-full ' + (on ? 'bg-white text-basalt font-semibold shadow-sm' : 'text-basalt-soft');
+      });
+      const container = document.getElementById('scheduleContainer');
+      container.innerHTML = schedView === 'list' ? renderAgenda() : renderCalendar();
+      renderDetailPanel(selectedDate);
+    }
+
+    function renderCalendar() {
+      const today = _isoToday();
+      const dates = calendarDates();
+      const cells = dates.map((iso, i) => {
+        const d = dayByDate(iso);
+        const evs = eventsOn(iso);
+        const inTrip = !!d;
+        const dateNum = +iso.slice(8), month = +iso.slice(5, 7);
+        const showMonth = i === 0 || dateNum === 1;
+        const col = i % 7;
+        const match = !d || currentFilter === 'all' || d.categories.includes(currentFilter);
+        const numCls = iso === today ? 'bg-jeju-500 text-white rounded-full w-6 h-6 inline-flex items-center justify-center'
+          : col === 0 ? 'text-red-500' : col === 6 ? 'text-blue-500' : 'text-basalt';
+        const maxEv = 3;
+        const evHtml = evs.slice(0, maxEv).map(e => {
+          const c = EVENT_COLORS[e.color] || EVENT_COLORS.jeju;
+          return `<span class="cal-pill cal-evt ${c.pill} ${e.done ? 'line-through opacity-60' : ''}" title="${_escHtml((e.time ? e.time + ' ' : '') + e.title)}">${e.time ? `<b class="font-semibold">${e.time}</b> ` : ''}${_escHtml(e.title)}</span>`;
+        }).join('');
+        const more = evs.length > maxEv ? `<span class="block text-[10px] text-gray-400 px-1">+${evs.length - maxEv}개</span>` : '';
+        const theme = d ? `<span class="cal-pill cal-theme ${CATEGORIES[primaryCat(d.categories)]?.color || 'bg-gray-100'}" title="${_escHtml(themeOf(d))}">${_escHtml(themeOf(d))}</span>` : '';
+        return `
+          <div class="cal-cell relative p-1 sm:p-1.5 border-b border-gray-100 ${col < 6 ? 'border-r' : ''} ${inTrip ? 'bg-white' : 'bg-gray-50/70'} ${selectedDate === iso ? 'is-selected' : ''} ${match ? '' : 'is-dim'}"
+               onclick="selectDate('${iso}')" role="button" tabindex="0" aria-label="${month}월 ${dateNum}일${d ? ' ' + _escHtml(themeOf(d)) : ''}${evs.length ? ', 내 일정 ' + evs.length + '개' : ''}"
+               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectDate('${iso}')}">
+            <div class="flex items-center justify-between mb-0.5 min-h-[24px]">
+              <span class="text-[11px] sm:text-xs font-semibold tnum ${inTrip ? '' : 'opacity-40'}">
+                ${showMonth ? `<span class="text-basalt-soft font-normal mr-0.5">${month}/</span>` : ''}<span class="${numCls}">${dateNum}</span>
+              </span>
+              <span class="flex items-center gap-0.5">
+                ${inTrip && isMarketDay(iso) ? '<span class="hidden sm:inline text-[10px]" title="세화오일장 (끝자리 5·0일)">🧺</span><span class="sm:hidden inline-block w-1.5 h-1.5 rounded-full bg-yellow-500" title="세화오일장"></span>' : ''}
+                ${d ? `<span class="hidden sm:inline text-[10px] text-gray-400 tnum">D${d.day}</span>` : ''}
+              </span>
+            </div>
+            <div class="space-y-0.5">${theme}${evHtml}${more}</div>
+          </div>`;
+      }).join('');
+      const evCount = userEvents.length;
+      return `
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+            <div class="font-display text-lg sm:text-xl font-bold text-basalt">2026년 10월 – 11월</div>
+            <div class="text-[11px] text-basalt-soft">여행 ${SCHEDULE.length}일 · 내 일정 ${evCount}개</div>
+          </div>
+          <div class="grid grid-cols-7 text-[11px] font-medium text-center border-b border-gray-100 bg-paper-card">
+            ${['일','월','화','수','목','금','토'].map((w, i) => `<div class="py-1.5 ${i === 0 ? 'text-red-500' : i === 6 ? 'text-blue-500' : 'text-basalt-soft'}">${w}</div>`).join('')}
+          </div>
+          <div class="grid grid-cols-7">${cells}</div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-[10px] text-basalt-soft border-t border-gray-100 bg-paper-card">
+            ${CAT_PRIORITY.filter(c => CATEGORIES[c]).map(c => `<span class="inline-flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm ${CATEGORIES[c].color.split(' ')[0]}"></span>${CATEGORIES[c].label}</span>`).join('')}
+            <span>🧺 세화오일장</span>
+            <span class="ml-auto">날짜를 누르면 상세 일정 · 내 일정 추가</span>
+          </div>
+        </div>`;
+    }
+
+    function renderAgenda() {
+      const today = _isoToday();
+      let html = '', curWeek = -1;
       SCHEDULE.forEach(d => {
         const wi = getWeekIndex(d.day);
-
-        // 주차 헤더 + 그리드 + 상세패널 컨테이너
         if (wi !== curWeek) {
+          if (curWeek !== -1) html += '</div>';
           curWeek = wi;
           const w = WEEKS[wi];
-          container.innerHTML += `
-            <div class="mb-6" id="weekBlock-${wi}">
-              <div class="flex items-center gap-2 mb-3 ${wi > 0 ? 'mt-4' : ''}">
-                <span class="bg-ocean-500 text-white px-3 py-1 rounded-full text-xs font-semibold">${w.label}</span>
-                <span class="text-gray-400 text-xs">${w.dates}</span>
-                <span class="text-gray-400 text-xs hidden sm:inline">| ${w.subtitle}</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2" id="weekGrid-${wi}"></div>
-              <div id="weekDetail-${wi}"></div>
+          html += `
+            <div class="flex items-baseline gap-2 mt-5 mb-2 first:mt-0 px-1">
+              <span class="shrink-0 whitespace-nowrap font-display text-base font-bold text-basalt">${w.label}</span>
+              <span class="text-xs text-basalt-soft">${w.dates} · ${w.subtitle}</span>
             </div>
-          `;
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm divide-y divide-gray-100 overflow-hidden">`;
         }
-      });
-
-      // 칩 렌더링
-      SCHEDULE.forEach(d => {
-        const wi = getWeekIndex(d.day);
-        const grid = document.getElementById(`weekGrid-${wi}`);
-        const matchesFilter = currentFilter === 'all' || d.categories.includes(currentFilter);
-        const isSelected = selectedDay === d.day;
-        const dateStr = d.date.split('-').slice(1).join('/');
-
-        const chip = document.createElement('div');
-        chip.className = `day-chip rounded-lg border-l-4 ${getBorderColor(d.categories)} bg-white border border-gray-100 shadow-sm p-2.5 ${matchesFilter ? '' : 'fade-out'} ${isSelected ? 'selected' : ''}`;
-        chip.id = `chip-${d.day}`;
-        chip.onclick = () => selectDay(d.day);
-
-        var lv = d.travelInfo ? getFatigueLevel(d.travelInfo.fatigue) : 'ok';
-        var fatigueIcon = lv === 'critical' ? '<span class="text-[9px] bg-red-100 text-red-700 rounded px-1" title="피로도 최고">🔴</span>' :
-          lv === 'high' ? '<span class="text-[9px] bg-orange-100 text-orange-700 rounded px-1" title="피로도 고">🟠</span>' :
-          lv === 'warn' ? '<span class="text-[9px] bg-yellow-100 text-yellow-700 rounded px-1" title="피로도 주의">🟡</span>' : '';
-
-        chip.innerHTML = `
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] font-bold ${getDayOfWeekColor(d.dayOfWeek)}">D${d.day}</span>
-            <span class="text-[10px] text-gray-400">${dateStr}(${d.dayOfWeek})</span>
-          </div>
-          <div class="font-semibold text-xs mb-1.5 leading-tight truncate" title="${d.theme}">${d.theme}</div>
-          <div class="flex items-center justify-between">
-            <div class="flex gap-0.5">${getCatDots(d.categories)}${fatigueIcon}</div>
-            <div class="flex gap-0.5 text-[10px]">
-              ${d.babyFriendly ? '👶' : '<span class="opacity-20">👶</span>'}
-              ${d.dogFriendly ? '🐶' : '<span class="opacity-20">🐶</span>'}
+        const evs = eventsOn(d.date);
+        const match = currentFilter === 'all' || d.categories.includes(currentFilter);
+        const dow = d.dayOfWeek;
+        const slots = [['🌅', d.schedule.morning], ['☀️', d.schedule.afternoon], ['🌙', d.schedule.evening]].filter(x => x[1]);
+        html += `
+          <div class="agenda-row flex gap-3 p-3 sm:p-4 ${selectedDate === d.date ? 'bg-ocean-50' : ''} ${match ? '' : 'opacity-30'}" onclick="selectDate('${d.date}')">
+            <div class="shrink-0 w-12 text-center">
+              <div class="text-[10px] font-semibold ${getDayOfWeekColor(dow)}">${dow}</div>
+              <div class="font-display text-2xl font-bold leading-none tnum ${d.date === today ? 'text-jeju-600' : 'text-basalt'}">${+d.date.slice(8)}</div>
+              <div class="text-[10px] text-gray-400 mt-0.5">${+d.date.slice(5, 7)}월 · D${d.day}</div>
             </div>
-          </div>
-        `;
-
-        grid.appendChild(chip);
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                <span class="font-semibold text-sm text-basalt">${_escHtml(themeOf(d))}</span>
+                ${d.categories.map(c => CATEGORIES[c] ? `<span class="text-[10px] rounded px-1.5 py-0.5 ${CATEGORIES[c].color}">${CATEGORIES[c].icon} ${CATEGORIES[c].label}</span>` : '').join('')}
+                ${isMarketDay(d.date) ? '<span class="text-[10px] rounded px-1.5 py-0.5 bg-yellow-50 text-yellow-800">🧺 오일장</span>' : ''}
+              </div>
+              ${evs.length ? `<div class="flex flex-col gap-0.5 mb-1.5">${evs.map(e => {
+                const c = EVENT_COLORS[e.color] || EVENT_COLORS.jeju;
+                return `<div class="flex items-center gap-1.5 text-xs ${e.done ? 'line-through text-gray-400' : 'text-basalt'}"><span class="inline-block w-2 h-2 rounded-full ${c.dot}"></span>${e.time ? `<span class="tnum font-semibold">${e.time}</span>` : ''}<span class="truncate">${_escHtml(e.title)}</span></div>`;
+              }).join('')}</div>` : ''}
+              <div class="space-y-0.5">${slots.map(([ic, sl]) => `<p class="text-xs text-basalt-soft truncate">${ic} ${sl.title}</p>`).join('')}</div>
+            </div>
+          </div>`;
       });
-
-      // 이미 선택된 날이 있으면 상세 패널 렌더링
-      if (selectedDay !== null) renderDetailPanel(selectedDay);
+      html += '</div>';
+      return html;
     }
 
-    function selectDay(day) {
-      // 같은 날 다시 클릭 → 닫기
-      if (selectedDay === day) {
-        selectedDay = null;
-        renderSchedule();
-        return;
-      }
-      selectedDay = day;
+    function selectDate(iso, opts) {
+      selectedDate = iso;
       renderSchedule();
-      // 상세 패널로 스크롤
-      setTimeout(() => {
-        const panel = document.getElementById('detailPanel');
-        if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (!opts || opts.scroll !== false) setTimeout(() => {
+        const panel = document.getElementById('calDetail');
+        if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 50);
     }
+    // 기존 호출부 호환 (day 번호 기반)
+    function selectDay(day) { const d = SCHEDULE.find(s => s.day === day); if (d) selectDate(d.date); }
+    function closeDetail() { selectedDate = null; renderSchedule(); }
+
+    function renderMyEvents(iso) {
+      const evs = eventsOn(iso);
+      return `
+        <div class="px-4 sm:px-5 py-4 border-b border-gray-100 bg-jeju-50/40">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-xs font-semibold text-jeju-700">📌 내 일정 ${evs.length ? `<span class="text-basalt-soft font-normal">${evs.length}개</span>` : ''}</div>
+            <button onclick="openEventModal(null,'${iso}')" class="text-xs px-3 py-1 rounded-full bg-jeju-500 text-white font-semibold hover:bg-jeju-600">＋ 추가</button>
+          </div>
+          ${evs.length ? `<div class="space-y-1.5">${evs.map(e => {
+            const c = EVENT_COLORS[e.color] || EVENT_COLORS.jeju;
+            return `
+              <div class="flex items-start gap-2 bg-white rounded-lg border border-gray-100 px-3 py-2">
+                <input type="checkbox" class="mt-1 shrink-0 rounded border-gray-300 text-ocean-500" ${e.done ? 'checked' : ''} onchange="toggleEventDone('${e.id}')" aria-label="완료">
+                <span class="mt-1.5 shrink-0 inline-block w-2 h-2 rounded-full ${c.dot}"></span>
+                <div class="min-w-0 flex-1 cursor-pointer" onclick="openEventModal('${e.id}')">
+                  <div class="text-sm ${e.done ? 'line-through text-gray-400' : 'text-basalt font-medium'}">${e.time ? `<span class="tnum font-semibold mr-1">${e.time}</span>` : ''}${_escHtml(e.title)}</div>
+                  ${e.memo ? `<div class="text-xs text-basalt-soft whitespace-pre-line mt-0.5">${_escHtml(e.memo)}</div>` : ''}
+                </div>
+                <button onclick="openEventModal('${e.id}')" class="shrink-0 w-7 h-7 text-xs rounded text-gray-400 hover:bg-gray-100 hover:text-gray-700" title="수정">✏️</button>
+                <button onclick="deleteEvent('${e.id}')" class="shrink-0 w-7 h-7 text-sm rounded text-red-500 hover:bg-red-50" title="삭제">✕</button>
+              </div>`;
+          }).join('')}</div>` : '<p class="text-xs text-basalt-soft">아직 없어요. 예약·약속·할 일을 추가해 보세요.</p>'}
+        </div>`;
+    }
+
+    // ----- 내 일정 CRUD -----
+    function _newId() { return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function openEventModal(id, date) {
+      const f = document.getElementById('eventForm');
+      const ev = id ? userEvents.find(e => e.id === id) : null;
+      f.reset();
+      f.elements.id.value = ev ? ev.id : '';
+      f.elements.title.value = ev ? ev.title : '';
+      f.elements.date.value = ev ? ev.date : (date || selectedDate || TRIP_INFO.startDate);
+      f.elements.time.value = ev ? (ev.time || '') : '';
+      f.elements.memo.value = ev ? (ev.memo || '') : '';
+      const color = ev ? (ev.color || 'jeju') : 'jeju';
+      document.getElementById('eventColorPicker').innerHTML = Object.entries(EVENT_COLORS).map(([k, c]) => `
+        <label class="cursor-pointer"><input type="radio" name="color" value="${k}" class="peer sr-only" ${k === color ? 'checked' : ''}>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs ${c.pill} ring-offset-1 peer-checked:ring-2 peer-checked:ring-basalt"><span class="w-2 h-2 rounded-full ${c.dot}"></span>${c.label}</span></label>`).join('');
+      document.getElementById('eventModalTitle').textContent = ev ? '일정 수정' : '일정 추가';
+      document.getElementById('eventDeleteBtn').classList.toggle('hidden', !ev);
+      document.getElementById('eventModal').classList.remove('hidden');
+      setTimeout(() => f.elements.title.focus(), 30);
+    }
+    function closeEventModal() { document.getElementById('eventModal').classList.add('hidden'); }
+    function saveEventFromForm() {
+      const f = document.getElementById('eventForm');
+      const title = f.elements.title.value.trim(), date = f.elements.date.value;
+      if (!title || !date) return;
+      const data = { title, date, time: f.elements.time.value || '', memo: f.elements.memo.value.trim(),
+        color: (f.querySelector('input[name=color]:checked') || {}).value || 'jeju' };
+      const id = f.elements.id.value;
+      const ev = id && userEvents.find(e => e.id === id);
+      if (ev) Object.assign(ev, data); else userEvents.push({ id: _newId(), done: false, ...data });
+      saveScheduleUserData(); closeEventModal();
+      selectedDate = date; renderSchedule();
+    }
+    function deleteEventFromForm() {
+      const id = document.getElementById('eventForm').elements.id.value;
+      if (id && deleteEvent(id)) closeEventModal();
+    }
+    function deleteEvent(id) {
+      const ev = userEvents.find(e => e.id === id);
+      if (!ev || !confirm(`'${ev.title}' 일정을 삭제할까요?`)) return false;
+      userEvents = userEvents.filter(e => e.id !== id);
+      saveScheduleUserData(); renderSchedule();
+      return true;
+    }
+    function toggleEventDone(id) {
+      const ev = userEvents.find(e => e.id === id);
+      if (ev) { ev.done = !ev.done; saveScheduleUserData(); renderSchedule(); }
+    }
+    function editDayTheme(day) {
+      const d = SCHEDULE.find(s => s.day === day);
+      const v = prompt('이 날의 제목 (비우면 기본 제목으로)', themeOf(d));
+      if (v === null) return;
+      if (v.trim() && v.trim() !== d.theme) dayOverrides[day] = { theme: v.trim() }; else delete dayOverrides[day];
+      saveScheduleUserData(); renderSchedule();
+    }
+    function exportSchedule() {
+      const blob = new Blob([JSON.stringify({ events: userEvents, dayOverrides }, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `jeju-schedule-${_isoToday()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    function importSchedule(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const obj = JSON.parse(reader.result);
+          if (!obj || !Array.isArray(obj.events) || !obj.events.every(e => e && typeof e.title === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.date))) throw new Error('형식 오류');
+          if (!confirm(`내 일정 ${obj.events.length}개로 현재 일정을 덮어쓸까요?`)) return;
+          userEvents = obj.events.map(e => ({ ...e, id: e.id || _newId() }));
+          dayOverrides = (obj.dayOverrides && typeof obj.dayOverrides === 'object') ? obj.dayOverrides : {};
+          saveScheduleUserData(); renderSchedule();
+        } catch (e) { alert('일정 파일을 읽지 못했어요: ' + e.message); }
+        finally { input.value = ''; }
+      };
+      reader.readAsText(file);
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeEventModal(); document.getElementById('shareModal').classList.add('hidden'); } });
 
     function getFatigueLevel(fatigue) {
       if (!fatigue) return 'ok';
@@ -661,11 +922,25 @@
         + items + '</div></div>';
     }
 
-    function renderDetailPanel(day) {
-      const d = SCHEDULE.find(s => s.day === day);
-      if (!d) return;
-      const wi = getWeekIndex(day);
-      const detailContainer = document.getElementById(`weekDetail-${wi}`);
+    function renderDetailPanel(iso) {
+      const detailContainer = document.getElementById('calDetail');
+      if (!iso) {
+        detailContainer.innerHTML = `<p class="text-center text-xs text-basalt-soft py-3">📅 날짜를 누르면 그날의 상세 일정이 여기에 열려요</p>`;
+        return;
+      }
+      const d = dayByDate(iso);
+      const m = +iso.slice(5, 7), n = +iso.slice(8);
+      if (!d) {
+        detailContainer.innerHTML = `
+          <div class="detail-panel bg-white rounded-xl border border-gray-200 shadow-md overflow-hidden" id="detailPanel">
+            <div class="bg-paper-card px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div><div class="text-sm text-gray-500">${m}/${n} (${_dow(iso)}) · 여행 기간 밖</div><h3 class="font-bold text-lg">${m}월 ${n}일</h3></div>
+              <button onclick="closeDetail()" class="text-gray-400 hover:text-gray-600 text-xl leading-none" aria-label="닫기">&times;</button>
+            </div>
+            ${renderMyEvents(iso)}
+          </div>`;
+        return;
+      }
       const dateStr = d.date.split('-').slice(1).join('/');
 
       detailContainer.innerHTML = `
@@ -679,11 +954,14 @@
                 ${d.babyFriendly ? '<span class="text-xs bg-pink-100 text-pink-700 rounded-full px-2 py-0.5">👶 OK</span>' : ''}
                 ${d.dogFriendly ? '<span class="text-xs bg-green-100 text-green-700 rounded-full px-2 py-0.5">🐶 OK</span>' : ''}
               </div>
-              <h3 class="font-bold text-lg">${d.theme}</h3>
+              <h3 class="font-bold text-lg">${_escHtml(themeOf(d))} <button onclick="editDayTheme(${d.day})" class="align-middle text-xs text-gray-400 hover:text-gray-700 font-normal" title="이 날 제목 수정">✏️</button></h3>
             </div>
-            <button onclick="selectDay(${d.day})" class="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+            <button onclick="closeDetail()" class="text-gray-400 hover:text-gray-600 text-xl leading-none" aria-label="닫기">&times;</button>
           </div>
 
+          ${renderMyEvents(d.date)}
+
+          <div class="px-4 sm:px-5 pt-3 text-[11px] font-semibold text-basalt-soft">🗺️ 추천 코스</div>
           <!-- 본문: 3열 타임라인 (데스크톱) / 세로 (모바일) -->
           <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
             ${renderSlotColumn('🌅 오전', d.schedule.morning)}
@@ -767,13 +1045,7 @@
           btn.className = 'filter-btn shrink-0 px-3 py-1 text-xs rounded-full bg-gray-100';
         }
       });
-      // 칩 fade 업데이트
-      SCHEDULE.forEach(d => {
-        const chip = document.getElementById(`chip-${d.day}`);
-        if (!chip) return;
-        const match = filter === 'all' || d.categories.includes(filter);
-        chip.classList.toggle('fade-out', !match);
-      });
+      renderSchedule();
     }
 
     // ========== 페리 정보 ==========
@@ -1634,7 +1906,6 @@
 
     function goToDay(day) {
       setTab('schedule');
-      selectedDay = null;
       setTimeout(() => selectDay(day), 90);
     }
 
@@ -1656,6 +1927,7 @@
                 <p class="text-sm text-basalt-soft leading-snug">${s.title}</p>
               </div>` : '').join('')}
           </div>
+          ${eventsOn(d.date).length ? `<div class="mt-3 pt-3 border-t border-gray-100 space-y-1">${eventsOn(d.date).map(e => `<div class="text-xs flex items-center gap-1.5 ${e.done ? 'line-through text-gray-400' : 'text-basalt'}"><span class="inline-block w-2 h-2 rounded-full ${(EVENT_COLORS[e.color] || EVENT_COLORS.jeju).dot}"></span>${e.time ? `<b class="tnum">${e.time}</b>` : ''} ${_escHtml(e.title)}</div>`).join('')}</div>` : ''}
           <button onclick="goToDay(${d.day})" class="mt-4 self-start text-xs font-semibold px-4 py-2 rounded-full bg-ocean-500 text-white hover:bg-ocean-600 transition-colors">일정 자세히 보기 →</button>
         </div>`;
     }
@@ -1871,6 +2143,7 @@
 
     // ========== Init ==========
     loadChecklistState();
+    loadScheduleUserData();
     initBudgetData();
     document.getElementById('budgetTitle').textContent = BUDGET_GUIDE.title;
     if (BUDGET_GUIDE.target) document.getElementById('budgetTarget').textContent = BUDGET_GUIDE.target;
@@ -1899,5 +2172,7 @@
       window.scrollTo({ top: 0 });
     })();
   </script>
+  <script src="sync-config.js"></script>
+  <script type="module" src="sync.js"></script>
 </body>
 </html>

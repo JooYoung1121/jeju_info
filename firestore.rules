@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 가족 코드를 아는 사람만 해당 문서 읽기/쓰기. 목록 조회·삭제는 막아 코드 추측 방지
+    match /families/{code} {
+      allow get: if code.size() >= 12 && code.size() <= 64;
+      allow create, update: if code.size() >= 12 && code.size() <= 64
+        && request.resource.data.keys().hasOnly(['checklists', 'events', 'dayOverrides', 'createdAt', 'updatedAt']);
+      allow list, delete: if false;
+    }
+  }
+}
