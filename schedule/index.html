@@ -352,7 +352,9 @@
     // 전체 목록(카테고리+항목+체크상태)을 localStorage에 저장. 첫 방문 시 data.js 기본값 + 구버전(jeju-checklist) 체크상태로 시드.
     const CHECKLIST_KEY = 'jeju-checklist-v2';
     const _CL_DEFAULT = JSON.stringify(CHECKLISTS);
-    let clEditMode = false;
+    // 기본 = 편집 화면. '보기 모드'로 바꾸면 그 선택을 기억
+    let clEditMode = true;
+    try { clEditMode = localStorage.getItem('jeju-cl-edit') !== '0'; } catch (e) {}
     function _escHtml(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
     function _setChecklists(obj) {
       for (const k of Object.keys(CHECKLISTS)) delete CHECKLISTS[k];
@@ -383,7 +385,11 @@
       CHECKLISTS[cat].items[idx].checked = !CHECKLISTS[cat].items[idx].checked;
       saveChecklistState(); renderChecklists();
     }
-    function toggleChecklistEdit() { clEditMode = !clEditMode; renderChecklists(); }
+    function toggleChecklistEdit() {
+      clEditMode = !clEditMode;
+      try { localStorage.setItem('jeju-cl-edit', clEditMode ? '1' : '0'); } catch (e) {}
+      renderChecklists();
+    }
     function addChecklistItem(cat, input) {
       const text = input.value.trim();
       if (!text) return;
@@ -466,7 +472,7 @@
     function renderChecklists() {
       const grid = document.getElementById('checklistGrid');
       const btn = document.getElementById('clEditBtn');
-      btn.textContent = clEditMode ? '✔ 편집 완료' : '✏️ 편집';
+      btn.textContent = clEditMode ? '👁 보기 모드' : '✏️ 편집';
       btn.classList.toggle('bg-ocean-500', clEditMode); btn.classList.toggle('text-white', clEditMode);
       btn.classList.toggle('bg-paper-deep', !clEditMode); btn.classList.toggle('text-basalt-soft', !clEditMode);
       document.getElementById('clEditTools').classList.toggle('hidden', !clEditMode);
@@ -490,7 +496,7 @@
         const items = list.items.map((item, i) => clEditMode ? `
                 <div class="flex items-center gap-1">
                   <input type="checkbox" class="shrink-0 rounded border-gray-300 text-ocean-500" onchange="toggleCheckItem('${key}',${i})" ${item.checked ? 'checked' : ''}>
-                  <input value="${_escHtml(item.text)}" class="flex-1 min-w-0 border border-gray-200 rounded px-2 py-1 text-sm" onchange="editChecklistItem('${key}',${i},this)" onkeydown="if(event.key==='Enter')this.blur()" aria-label="항목 수정">
+                  <input value="${_escHtml(item.text)}" class="flex-1 min-w-0 border border-gray-200 rounded px-2 py-1 text-sm ${item.checked ? 'line-through text-gray-400' : ''}" onchange="editChecklistItem('${key}',${i},this)" onkeydown="if(event.key==='Enter')this.blur()" aria-label="항목 수정">
                   <button onclick="moveChecklistItem('${key}',${i},-1)" class="shrink-0 w-6 h-7 text-xs text-gray-400 hover:text-gray-700 disabled:opacity-30" ${i === 0 ? 'disabled' : ''} title="위로">▲</button>
                   <button onclick="moveChecklistItem('${key}',${i},1)" class="shrink-0 w-6 h-7 text-xs text-gray-400 hover:text-gray-700 disabled:opacity-30" ${i === list.items.length - 1 ? 'disabled' : ''} title="아래로">▼</button>
                   <button onclick="deleteChecklistItem('${key}',${i})" class="shrink-0 w-7 h-7 text-sm rounded text-red-500 hover:bg-red-50" title="삭제">✕</button>
