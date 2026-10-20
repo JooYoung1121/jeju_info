@@ -1464,8 +1464,14 @@
         amber: { bg:'bg-amber-50', bd:'border-amber-200', tx:'text-amber-800', chip:'bg-amber-500', dot:'#f59e0b' },
         blue:  { bg:'bg-blue-50',  bd:'border-blue-200',  tx:'text-blue-800',  chip:'bg-blue-500',  dot:'#3b82f6' },
         violet:{ bg:'bg-violet-50',bd:'border-violet-200',tx:'text-violet-800',chip:'bg-violet-500',dot:'#7c3aed' },
+        teal:  { bg:'bg-teal-50',  bd:'border-teal-200',  tx:'text-teal-800',  chip:'bg-teal-600',  dot:'#0d9488' },
       };
-      let medFilter = 'all'; // all | baby | pet
+      let medFilter = 'all'; // all | baby | pharmacy | pet
+      const medSecs = () => [
+        (medFilter==='all'||medFilter==='baby') && data.baby,
+        (medFilter==='all'||medFilter==='pharmacy') && data.pharmacy,
+        (medFilter==='all'||medFilter==='pet') && data.pet,
+      ].filter(Boolean);
 
       function placeCard(p, col) {
         return `
@@ -1478,6 +1484,7 @@
             ${p.address ? `<div class="text-[10px] text-gray-400">📍 ${p.address}</div>` : ''}
             ${p.hours ? `<div class="text-[10px] text-gray-500 mt-1">🕒 ${p.hours}</div>` : ''}
             ${p.note ? `<p class="text-[11px] text-gray-600 mt-1">${p.note}</p>` : ''}
+            ${p.confirm ? `<div class="mt-1"><span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">⚠️ ${p.confirm}</span></div>` : ''}
             <div class="flex gap-1.5 mt-2 pt-2 border-t border-gray-50">
               ${p.phone ? `<a href="tel:${p.phone.replace(/[^\d-]/g,'')}" class="flex-1 text-center text-[11px] font-semibold px-2 py-1.5 rounded-md ${col.chip} text-white hover:opacity-90 transition-opacity">📞 ${p.phone}</a>` : ''}
               <a href="${naverMapUrl(p.name, p.address, p.mapQuery)}" target="_blank" class="text-center text-[10px] font-medium px-2.5 py-1.5 rounded-md bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors">🗺️ 지도</a>
@@ -1516,7 +1523,7 @@
 
           <!-- 응급 핫라인 -->
           <div class="bg-red-50 rounded-xl p-4 mb-4 border border-red-200">
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
               ${data.hotlines.map(h => `
                 <a href="${h.tel ? 'tel:' + h.tel : h.url}" ${h.url && !h.tel ? 'target="_blank"' : ''} class="bg-white rounded-lg p-3 text-center border border-red-100 hover:shadow-md transition-shadow">
                   <div class="text-xl mb-0.5">${h.icon}</div>
@@ -1526,19 +1533,38 @@
             </div>
           </div>
 
+          <!-- 상황별 행동요령 -->
+          ${data.steps && data.steps.length ? `
+          <div class="bg-white rounded-xl p-4 mb-4 border border-gray-200">
+            <h3 class="font-semibold text-gray-800 mb-2 text-sm">🧭 아기가 아플 때 — 상황별로 어디로?</h3>
+            <div class="space-y-1.5">
+              ${data.steps.map(s => `
+                <div class="flex flex-col sm:flex-row sm:gap-3 text-[11px] border-b border-gray-50 pb-1.5 last:border-0 last:pb-0">
+                  <div class="sm:w-56 shrink-0 font-semibold text-gray-700">${s.when}</div>
+                  <div class="text-gray-600">${s.what}</div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}
+
           <!-- 지도 -->
-          <p class="text-[11px] text-gray-500 mb-2">🗺️ 마커: <span style="color:#ec4899">●</span> 소아과 <span style="color:#dc2626">●</span> 응급실·24시 <span style="color:#16a34a">●</span> 약국 <span style="color:#f59e0b">●</span> 동물병원 + 🏠 숙소</p>
+          <p class="text-[11px] text-gray-500 mb-2">🗺️ 마커: <span style="color:#0d9488">●</span> 동부 의원 <span style="color:#ec4899">●</span> 소아과 <span style="color:#7c3aed">●</span> 달빛 <span style="color:#dc2626">●</span> 응급실·24시 <span style="color:#16a34a">●</span> 약국 <span style="color:#f59e0b">●</span><span style="color:#3b82f6">●</span> 동물병원 + 🏠 숙소</p>
           <div id="medicalMap" class="border border-gray-200 mb-4" style="height:400px;border-radius:14px;overflow:hidden;z-index:0"></div>
 
           <!-- 필터 -->
-          <div class="flex gap-1.5 mb-4">
+          <div class="flex flex-wrap gap-1.5 mb-4">
             <button onclick="setMedFilter('all')" class="px-3 py-1 text-xs rounded-full ${medFilter==='all'?'bg-gray-800 text-white':'bg-white border border-gray-200 text-gray-600'}">전체</button>
             <button onclick="setMedFilter('baby')" class="px-3 py-1 text-xs rounded-full ${medFilter==='baby'?'bg-pink-500 text-white':'bg-white border border-gray-200 text-gray-600'}">👶 영유아</button>
+            ${data.pharmacy ? `<button onclick="setMedFilter('pharmacy')" class="px-3 py-1 text-xs rounded-full ${medFilter==='pharmacy'?'bg-green-600 text-white':'bg-white border border-gray-200 text-gray-600'}">💊 약국</button>` : ''}
             <button onclick="setMedFilter('pet')" class="px-3 py-1 text-xs rounded-full ${medFilter==='pet'?'bg-amber-500 text-white':'bg-white border border-gray-200 text-gray-600'}">🐾 동물병원</button>
           </div>
 
-          ${(medFilter==='all'||medFilter==='baby') ? sectionBlock(data.baby) : ''}
-          ${(medFilter==='all'||medFilter==='pet') ? sectionBlock(data.pet) : ''}
+          ${medSecs().map(sectionBlock).join('')}
+
+          <!-- 참고 링크 -->
+          ${data.links && data.links.length ? `
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            ${data.links.map(l => `<a href="${l.url}" target="_blank" class="text-[11px] px-2.5 py-1.5 rounded-md bg-white border border-gray-200 text-gray-700 hover:bg-gray-50">${l.icon} ${l.label} ↗</a>`).join('')}
+          </div>` : ''}
 
           <!-- 출처 -->
           <details class="bg-gray-50 rounded-lg p-3 border border-gray-200">
@@ -1555,10 +1581,7 @@
           const a = NEARBY_PLACES.accommodation.coords;
           markers.push({ lat: a[0], lng: a[1], isHome: true, popup: '<b>🏠 우리 숙소</b>' });
         }
-        const secs = [];
-        if (medFilter==='all'||medFilter==='baby') secs.push(data.baby);
-        if (medFilter==='all'||medFilter==='pet') secs.push(data.pet);
-        secs.forEach(sec => sec.groups.forEach(g => {
+        medSecs().forEach(sec => sec.groups.forEach(g => {
           const dot = (cm[g.color] || cm.blue).dot;
           g.places.forEach(p => {
             if (typeof p.lat !== 'number') return;
@@ -1949,7 +1972,7 @@
       if (phase === 'before') {
         eyebrow = '제주 한달살이까지';
         big = `D-${toStart}`;
-        sub = `${_fmtDate(start)} 출발 · 목포항 14:00 퀸메리호`;
+        sub = `${_fmtDate(start)} 출발 · 목포 삼학부두 08:30 퀸메리호`;
         const cl = checklistStats();
         barPct = cl.pct; barLabel = `준비물 ${cl.done}/${cl.total} (${cl.pct}%)`; barClass = 'gold';
       } else if (phase === 'during') {
