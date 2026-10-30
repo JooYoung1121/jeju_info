@@ -5,7 +5,7 @@ service cloud.firestore {
     match /families/{code} {
       allow get: if code.size() >= 12 && code.size() <= 64;
       allow create, update: if code.size() >= 12 && code.size() <= 64
-        && request.resource.data.keys().hasOnly(['checklists', 'events', 'dayOverrides', 'createdAt', 'updatedAt']);
+        && request.resource.data.keys().hasOnly(['checklists', 'events', 'dayOverrides', 'logs', 'createdAt', 'updatedAt']);
       allow list, delete: if false;
     }
   }

@@ -4,7 +4,7 @@
 // - 설정값은 sync-config.js 의 window.JEJU_FIREBASE_CONFIG
 const FB_VER = '10.12.2';
 const CODE_KEY = 'jeju-family-code';
-const SECTIONS = ['checklists', 'events', 'dayOverrides'];
+const SECTIONS = ['checklists', 'events', 'dayOverrides', 'logs'];
 
 let db = null, fs = null, docRef = null, unsub = null;
 let baseline = null;          // 마지막으로 원격과 일치했던 상태 { section: { key: json문자열 } }
@@ -34,7 +34,9 @@ function localState() {
   Object.entries(CHECKLISTS).forEach(([k, l], i) => { checklists[k] = { ...l, order: i }; });
   const events = {};
   userEvents.forEach(e => { events[e.id] = e; });
-  return { checklists, events, dayOverrides: { ...dayOverrides } };
+  const logs = {};
+  travelLogs.forEach(l => { logs[l.id] = l; });
+  return { checklists, events, dayOverrides: { ...dayOverrides }, logs };
 }
 function snapshotOf(state) {
   const out = {};
@@ -48,11 +50,13 @@ function applyRemote(data) {
   _setChecklists(Object.fromEntries(cl));
   userEvents = Object.values(data.events || {}).filter(e => e && e.date && e.title);
   dayOverrides = data.dayOverrides || {};
+  travelLogs = Object.values(data.logs || {}).filter(l => l && l.id && l.name);
   // 로컬 캐시도 최신화 (오프라인일 때 마지막 상태로 열리도록). push 재귀 방지 위해 직접 저장
   try {
     localStorage.setItem(CHECKLIST_KEY, JSON.stringify(CHECKLISTS));
     localStorage.setItem(EVENTS_KEY, JSON.stringify(userEvents));
     localStorage.setItem(DAY_OVR_KEY, JSON.stringify(dayOverrides));
+    localStorage.setItem(LOGS_KEY, JSON.stringify(travelLogs));
   } catch (e) {}
   baseline = snapshotOf(localState());
   rerender();
@@ -60,12 +64,14 @@ function applyRemote(data) {
 function isEditing() {
   const a = document.activeElement;
   if (!a || !/^(INPUT|TEXTAREA)$/.test(a.tagName) || a.type === 'checkbox') return false;
-  return !!a.closest('#checklistGrid, #eventModal');
+  return !!a.closest('#checklistGrid, #eventModal, #logModal, #logContent');
 }
 function rerender() {
-  if (isEditing() || !document.getElementById('eventModal').classList.contains('hidden')) { pendingRender = true; return; }
+  const modalOpen = ['eventModal', 'logModal'].some(id => !document.getElementById(id).classList.contains('hidden'));
+  if (isEditing() || modalOpen) { pendingRender = true; return; }
   pendingRender = false;
   renderChecklists(); renderSchedule();
+  renderLogs();
   if (!document.getElementById('dashboardContent')?.closest('.tab-panel')?.classList.contains('hidden')) renderDashboard();
 }
 document.addEventListener('focusout', () => setTimeout(() => { if (pendingRender) rerender(); }, 0));
@@ -109,6 +115,7 @@ function mergeLocalInto(remote, local) {
   });
   Object.entries(local.events).forEach(([id, e]) => { if (!merged.events[id]) merged.events[id] = e; });
   Object.entries(local.dayOverrides).forEach(([d, o]) => { if (!merged.dayOverrides[d]) merged.dayOverrides[d] = o; });
+  Object.entries(local.logs).forEach(([id, l]) => { if (!merged.logs[id]) merged.logs[id] = l; });
   return merged;
 }
 

@@ -164,6 +164,7 @@
   <nav id="tabBar" class="sticky top-0 z-40 bg-paper-card/95 backdrop-blur border-b border-paper-deep">
     <div class="max-w-6xl mx-auto px-4 py-2.5 flex gap-2 overflow-x-auto">
       <button onclick="setTab('today')" data-tab-btn="today" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-ocean-500 text-white">🌾 오늘</button>
+      <button onclick="setTab('log')" data-tab-btn="log" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">📝 기록</button>
       <button onclick="setTab('ev')" data-tab-btn="ev" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">⚡ 충전지도</button>
       <button onclick="setTab('schedule')" data-tab-btn="schedule" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">📅 일정</button>
       <button onclick="setTab('nearby')" data-tab-btn="nearby" class="tab-btn shrink-0 px-3 py-1.5 text-sm rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft">🏠 숙소주변</button>
@@ -331,6 +332,72 @@
     <section id="medicalSection" class="tab-panel hidden" data-tab="medical">
       <div id="medicalContent"></div>
     </section>
+
+    <!-- ===== TAB: 기록 (다녀온 곳) ===== -->
+    <section id="logSection" class="tab-panel hidden" data-tab="log">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h2 class="text-xl font-bold">📝 다녀온 곳 기록</h2>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button data-sync-badge onclick="openShareModal()" class="px-3 py-1.5 text-xs rounded-full font-medium bg-gray-100 text-gray-600">⚪ 이 기기만</button>
+          <button onclick="exportLogs()" class="px-2.5 py-1.5 text-xs rounded-full bg-paper-deep text-basalt-soft hover:bg-gold-soft" title="기록 JSON 백업">⬇️ 백업</button>
+        </div>
+      </div>
+      <button onclick="openLogModal()" class="w-full mb-4 py-3 rounded-xl bg-jeju-500 text-white font-semibold shadow-sm hover:bg-jeju-600">＋ 방금 다녀온 곳 기록하기</button>
+      <div id="logContent"></div>
+    </section>
+
+    <!-- 기록 추가/수정 모달 -->
+    <div id="logModal" class="hidden fixed inset-0 z-[60] bg-black/40 flex items-end sm:items-center justify-center" onclick="if(event.target===this)closeLogModal()">
+      <form id="logForm" onsubmit="event.preventDefault(); saveLogFromForm()" class="w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-5 space-y-3 max-h-[92vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <h3 id="logModalTitle" class="font-bold text-lg">기록하기</h3>
+          <button type="button" onclick="closeLogModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none" aria-label="닫기">&times;</button>
+        </div>
+        <input type="hidden" name="id">
+        <div id="logCatPicker" class="flex flex-wrap gap-1.5"></div>
+        <label class="block"><span class="text-xs font-medium text-gray-500">이름</span>
+          <input name="name" required maxlength="60" placeholder="예: 세화 OO국수" class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ocean-500"></label>
+        <div>
+          <span class="text-xs font-medium text-gray-500">별점</span>
+          <div id="logStars" class="mt-1 flex items-center gap-1"></div>
+          <input type="hidden" name="rating">
+        </div>
+        <label class="block"><span class="text-xs font-medium text-gray-500">후기</span>
+          <textarea name="review" rows="4" maxlength="2000" placeholder="어땠는지, 뭐가 맛있었는지, 아쉬운 점, 주차·대기 등" class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-ocean-500"></textarea></label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="block"><span class="text-xs font-medium text-gray-500">방문 날짜</span>
+            <input name="date" type="date" required class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></label>
+          <label class="block"><span class="text-xs font-medium text-gray-500">쓴 돈 (선택)</span>
+            <input name="price" maxlength="40" placeholder="예: 3.2만원" class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></label>
+        </div>
+        <label class="block"><span class="text-xs font-medium text-gray-500">링크 (선택) — 네이버지도·카카오맵·인스타 등</span>
+          <input name="link" type="url" inputmode="url" placeholder="https://naver.me/..." class="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"></label>
+        <div>
+          <span class="text-xs font-medium text-gray-500">위치 (선택)</span>
+          <div class="mt-1 flex gap-1.5">
+            <input name="address" maxlength="100" placeholder="주소나 지역 (예: 구좌읍 세화리)" class="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm">
+            <button type="button" onclick="fillLogLocation(this)" class="shrink-0 px-3 py-2 rounded-lg bg-ocean-50 text-ocean-700 text-xs font-semibold hover:bg-ocean-100">📍 현재 위치</button>
+          </div>
+          <input type="hidden" name="lat"><input type="hidden" name="lng">
+          <p id="logGeoNote" class="text-[11px] text-basalt-soft mt-1"></p>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <label class="cursor-pointer"><input type="checkbox" name="baby" class="peer sr-only"><span class="inline-block px-3 py-1.5 rounded-full text-xs border border-gray-200 text-gray-500 peer-checked:bg-pink-100 peer-checked:text-pink-700 peer-checked:border-pink-200">👶 아기 OK</span></label>
+          <label class="cursor-pointer"><input type="checkbox" name="dog" class="peer sr-only"><span class="inline-block px-3 py-1.5 rounded-full text-xs border border-gray-200 text-gray-500 peer-checked:bg-green-100 peer-checked:text-green-700 peer-checked:border-green-200">🐶 강아지 OK</span></label>
+          <label class="cursor-pointer"><input type="checkbox" name="revisit" class="peer sr-only"><span class="inline-block px-3 py-1.5 rounded-full text-xs border border-gray-200 text-gray-500 peer-checked:bg-jeju-100 peer-checked:text-jeju-700 peer-checked:border-jeju-200">🔁 또 갈래</span></label>
+        </div>
+        <div>
+          <span class="text-xs font-medium text-gray-500">작성</span>
+          <div class="mt-1 flex gap-1.5" id="logAuthorPicker"></div>
+        </div>
+        <div class="flex items-center gap-2 pt-1">
+          <button type="button" id="logDeleteBtn" onclick="deleteLogFromForm()" class="hidden px-3 py-2 text-sm rounded-lg bg-red-50 text-red-600 hover:bg-red-100">삭제</button>
+          <div class="flex-1"></div>
+          <button type="button" onclick="closeLogModal()" class="px-4 py-2 text-sm rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">취소</button>
+          <button class="px-4 py-2 text-sm rounded-lg bg-ocean-500 text-white font-semibold hover:bg-ocean-600">저장</button>
+        </div>
+      </form>
+    </div>
 
     <!-- ===== TAB: 준비물 ===== -->
     <section id="checklist" class="tab-panel hidden" data-tab="checklist">
@@ -581,6 +648,219 @@
       }).join('');
       updateChecklistProgress();
     }
+
+    // ========== 기록 (다녀온 곳 · 별점 · 후기) ==========
+    const LOGS_KEY = 'jeju-logs-v1', LOG_AUTHOR_KEY = 'jeju-log-author';
+    const LOG_CATS = {
+      food:  { label: '식당', icon: '🍽️', cls: 'bg-orange-100 text-orange-800', fill: '#f97316' },
+      cafe:  { label: '카페', icon: '☕', cls: 'bg-amber-100 text-amber-800', fill: '#d97706' },
+      spot:  { label: '관광·산책', icon: '🏔️', cls: 'bg-blue-100 text-blue-800', fill: '#3b82f6' },
+      etc:   { label: '기타', icon: '✨', cls: 'bg-gray-100 text-gray-700', fill: '#6b7280' },
+    };
+    const LOG_AUTHORS = { '': '안 적음', dad: '👨 아빠', mom: '👩 엄마' };
+    let travelLogs = [], logFilter = 'all', logSort = 'recent', logQuery = '';
+    try { const v = JSON.parse(localStorage.getItem(LOGS_KEY) || '[]'); if (Array.isArray(v)) travelLogs = v.filter(x => x && x.id && x.name); } catch (e) {}
+    function saveLogs() {
+      try { localStorage.setItem(LOGS_KEY, JSON.stringify(travelLogs)); } catch (e) {}
+      window.syncPush && window.syncPush();
+    }
+    function _stars(n, size) {
+      n = Math.round(n || 0);
+      return `<span class="${size || 'text-sm'} tracking-tight" aria-label="별점 ${n}점"><span class="text-jeju-500">${'★'.repeat(n)}</span><span class="text-gray-300">${'★'.repeat(5 - n)}</span></span>`;
+    }
+    function _safeUrl(u) { return /^https?:\/\//i.test(u || '') ? u : ''; }
+    function _logDay(iso) { const d = dayByDate(iso); return d ? `D${d.day}` : ''; }
+
+    function setLogFilter(f) { logFilter = f; renderLogs(); }
+    function setLogSort(v) { logSort = v; renderLogs(); }
+    function setLogQuery(v) { logQuery = v; renderLogList(); }
+
+    function renderLogs() {
+      const el = document.getElementById('logContent');
+      if (!el) return;
+      const rated = travelLogs.filter(l => l.rating);
+      const avg = rated.length ? (rated.reduce((a, l) => a + l.rating, 0) / rated.length).toFixed(1) : '-';
+      const counts = Object.fromEntries(Object.keys(LOG_CATS).map(k => [k, travelLogs.filter(l => l.cat === k).length]));
+      const withPos = travelLogs.filter(l => typeof l.lat === 'number' && typeof l.lng === 'number');
+      el.innerHTML = `
+        <div class="grid grid-cols-3 gap-2 mb-4">
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center"><div class="font-display text-2xl font-bold text-basalt tnum">${travelLogs.length}</div><div class="text-[11px] text-basalt-soft">다녀온 곳</div></div>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center"><div class="font-display text-2xl font-bold text-jeju-600 tnum">${avg}</div><div class="text-[11px] text-basalt-soft">평균 별점</div></div>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center"><div class="font-display text-2xl font-bold text-ocean-600 tnum">${travelLogs.filter(l => l.revisit).length}</div><div class="text-[11px] text-basalt-soft">또 갈 곳</div></div>
+        </div>
+        ${withPos.length ? `<div id="logMap" class="border border-gray-200 mb-4" style="height:260px;border-radius:14px;overflow:hidden;z-index:0"></div>` : ''}
+        <div class="flex flex-wrap items-center gap-1.5 mb-2">
+          ${[['all', '전체', travelLogs.length], ...Object.entries(LOG_CATS).map(([k, c]) => [k, c.icon + ' ' + c.label, counts[k]])].map(([k, label, n]) => `
+            <button onclick="setLogFilter('${k}')" class="shrink-0 px-3 py-1 text-xs rounded-full ${logFilter === k ? 'bg-ocean-500 text-white' : 'bg-white border border-gray-200 text-basalt-soft'}">${label} <span class="opacity-70">${n}</span></button>`).join('')}
+        </div>
+        <div class="flex gap-1.5 mb-4">
+          <input value="${_escHtml(logQuery)}" oninput="setLogQuery(this.value)" placeholder="🔍 이름·후기 검색" class="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white">
+          <select onchange="setLogSort(this.value)" class="shrink-0 border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-white">
+            <option value="recent" ${logSort === 'recent' ? 'selected' : ''}>최신순</option>
+            <option value="rating" ${logSort === 'rating' ? 'selected' : ''}>별점순</option>
+          </select>
+        </div>
+        <div id="logList"></div>`;
+      renderLogList();
+      if (withPos.length) {
+        buildSpotsMap('logMap', 'log', null, withPos.map(l => ({
+          lat: l.lat, lng: l.lng, fill: (LOG_CATS[l.cat] || LOG_CATS.etc).fill,
+          popup: `<b>${_escHtml(l.name)}</b><br>${_stars(l.rating, 'text-xs')}${l.review ? '<br>' + _escHtml(l.review.slice(0, 60)) : ''}`,
+        })), 14);
+      }
+    }
+
+    function renderLogList() {
+      const box = document.getElementById('logList');
+      if (!box) return;
+      const q = logQuery.trim().toLowerCase();
+      let list = travelLogs.filter(l => (logFilter === 'all' || l.cat === logFilter) &&
+        (!q || (l.name + ' ' + (l.review || '') + ' ' + (l.address || '')).toLowerCase().includes(q)));
+      list.sort((a, b) => logSort === 'rating'
+        ? (b.rating || 0) - (a.rating || 0) || (b.date || '').localeCompare(a.date || '')
+        : (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0));
+      if (!list.length) {
+        box.innerHTML = `<div class="text-center text-sm text-basalt-soft bg-white rounded-xl p-8 border border-dashed border-gray-300">${travelLogs.length ? '조건에 맞는 기록이 없어요' : '아직 기록이 없어요.<br>방금 다녀온 곳부터 남겨 보세요 ✍️'}</div>`;
+        return;
+      }
+      // 날짜별 묶음
+      let html = '', cur = '';
+      list.forEach(l => {
+        if (logSort === 'recent' && l.date !== cur) {
+          cur = l.date;
+          const m = +cur.slice(5, 7), n = +cur.slice(8);
+          html += `<div class="flex items-baseline gap-2 mt-4 mb-2 first:mt-0 px-1"><span class="font-display font-bold text-basalt">${m}월 ${n}일 (${_dow(cur)})</span><span class="text-[11px] text-basalt-soft">${_logDay(cur)}</span></div>`;
+        }
+        const c = LOG_CATS[l.cat] || LOG_CATS.etc;
+        const link = _safeUrl(l.link);
+        const naver = `https://map.naver.com/v5/search/${encodeURIComponent(l.name)}`;
+        const pin = typeof l.lat === 'number' ? `https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}` : '';
+        html += `
+          <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-2.5">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
+                  <span class="text-[10px] rounded px-1.5 py-0.5 ${c.cls}">${c.icon} ${c.label}</span>
+                  ${l.revisit ? '<span class="text-[10px] rounded px-1.5 py-0.5 bg-jeju-100 text-jeju-700">🔁 또 갈래</span>' : ''}
+                  ${l.baby ? '<span class="text-[10px] rounded px-1.5 py-0.5 bg-pink-100 text-pink-700">👶 OK</span>' : ''}
+                  ${l.dog ? '<span class="text-[10px] rounded px-1.5 py-0.5 bg-green-100 text-green-700">🐶 OK</span>' : ''}
+                </div>
+                <h3 class="font-semibold text-basalt">${_escHtml(l.name)}</h3>
+                <div class="flex items-center gap-2 mt-0.5">${_stars(l.rating)}${logSort === 'rating' ? `<span class="text-[11px] text-basalt-soft">${+l.date.slice(5, 7)}/${+l.date.slice(8)}</span>` : ''}${l.price ? `<span class="text-[11px] text-basalt-soft">💰 ${_escHtml(l.price)}</span>` : ''}</div>
+              </div>
+              <button onclick="openLogModal('${l.id}')" class="shrink-0 px-2 py-1 text-xs rounded-lg text-basalt-soft hover:bg-gray-100" title="수정">✏️ 수정</button>
+            </div>
+            ${l.review ? `<p class="text-sm text-basalt mt-2 whitespace-pre-line leading-relaxed">${_escHtml(l.review)}</p>` : ''}
+            <div class="flex flex-wrap items-center gap-1.5 mt-3">
+              ${link ? `<a href="${_escHtml(link)}" target="_blank" rel="noopener" class="text-[11px] px-2.5 py-1 rounded-full bg-ocean-50 text-ocean-700 hover:bg-ocean-100">🔗 링크</a>` : ''}
+              <a href="${naver}" target="_blank" rel="noopener" class="text-[11px] px-2.5 py-1 rounded-full bg-green-50 text-green-700 hover:bg-green-100">🗺️ 네이버지도</a>
+              ${pin ? `<a href="${pin}" target="_blank" rel="noopener" class="text-[11px] px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200">📍 저장한 위치</a>` : ''}
+              ${l.address ? `<span class="text-[11px] text-basalt-soft">📍 ${_escHtml(l.address)}</span>` : ''}
+              ${l.author && LOG_AUTHORS[l.author] ? `<span class="ml-auto text-[11px] text-basalt-soft">${LOG_AUTHORS[l.author]}</span>` : ''}
+            </div>
+          </article>`;
+      });
+      box.innerHTML = html;
+    }
+
+    // ----- 기록 모달 -----
+    function _setLogRating(n) {
+      const f = document.getElementById('logForm');
+      f.elements.rating.value = n;
+      document.getElementById('logStars').innerHTML = [1, 2, 3, 4, 5].map(i =>
+        `<button type="button" onclick="_setLogRating(${i === n ? 0 : i})" class="text-3xl leading-none ${i <= n ? 'text-jeju-500' : 'text-gray-300'}" aria-label="${i}점">★</button>`).join('') +
+        `<span class="ml-2 text-sm text-basalt-soft">${n ? n + '점' : '탭해서 선택'}</span>`;
+    }
+    function _setLogCat(k) {
+      document.getElementById('logCatPicker').innerHTML = Object.entries(LOG_CATS).map(([key, c]) =>
+        `<button type="button" onclick="_setLogCat('${key}')" data-cat="${key}" class="px-3 py-1.5 rounded-full text-xs ${key === k ? c.cls + ' ring-2 ring-basalt ring-offset-1 font-semibold' : 'bg-gray-50 text-gray-500'}">${c.icon} ${c.label}</button>`).join('');
+      document.getElementById('logCatPicker').dataset.value = k;
+    }
+    function _setLogAuthor(a) {
+      const el = document.getElementById('logAuthorPicker');
+      el.dataset.value = a;
+      el.innerHTML = Object.entries(LOG_AUTHORS).map(([k, label]) =>
+        `<button type="button" onclick="_setLogAuthor('${k}')" class="px-3 py-1.5 rounded-full text-xs ${k === a ? 'bg-basalt text-white' : 'bg-gray-50 text-gray-500'}">${label}</button>`).join('');
+    }
+    function openLogModal(id) {
+      const f = document.getElementById('logForm');
+      const l = id ? travelLogs.find(x => x.id === id) : null;
+      f.reset();
+      f.elements.id.value = l ? l.id : '';
+      f.elements.name.value = l ? l.name : '';
+      f.elements.review.value = l ? (l.review || '') : '';
+      f.elements.date.value = l ? l.date : _isoToday();
+      f.elements.price.value = l ? (l.price || '') : '';
+      f.elements.link.value = l ? (l.link || '') : '';
+      f.elements.address.value = l ? (l.address || '') : '';
+      f.elements.lat.value = l && typeof l.lat === 'number' ? l.lat : '';
+      f.elements.lng.value = l && typeof l.lng === 'number' ? l.lng : '';
+      f.elements.baby.checked = !!(l && l.baby);
+      f.elements.dog.checked = !!(l && l.dog);
+      f.elements.revisit.checked = !!(l && l.revisit);
+      document.getElementById('logGeoNote').textContent = l && typeof l.lat === 'number' ? '📍 위치 저장됨' : '';
+      _setLogRating(l ? (l.rating || 0) : 0);
+      _setLogCat(l ? (l.cat || 'food') : 'food');
+      let me = ''; try { me = localStorage.getItem(LOG_AUTHOR_KEY) || ''; } catch (e) {}
+      _setLogAuthor(l ? (l.author || '') : me);
+      document.getElementById('logModalTitle').textContent = l ? '기록 수정' : '기록하기';
+      document.getElementById('logDeleteBtn').classList.toggle('hidden', !l);
+      document.getElementById('logModal').classList.remove('hidden');
+      if (!l) setTimeout(() => f.elements.name.focus(), 30);
+    }
+    function closeLogModal() { document.getElementById('logModal').classList.add('hidden'); }
+    function fillLogLocation(btn) {
+      const note = document.getElementById('logGeoNote');
+      if (!navigator.geolocation) { note.textContent = '이 브라우저는 위치를 지원하지 않아요'; return; }
+      btn.disabled = true; note.textContent = '위치 확인 중…';
+      navigator.geolocation.getCurrentPosition(pos => {
+        const f = document.getElementById('logForm');
+        f.elements.lat.value = pos.coords.latitude.toFixed(6);
+        f.elements.lng.value = pos.coords.longitude.toFixed(6);
+        note.textContent = `📍 현재 위치 저장됨 (오차 약 ${Math.round(pos.coords.accuracy)}m)`;
+        btn.disabled = false;
+      }, err => {
+        note.textContent = err.code === 1 ? '위치 권한이 거부됐어요 (브라우저 설정에서 허용)' : '위치를 가져오지 못했어요';
+        btn.disabled = false;
+      }, { enableHighAccuracy: true, timeout: 10000 });
+    }
+    function saveLogFromForm() {
+      const f = document.getElementById('logForm');
+      const name = f.elements.name.value.trim();
+      if (!name) return;
+      const lat = parseFloat(f.elements.lat.value), lng = parseFloat(f.elements.lng.value);
+      const author = document.getElementById('logAuthorPicker').dataset.value || '';
+      const data = {
+        name, cat: document.getElementById('logCatPicker').dataset.value || 'food',
+        rating: +f.elements.rating.value || 0, review: f.elements.review.value.trim(),
+        date: f.elements.date.value || _isoToday(), price: f.elements.price.value.trim(),
+        link: f.elements.link.value.trim(), address: f.elements.address.value.trim(),
+        baby: f.elements.baby.checked, dog: f.elements.dog.checked, revisit: f.elements.revisit.checked, author,
+      };
+      if (isFinite(lat) && isFinite(lng)) { data.lat = lat; data.lng = lng; }
+      try { localStorage.setItem(LOG_AUTHOR_KEY, author); } catch (e) {}
+      const id = f.elements.id.value;
+      const l = id && travelLogs.find(x => x.id === id);
+      if (l) { delete l.lat; delete l.lng; Object.assign(l, data); }
+      else travelLogs.push({ id: 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), createdAt: Date.now(), ...data });
+      saveLogs(); closeLogModal(); renderLogs();
+    }
+    function deleteLogFromForm() {
+      const id = document.getElementById('logForm').elements.id.value;
+      const l = travelLogs.find(x => x.id === id);
+      if (!l || !confirm(`'${l.name}' 기록을 삭제할까요?`)) return;
+      travelLogs = travelLogs.filter(x => x.id !== id);
+      saveLogs(); closeLogModal(); renderLogs();
+    }
+    function exportLogs() {
+      const blob = new Blob([JSON.stringify(travelLogs, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `jeju-logs-${_isoToday()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogModal(); });
 
     // ========== 일정 렌더링 (컴팩트 칩 + 전체 너비 상세 패널) ==========
     function getWeekIndex(day) { if(day<=7) return 0; if(day<=14) return 1; if(day<=21) return 2; if(day<=28) return 3; return 4; }
@@ -1253,7 +1533,7 @@
     function buildSpotsMap(elId, tabKey, center, markers, maxZoom) {
       const el = document.getElementById(elId);
       if (!el || typeof L === 'undefined') return;
-      if (_maps[tabKey] && _maps[tabKey].map) { _maps[tabKey].map.remove(); }
+      if (_maps[tabKey] && _maps[tabKey].map) { try { _maps[tabKey].map.stop(); _maps[tabKey].map.off(); _maps[tabKey].map.remove(); } catch (e) {} }
       const map = L.map(elId, { scrollWheelZoom: true }).setView(center || [33.4, 126.55], 10);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
       const pts = [];
@@ -1268,7 +1548,7 @@
         pts.push(ll);
       });
       let bounds = null;
-      if (pts.length) { bounds = L.latLngBounds(pts); map.fitBounds(bounds, { padding: [25, 25], maxZoom: maxZoom || 14 }); }
+      if (pts.length) { bounds = L.latLngBounds(pts); map.fitBounds(bounds, { padding: [25, 25], maxZoom: maxZoom || 14, animate: false }); }
       _maps[tabKey] = { map, bounds };
     }
 
@@ -2146,7 +2426,7 @@
       if (typeof _maps !== 'undefined' && _maps[name] && _maps[name].map) {
         setTimeout(() => {
           _maps[name].map.invalidateSize();
-          if (_maps[name].bounds) _maps[name].map.fitBounds(_maps[name].bounds, { padding: [25, 25], maxZoom: 14 });
+          if (_maps[name].bounds) _maps[name].map.fitBounds(_maps[name].bounds, { padding: [25, 25], maxZoom: 14, animate: false });
         }, 60);
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2174,6 +2454,7 @@
     if (BUDGET_GUIDE.savingTips) document.getElementById('budgetTips').innerHTML = BUDGET_GUIDE.savingTips.map(t => `<li class="text-[11px] text-green-700">• ${t}</li>`).join('');
     renderChecklists();
     renderSchedule();
+    renderLogs();
     renderNearby();
     renderFerryInfo();
     renderPetBabySpots();
@@ -2190,7 +2471,7 @@
     (function() {
       let saved = 'today';
       try { saved = localStorage.getItem('jeju-tab') || 'today'; } catch(e) {}
-      const valid = ['today','schedule','nearby','food','explore','ev','pet','medical','checklist','info'];
+      const valid = ['today','log','schedule','nearby','food','explore','ev','pet','medical','checklist','info'];
       setTab(valid.includes(saved) ? saved : 'today');
       window.scrollTo({ top: 0 });
     })();
